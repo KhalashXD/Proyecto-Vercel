@@ -82,17 +82,3 @@ El proyecto se desarrollará bajo metodología Scrum en 15 sprints, con las sigu
 6. Pruebas y despliegue
 
 ---
-
-## Instalación (Propuesta)
-
-Instrucciones preliminares (sujetas a cambios):
-
-```bash
-# Clonar repositorio
-git clone <url-del-repositorio>
-
-# Ingresar al proyecto
-cd proyecto
-
-# Levantar servicios con Docker
-docker-compose up --build
