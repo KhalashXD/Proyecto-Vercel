@@ -1,0 +1,98 @@
+[
+    {
+        "carro": 11,
+        "estado": 0,
+        "x": -33.0485097,
+        "y": -71.3771123,
+        "calle": "Pasaje Las Cruces",
+        "interseccion": "Alcalde Miguel Gandulfo G."
+    },
+    {
+        "carro": 12,
+        "estado": 0,
+        "x": -33.0485097,
+        "y": -71.3771123,
+        "calle": "Asunci\u00f3n",
+        "interseccion": "Avenida Almirante Latorre"
+    },
+    {
+        "carro": 13,
+        "estado": 0,
+        "x": -33.0485097,
+        "y": -71.3771123,
+        "calle": "Cumming",
+        "interseccion": "Pasaje Cumming"
+    },
+    {
+        "carro": 14,
+        "estado": 0,
+        "x": -33.0485097,
+        "y": -71.3771123,
+        "calle": "Bilbao",
+        "interseccion": "Ignacio Carrera Pinto"
+    },
+    {
+        "carro": 21,
+        "estado": 0,
+        "x": -33.0435523,
+        "y": -71.3722742,
+        "calle": "Pasaje Las Cruces",
+        "interseccion": "Alcalde Miguel Gandulfo G."
+    },
+    {
+        "carro": 22,
+        "estado": 0,
+        "x": -33.0435523,
+        "y": -71.3722742,
+        "calle": "Autopista Troncal Sur",
+        "interseccion": "Autopista Los Andes"
+    },
+    {
+        "carro": 31,
+        "estado": 0,
+        "x": -33.0466061,
+        "y": -71.3533567,
+        "calle": "Pasaje Las Cruces",
+        "interseccion": "Alcalde Miguel Gandulfo G."
+    },
+    {
+        "carro": 32,
+        "estado": 1,
+        "x": -33.0588079,
+        "y": -71.3933562,
+        "calle": "Pasaje Las Cruces",
+        "interseccion": "Alcalde Miguel Gandulfo G."
+    },
+    {
+        "carro": 33,
+        "estado": 0,
+        "x": -33.0466061,
+        "y": -71.3533567,
+        "calle": "Orella",
+        "interseccion": "Aviador Figueroa"
+    },
+    {
+        "carro": 41,
+        "estado": 0,
+        "x": -33.0562161,
+        "y": -71.3912396,
+        "calle": "Pasaje Las Cruces",
+        "interseccion": "Alcalde Miguel Gandulfo G."
+    },
+    {
+        "carro": 42,
+        "estado": 0,
+        "x": -33.0562161,
+        "y": -71.3912396,
+        "calle": "Pasaje Las Cruces",
+        "interseccion": "Alcalde Miguel Gandulfo G."
+    },
+    {
+        "carro": 43,
+        "estado": 0,
+        "x": -33.0562161,
+        "y": -71.3912396,
+        "calle": "a",
+        "interseccion": "b"
+    }
+]

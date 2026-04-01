@@ -1,0 +1,43 @@
+/* Fondo negro para la columna de "Estado Carros" */
+.estado-carros {
+    background-color: #333; /* Fondo negro */
+    color: #fff; /* Texto blanco */
+    padding: 10px;
+}
+
+/* Encabezado "Emergencias activas" en blanco */
+.emergencias-activas {
+    color: #fff; /* Texto blanco */
+    margin-top: 20px;
+}
+
+/* Estilos de tabla */
+.emergencias-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.emergencias-table th, .emergencias-table td {
+    border: 1px solid #555;
+    padding: 8px;
+    color: #fff; /* Texto blanco en celdas */
+}
+
+.emergencias-table th {
+    background-color: #393939; /* Fondo oscuro para el encabezado */
+}
+
+.emergencias-table tbody tr:nth-child(even) {
+    background-color: #393939; /* Fondo alternado */
+}
+
+/* Estilo para el botón de navegación */
+.navigate-button {
+    border: none;
+    background: none;
+}
+
+.icon {
+    width: 30px;
+    height: 30px;
+}

@@ -1,0 +1,1202 @@
+[
+    {
+        "nombre": "1-9 Crist\u00f3bal Morales Flores",
+        "id": "2"
+    },
+    {
+        "nombre": "2-9 Natalia Vergara Castro",
+        "id": "3"
+    },
+    {
+        "nombre": "3-9 Martina Valenzuela G\u00f3mez",
+        "id": "4"
+    },
+    {
+        "nombre": "4-9 Natalia Morales Ram\u00edrez",
+        "id": "5"
+    },
+    {
+        "nombre": "1-9 Amanda N\u00fa\u00f1ez Herrera",
+        "id": "6"
+    },
+    {
+        "nombre": "3-9 Gabriel Fern\u00e1ndez Espinoza",
+        "id": "7"
+    },
+    {
+        "nombre": "1-9 Camila Torres Mart\u00ednez",
+        "id": "8"
+    },
+    {
+        "nombre": "1-9 Lorenzo Rodr\u00edguez Torres",
+        "id": "9"
+    },
+    {
+        "nombre": "1-9 Benjam\u00edn Mart\u00ednez Gonz\u00e1lez",
+        "id": "10"
+    },
+    {
+        "nombre": "3-9 Antonia Flores Ram\u00edrez",
+        "id": "11"
+    },
+    {
+        "nombre": "3-9 Carolina N\u00fa\u00f1ez Fuentes",
+        "id": "12"
+    },
+    {
+        "nombre": "4-9 Iv\u00e1n Torres Espinoza",
+        "id": "13"
+    },
+    {
+        "nombre": "1-9 Iv\u00e1n Ram\u00edrez D\u00edaz",
+        "id": "14"
+    },
+    {
+        "nombre": "3-9 Sim\u00f3n Fern\u00e1ndez Espinoza",
+        "id": "15"
+    },
+    {
+        "nombre": "1-9 Sebasti\u00e1n L\u00f3pez Silva",
+        "id": "16"
+    },
+    {
+        "nombre": "2-9 Iv\u00e1n Jara S\u00e1nchez",
+        "id": "17"
+    },
+    {
+        "nombre": "2-9 Roc\u00edo Rojas Valenzuela",
+        "id": "18"
+    },
+    {
+        "nombre": "4-1 Amanda V\u00e1squez Torres",
+        "id": "19"
+    },
+    {
+        "nombre": "3-9 Ignacio Espinoza \u00c1lvarez",
+        "id": "20"
+    },
+    {
+        "nombre": "3-9 Catalina Valenzuela Silva",
+        "id": "21"
+    },
+    {
+        "nombre": "2-9 Marcelo V\u00e1squez Soto",
+        "id": "22"
+    },
+    {
+        "nombre": "1-9 Rosario D\u00edaz Morales",
+        "id": "23"
+    },
+    {
+        "nombre": "1-9 Agust\u00edn Reyes Figueroa",
+        "id": "24"
+    },
+    {
+        "nombre": "3-9 Iv\u00e1n V\u00e1squez Rodr\u00edguez",
+        "id": "25"
+    },
+    {
+        "nombre": "3-9 Santiago Mu\u00f1oz Hern\u00e1ndez",
+        "id": "26"
+    },
+    {
+        "nombre": "4-9 Maximiliano Torres Rojas",
+        "id": "27"
+    },
+    {
+        "nombre": "2-9 Patricio \u00c1lvarez Carrasco",
+        "id": "28"
+    },
+    {
+        "nombre": "3-9 Francisca Mu\u00f1oz Hern\u00e1ndez",
+        "id": "29"
+    },
+    {
+        "nombre": "3-9 Francisco Rojas V\u00e1squez",
+        "id": "30"
+    },
+    {
+        "nombre": "3-9 Maximiliano Torres \u00c1lvarez",
+        "id": "31"
+    },
+    {
+        "nombre": "1-9 Juan Silva D\u00edaz",
+        "id": "32"
+    },
+    {
+        "nombre": "1-9 Fernanda V\u00e1squez Herrera",
+        "id": "33"
+    },
+    {
+        "nombre": "2-9 Patricio Silva Cort\u00e9s",
+        "id": "34"
+    },
+    {
+        "nombre": "2-9 Camilo Bravo P\u00e9rez",
+        "id": "35"
+    },
+    {
+        "nombre": "3-9 Maximiliano Tapia D\u00edaz",
+        "id": "36"
+    },
+    {
+        "nombre": "1-9 Laura Morales Valenzuela",
+        "id": "37"
+    },
+    {
+        "nombre": "4-9 Gabriel Gonz\u00e1lez Sep\u00falveda",
+        "id": "38"
+    },
+    {
+        "nombre": "1-9 Daniela Reyes Rojas",
+        "id": "39"
+    },
+    {
+        "nombre": "3-9 Crist\u00f3bal Riquelme Figueroa",
+        "id": "40"
+    },
+    {
+        "nombre": "3-9 Rosario Riquelme \u00c1lvarez",
+        "id": "41"
+    },
+    {
+        "nombre": "M-4 Leonardo Herrera Guti\u00e9rrez",
+        "id": "42"
+    },
+    {
+        "nombre": "2-9 Catalina Rojas Valenzuela",
+        "id": "43"
+    },
+    {
+        "nombre": "3-9 Marcelo Espinoza Hern\u00e1ndez",
+        "id": "44"
+    },
+    {
+        "nombre": "3-9 Lorenzo Hern\u00e1ndez Carrasco",
+        "id": "45"
+    },
+    {
+        "nombre": "3-9 Patricio Valenzuela Ram\u00edrez",
+        "id": "46"
+    },
+    {
+        "nombre": "1-9 Benjam\u00edn Mart\u00ednez Fuentes",
+        "id": "47"
+    },
+    {
+        "nombre": "3-9 Juan Espinoza Araya",
+        "id": "48"
+    },
+    {
+        "nombre": "1-9 Fernanda Ram\u00edrez V\u00e1squez",
+        "id": "49"
+    },
+    {
+        "nombre": "2-9 Javiera Gonz\u00e1lez Espinoza",
+        "id": "50"
+    },
+    {
+        "nombre": "4-9 Santiago Soto Mart\u00ednez",
+        "id": "51"
+    },
+    {
+        "nombre": "4-9 Sebasti\u00e1n Riquelme Contreras",
+        "id": "52"
+    },
+    {
+        "nombre": "3-9 Tom\u00e1s Fern\u00e1ndez Jara",
+        "id": "53"
+    },
+    {
+        "nombre": "3-9 Rodrigo Jara Valenzuela",
+        "id": "54"
+    },
+    {
+        "nombre": "2-9 V\u00edctor P\u00e9rez Torres",
+        "id": "55"
+    },
+    {
+        "nombre": "1-1 Ricardo G\u00f3mez Bravo",
+        "id": "56"
+    },
+    {
+        "nombre": "1-9 Antonia Silva Vargas",
+        "id": "57"
+    },
+    {
+        "nombre": "4-9 Roc\u00edo Valenzuela Bravo",
+        "id": "58"
+    },
+    {
+        "nombre": "1-9 Fernanda Jara Reyes",
+        "id": "59"
+    },
+    {
+        "nombre": "3-9 Juan Espinoza Hern\u00e1ndez",
+        "id": "60"
+    },
+    {
+        "nombre": "4-9 Josefina V\u00e1squez L\u00f3pez",
+        "id": "61"
+    },
+    {
+        "nombre": "1-9 Mat\u00edas \u00c1lvarez Castillo",
+        "id": "62"
+    },
+    {
+        "nombre": "3-9 Francisca Jara V\u00e1squez",
+        "id": "63"
+    },
+    {
+        "nombre": "4-9 Bel\u00e9n Torres D\u00edaz",
+        "id": "64"
+    },
+    {
+        "nombre": "2-9 Maximiliano V\u00e1squez Figueroa",
+        "id": "65"
+    },
+    {
+        "nombre": "2-9 Josefina Sep\u00falveda Tapia",
+        "id": "66"
+    },
+    {
+        "nombre": "4-9 Josefina Castro Herrera",
+        "id": "67"
+    },
+    {
+        "nombre": "4-9 Victoria Mart\u00ednez Cort\u00e9s",
+        "id": "68"
+    },
+    {
+        "nombre": "3-9 Sebasti\u00e1n Araya Araya",
+        "id": "69"
+    },
+    {
+        "nombre": "1-9 Pedro Reyes Rojas",
+        "id": "70"
+    },
+    {
+        "nombre": "3-9 Agust\u00edn Vargas Riquelme",
+        "id": "71"
+    },
+    {
+        "nombre": "3-9 Francisco Vargas Morales",
+        "id": "72"
+    },
+    {
+        "nombre": "3-9 Ricardo D\u00edaz P\u00e9rez",
+        "id": "73"
+    },
+    {
+        "nombre": "3-9 Mat\u00edas Tapia Rivera",
+        "id": "74"
+    },
+    {
+        "nombre": "2-9 Ricardo P\u00e9rez Herrera",
+        "id": "75"
+    },
+    {
+        "nombre": "3-9 Victoria Rodr\u00edguez N\u00fa\u00f1ez",
+        "id": "76"
+    },
+    {
+        "nombre": "2-9 Natalia L\u00f3pez Espinoza",
+        "id": "77"
+    },
+    {
+        "nombre": "2-9 Francisco Gonz\u00e1lez Contreras",
+        "id": "78"
+    },
+    {
+        "nombre": "3-9 Valentina Cort\u00e9s Gonz\u00e1lez",
+        "id": "79"
+    },
+    {
+        "nombre": "1-9 Ricardo P\u00e9rez L\u00f3pez",
+        "id": "80"
+    },
+    {
+        "nombre": "1-9 Crist\u00f3bal S\u00e1nchez V\u00e1squez",
+        "id": "81"
+    },
+    {
+        "nombre": "1-9 Francisca Castillo Cort\u00e9s",
+        "id": "82"
+    },
+    {
+        "nombre": "1-9 Antonia Rojas Rojas",
+        "id": "83"
+    },
+    {
+        "nombre": "4-9 Crist\u00f3bal Reyes Carrasco",
+        "id": "84"
+    },
+    {
+        "nombre": "1-9 Maximiliano Rivera Castro",
+        "id": "85"
+    },
+    {
+        "nombre": "3-9 Gabriel Riquelme Vergara",
+        "id": "86"
+    },
+    {
+        "nombre": "2-9 Daniela Torres Mart\u00ednez",
+        "id": "87"
+    },
+    {
+        "nombre": "4-9 Francisco Fuentes Rodr\u00edguez",
+        "id": "88"
+    },
+    {
+        "nombre": "1-9 Camilo Sep\u00falveda Hern\u00e1ndez",
+        "id": "89"
+    },
+    {
+        "nombre": "2-9 Valentina Jara Vargas",
+        "id": "90"
+    },
+    {
+        "nombre": "2-9 Valentina Rivera Jara",
+        "id": "91"
+    },
+    {
+        "nombre": "3-9 Juan Silva Araya",
+        "id": "92"
+    },
+    {
+        "nombre": "2-9 Juan Fern\u00e1ndez Ram\u00edrez",
+        "id": "93"
+    },
+    {
+        "nombre": "3-9 Sebasti\u00e1n Sep\u00falveda Castro",
+        "id": "94"
+    },
+    {
+        "nombre": "2-9 Pedro Riquelme Soto",
+        "id": "95"
+    },
+    {
+        "nombre": "4-9 Catalina S\u00e1nchez \u00c1lvarez",
+        "id": "96"
+    },
+    {
+        "nombre": "3-9 Emilia Gonz\u00e1lez Herrera",
+        "id": "97"
+    },
+    {
+        "nombre": "4-9 Sim\u00f3n Torres Jara",
+        "id": "98"
+    },
+    {
+        "nombre": "4-9 Jorge N\u00fa\u00f1ez D\u00edaz",
+        "id": "99"
+    },
+    {
+        "nombre": "3-9 Camila Sep\u00falveda Rojas",
+        "id": "100"
+    },
+    {
+        "nombre": "4-9 Rosario Contreras S\u00e1nchez",
+        "id": "101"
+    },
+    {
+        "nombre": "1-9 Roc\u00edo V\u00e1squez Mart\u00ednez",
+        "id": "102"
+    },
+    {
+        "nombre": "4-9 Camila P\u00e9rez G\u00f3mez",
+        "id": "103"
+    },
+    {
+        "nombre": "3-9 David Sep\u00falveda Silva",
+        "id": "104"
+    },
+    {
+        "nombre": "2-9 Antonia Ram\u00edrez Flores",
+        "id": "105"
+    },
+    {
+        "nombre": "4-9 Javiera Cort\u00e9s Riquelme",
+        "id": "106"
+    },
+    {
+        "nombre": "3-9 Laura Araya Bravo",
+        "id": "107"
+    },
+    {
+        "nombre": "3-9 Ignacio Torres Tapia",
+        "id": "108"
+    },
+    {
+        "nombre": "2-9 Rodrigo Bravo V\u00e1squez",
+        "id": "109"
+    },
+    {
+        "nombre": "4-9 Camila V\u00e1squez Fuentes",
+        "id": "110"
+    },
+    {
+        "nombre": "1-9 Pedro L\u00f3pez \u00c1lvarez",
+        "id": "111"
+    },
+    {
+        "nombre": "4-9 Javiera Rivera Vargas",
+        "id": "112"
+    },
+    {
+        "nombre": "2-9 Camila Castillo Soto",
+        "id": "113"
+    },
+    {
+        "nombre": "4-9 Gabriel Fern\u00e1ndez Castillo",
+        "id": "114"
+    },
+    {
+        "nombre": "2-9 Martina Jara V\u00e1squez",
+        "id": "115"
+    },
+    {
+        "nombre": "4-9 Marcelo Figueroa S\u00e1nchez",
+        "id": "116"
+    },
+    {
+        "nombre": "2-9 Ricardo Bravo Morales",
+        "id": "117"
+    },
+    {
+        "nombre": "2-9 Mart\u00edn Castillo Rojas",
+        "id": "118"
+    },
+    {
+        "nombre": "4-9 Benjam\u00edn Vargas Fuentes",
+        "id": "119"
+    },
+    {
+        "nombre": "2-9 Mart\u00edn Contreras D\u00edaz",
+        "id": "120"
+    },
+    {
+        "nombre": "3-9 Santiago Contreras Flores",
+        "id": "121"
+    },
+    {
+        "nombre": "4-9 Camilo Vergara Morales",
+        "id": "122"
+    },
+    {
+        "nombre": "4-9 Emilia Morales P\u00e9rez",
+        "id": "123"
+    },
+    {
+        "nombre": "3-9 Lorenzo Flores P\u00e9rez",
+        "id": "124"
+    },
+    {
+        "nombre": "4-9 Camila Flores Guti\u00e9rrez",
+        "id": "125"
+    },
+    {
+        "nombre": "1-9 Amanda Valenzuela Valenzuela",
+        "id": "126"
+    },
+    {
+        "nombre": "2-9 Javiera G\u00f3mez Tapia",
+        "id": "127"
+    },
+    {
+        "nombre": "4-9 Mart\u00edn N\u00fa\u00f1ez Torres",
+        "id": "128"
+    },
+    {
+        "nombre": "1-2 Agust\u00edn Araya G\u00f3mez",
+        "id": "129"
+    },
+    {
+        "nombre": "1-9 Gabriel Valenzuela Reyes",
+        "id": "130"
+    },
+    {
+        "nombre": "2-9 Antonia Carrasco Vargas",
+        "id": "131"
+    },
+    {
+        "nombre": "2-9 Jorge Castro Mu\u00f1oz",
+        "id": "132"
+    },
+    {
+        "nombre": "2-9 Josefina V\u00e1squez Mu\u00f1oz",
+        "id": "133"
+    },
+    {
+        "nombre": "4-9 Iv\u00e1n Soto L\u00f3pez",
+        "id": "134"
+    },
+    {
+        "nombre": "3-9 Antonia Valenzuela Sep\u00falveda",
+        "id": "135"
+    },
+    {
+        "nombre": "2-9 Benjam\u00edn Rodr\u00edguez Herrera",
+        "id": "136"
+    },
+    {
+        "nombre": "4-2 Joaqu\u00edn Guti\u00e9rrez Bravo",
+        "id": "137"
+    },
+    {
+        "nombre": "2-9 Agust\u00edn Fern\u00e1ndez N\u00fa\u00f1ez",
+        "id": "138"
+    },
+    {
+        "nombre": "4-9 Roc\u00edo Hern\u00e1ndez G\u00f3mez",
+        "id": "139"
+    },
+    {
+        "nombre": "2-9 Maximiliano Rivera P\u00e9rez",
+        "id": "140"
+    },
+    {
+        "nombre": "2-9 Antonia G\u00f3mez Rojas",
+        "id": "141"
+    },
+    {
+        "nombre": "4-3 V\u00edctor Castro Contreras",
+        "id": "142"
+    },
+    {
+        "nombre": "4-9 Patricio Jara Rodr\u00edguez",
+        "id": "143"
+    },
+    {
+        "nombre": "3-9 Natalia N\u00fa\u00f1ez Vargas",
+        "id": "144"
+    },
+    {
+        "nombre": "2-9 Gabriel Vergara Morales",
+        "id": "145"
+    },
+    {
+        "nombre": "2-9 Maximiliano Flores Jara",
+        "id": "146"
+    },
+    {
+        "nombre": "2-9 Roc\u00edo Fern\u00e1ndez Rodr\u00edguez",
+        "id": "147"
+    },
+    {
+        "nombre": "2-9 Mart\u00edn Rodr\u00edguez Torres",
+        "id": "148"
+    },
+    {
+        "nombre": "2-9 Santiago Araya Valenzuela",
+        "id": "149"
+    },
+    {
+        "nombre": "3-9 Rodrigo Herrera V\u00e1squez",
+        "id": "150"
+    },
+    {
+        "nombre": "4-9 Laura Contreras G\u00f3mez",
+        "id": "151"
+    },
+    {
+        "nombre": "4-9 Pedro Riquelme Araya",
+        "id": "152"
+    },
+    {
+        "nombre": "1-9 Camila Reyes Contreras",
+        "id": "153"
+    },
+    {
+        "nombre": "3-9 Javiera Contreras Bravo",
+        "id": "154"
+    },
+    {
+        "nombre": "1-9 Ignacio Morales Riquelme",
+        "id": "155"
+    },
+    {
+        "nombre": "4-9 Roc\u00edo Vergara L\u00f3pez",
+        "id": "156"
+    },
+    {
+        "nombre": "3-9 Juan Riquelme Reyes",
+        "id": "157"
+    },
+    {
+        "nombre": "2-9 Jorge D\u00edaz S\u00e1nchez",
+        "id": "158"
+    },
+    {
+        "nombre": "4-9 Laura Mart\u00ednez Contreras",
+        "id": "159"
+    },
+    {
+        "nombre": "4-9 Juan Vargas Torres",
+        "id": "160"
+    },
+    {
+        "nombre": "4-9 Camila Hern\u00e1ndez V\u00e1squez",
+        "id": "161"
+    },
+    {
+        "nombre": "2-1 Sim\u00f3n Figueroa Torres",
+        "id": "162"
+    },
+    {
+        "nombre": "3-9 Marcelo Bravo Castillo",
+        "id": "163"
+    },
+    {
+        "nombre": "4-9 Antonia Mu\u00f1oz Herrera",
+        "id": "164"
+    },
+    {
+        "nombre": "2-9 Rodrigo Carrasco Hern\u00e1ndez",
+        "id": "165"
+    },
+    {
+        "nombre": "2-9 Amanda Vargas Contreras",
+        "id": "166"
+    },
+    {
+        "nombre": "3-9 Maximiliano Espinoza Morales",
+        "id": "167"
+    },
+    {
+        "nombre": "3-9 Patricio Soto Rodr\u00edguez",
+        "id": "168"
+    },
+    {
+        "nombre": "4-9 Bel\u00e9n Torres Araya",
+        "id": "169"
+    },
+    {
+        "nombre": "2-9 Javiera Tapia Jara",
+        "id": "170"
+    },
+    {
+        "nombre": "4-9 Daniela Vergara Rivera",
+        "id": "171"
+    },
+    {
+        "nombre": "1-9 Victoria Fern\u00e1ndez Herrera",
+        "id": "172"
+    },
+    {
+        "nombre": "4-9 Carolina Hern\u00e1ndez P\u00e9rez",
+        "id": "173"
+    },
+    {
+        "nombre": "2-9 Iv\u00e1n Rojas Silva",
+        "id": "174"
+    },
+    {
+        "nombre": "1-9 Sim\u00f3n Rojas Espinoza",
+        "id": "175"
+    },
+    {
+        "nombre": "3-9 Natalia Soto Gonz\u00e1lez",
+        "id": "176"
+    },
+    {
+        "nombre": "2-9 Javiera Hern\u00e1ndez Rodr\u00edguez",
+        "id": "177"
+    },
+    {
+        "nombre": "3-9 Valentina Hern\u00e1ndez Fuentes",
+        "id": "178"
+    },
+    {
+        "nombre": "1-9 Martina Castillo Contreras",
+        "id": "179"
+    },
+    {
+        "nombre": "3-9 Antonia Sep\u00falveda Castro",
+        "id": "180"
+    },
+    {
+        "nombre": "3-9 Tom\u00e1s Carrasco Araya",
+        "id": "181"
+    },
+    {
+        "nombre": "3-9 Roc\u00edo \u00c1lvarez D\u00edaz",
+        "id": "182"
+    },
+    {
+        "nombre": "2-9 Rodrigo Fuentes N\u00fa\u00f1ez",
+        "id": "183"
+    },
+    {
+        "nombre": "1-9 Maximiliano Ram\u00edrez Castillo",
+        "id": "184"
+    },
+    {
+        "nombre": "1-9 Camilo Castillo Rodr\u00edguez",
+        "id": "185"
+    },
+    {
+        "nombre": "1-9 Valentina Torres Fuentes",
+        "id": "186"
+    },
+    {
+        "nombre": "3-9 Antonia P\u00e9rez D\u00edaz",
+        "id": "187"
+    },
+    {
+        "nombre": "1-9 Leonardo \u00c1lvarez Guti\u00e9rrez",
+        "id": "188"
+    },
+    {
+        "nombre": "1-3 Mat\u00edas Rodr\u00edguez Torres",
+        "id": "189"
+    },
+    {
+        "nombre": "2-9 David Ram\u00edrez Fuentes",
+        "id": "190"
+    },
+    {
+        "nombre": "1-9 Sim\u00f3n Vergara N\u00fa\u00f1ez",
+        "id": "191"
+    },
+    {
+        "nombre": "3-9 Gabriel Tapia Reyes",
+        "id": "192"
+    },
+    {
+        "nombre": "3-9 Francisco Morales Bravo",
+        "id": "193"
+    },
+    {
+        "nombre": "3-9 Ignacio Figueroa Vargas",
+        "id": "194"
+    },
+    {
+        "nombre": "3-9 Daniela Cort\u00e9s Bravo",
+        "id": "195"
+    },
+    {
+        "nombre": "3-9 Mart\u00edn P\u00e9rez Castro",
+        "id": "196"
+    },
+    {
+        "nombre": "1-9 Camilo Rodr\u00edguez D\u00edaz",
+        "id": "197"
+    },
+    {
+        "nombre": "3-9 Pedro Castro Jara",
+        "id": "198"
+    },
+    {
+        "nombre": "4-9 Sim\u00f3n Mu\u00f1oz Valenzuela",
+        "id": "199"
+    },
+    {
+        "nombre": "4-9 Martina N\u00fa\u00f1ez Rivera",
+        "id": "200"
+    },
+    {
+        "nombre": "M-2 Lorenzo Bravo Bravo",
+        "id": "201"
+    },
+    {
+        "nombre": "4-9 Maximiliano Reyes Fuentes",
+        "id": "202"
+    },
+    {
+        "nombre": "2-9 Benjam\u00edn Morales Fern\u00e1ndez",
+        "id": "203"
+    },
+    {
+        "nombre": "2-9 Jorge Riquelme Araya",
+        "id": "204"
+    },
+    {
+        "nombre": "2-2 Rodrigo Fern\u00e1ndez Reyes",
+        "id": "205"
+    },
+    {
+        "nombre": "4-9 Gabriel Soto Carrasco",
+        "id": "206"
+    },
+    {
+        "nombre": "2-9 Martina Figueroa Morales",
+        "id": "207"
+    },
+    {
+        "nombre": "1-9 Pedro Contreras Sep\u00falveda",
+        "id": "208"
+    },
+    {
+        "nombre": "2-9 Emilia Fern\u00e1ndez Ram\u00edrez",
+        "id": "209"
+    },
+    {
+        "nombre": "2-9 Gabriel Silva Jara",
+        "id": "210"
+    },
+    {
+        "nombre": "3-3 Daniela Rodr\u00edguez \u00c1lvarez",
+        "id": "211"
+    },
+    {
+        "nombre": "1-9 Antonia \u00c1lvarez Jara",
+        "id": "212"
+    },
+    {
+        "nombre": "1-9 Francisco Castro Araya",
+        "id": "213"
+    },
+    {
+        "nombre": "2-9 Francisca Jara G\u00f3mez",
+        "id": "214"
+    },
+    {
+        "nombre": "4-9 Lorenzo Tapia Sep\u00falveda",
+        "id": "215"
+    },
+    {
+        "nombre": "4-9 Daniela Tapia Mu\u00f1oz",
+        "id": "216"
+    },
+    {
+        "nombre": "1-9 Laura Flores Castillo",
+        "id": "217"
+    },
+    {
+        "nombre": "4-9 Amanda Espinoza Cort\u00e9s",
+        "id": "218"
+    },
+    {
+        "nombre": "1-9 Natalia G\u00f3mez P\u00e9rez",
+        "id": "219"
+    },
+    {
+        "nombre": "3-9 Leonardo Sep\u00falveda L\u00f3pez",
+        "id": "220"
+    },
+    {
+        "nombre": "1-9 Rodrigo Vergara N\u00fa\u00f1ez",
+        "id": "221"
+    },
+    {
+        "nombre": "2-9 Pedro N\u00fa\u00f1ez Reyes",
+        "id": "222"
+    },
+    {
+        "nombre": "2-9 Sebasti\u00e1n Espinoza Riquelme",
+        "id": "223"
+    },
+    {
+        "nombre": "2-9 Antonia Rivera Silva",
+        "id": "224"
+    },
+    {
+        "nombre": "M-1 Benjam\u00edn S\u00e1nchez Araya",
+        "id": "225"
+    },
+    {
+        "nombre": "2-9 Josefina N\u00fa\u00f1ez Torres",
+        "id": "226"
+    },
+    {
+        "nombre": "2-9 Ignacio G\u00f3mez Castro",
+        "id": "227"
+    },
+    {
+        "nombre": "2-9 Santiago Torres Flores",
+        "id": "228"
+    },
+    {
+        "nombre": "4-9 Bel\u00e9n Morales Vergara",
+        "id": "229"
+    },
+    {
+        "nombre": "1-9 Santiago S\u00e1nchez D\u00edaz",
+        "id": "230"
+    },
+    {
+        "nombre": "1-9 Lorenzo Ram\u00edrez Gonz\u00e1lez",
+        "id": "231"
+    },
+    {
+        "nombre": "1-9 Sebasti\u00e1n Torres Castillo",
+        "id": "232"
+    },
+    {
+        "nombre": "1-9 Rodrigo Castillo Morales",
+        "id": "233"
+    },
+    {
+        "nombre": "1-9 Sim\u00f3n Araya Flores",
+        "id": "234"
+    },
+    {
+        "nombre": "3-9 Tom\u00e1s \u00c1lvarez Mu\u00f1oz",
+        "id": "235"
+    },
+    {
+        "nombre": "1-9 David Guti\u00e9rrez Araya",
+        "id": "236"
+    },
+    {
+        "nombre": "4-9 Francisco D\u00edaz Castro",
+        "id": "237"
+    },
+    {
+        "nombre": "3-2 Mat\u00edas P\u00e9rez Morales",
+        "id": "238"
+    },
+    {
+        "nombre": "3-9 Antonia Castro Torres",
+        "id": "239"
+    },
+    {
+        "nombre": "3-9 Sebasti\u00e1n Rodr\u00edguez Mart\u00ednez",
+        "id": "240"
+    },
+    {
+        "nombre": "4-9 Antonia Mu\u00f1oz V\u00e1squez",
+        "id": "241"
+    },
+    {
+        "nombre": "1-9 Jorge Rojas D\u00edaz",
+        "id": "242"
+    },
+    {
+        "nombre": "1-9 Roc\u00edo Silva Sep\u00falveda",
+        "id": "243"
+    },
+    {
+        "nombre": "1-9 Amanda Hern\u00e1ndez Rodr\u00edguez",
+        "id": "244"
+    },
+    {
+        "nombre": "1-9 Catalina S\u00e1nchez V\u00e1squez",
+        "id": "245"
+    },
+    {
+        "nombre": "1-9 Bel\u00e9n Mart\u00ednez Castillo",
+        "id": "246"
+    },
+    {
+        "nombre": "4-9 Josefina \u00c1lvarez Vergara",
+        "id": "247"
+    },
+    {
+        "nombre": "4-9 Rodrigo Vergara Silva",
+        "id": "248"
+    },
+    {
+        "nombre": "2-9 Lorenzo G\u00f3mez Gonz\u00e1lez",
+        "id": "249"
+    },
+    {
+        "nombre": "1-9 Amanda P\u00e9rez Mart\u00ednez",
+        "id": "250"
+    },
+    {
+        "nombre": "1-9 Valentina Reyes Cort\u00e9s",
+        "id": "251"
+    },
+    {
+        "nombre": "1-9 Antonia Castro Vargas",
+        "id": "252"
+    },
+    {
+        "nombre": "1-9 Pedro N\u00fa\u00f1ez Morales",
+        "id": "253"
+    },
+    {
+        "nombre": "3-9 Gabriel Torres Fuentes",
+        "id": "254"
+    },
+    {
+        "nombre": "4-9 Benjam\u00edn Morales Araya",
+        "id": "255"
+    },
+    {
+        "nombre": "3-9 Camila Figueroa Torres",
+        "id": "256"
+    },
+    {
+        "nombre": "4-9 V\u00edctor Rodr\u00edguez Bravo",
+        "id": "257"
+    },
+    {
+        "nombre": "3-9 Sim\u00f3n Castillo N\u00fa\u00f1ez",
+        "id": "258"
+    },
+    {
+        "nombre": "4-9 David G\u00f3mez Mu\u00f1oz",
+        "id": "259"
+    },
+    {
+        "nombre": "3-9 Mat\u00edas Rodr\u00edguez S\u00e1nchez",
+        "id": "260"
+    },
+    {
+        "nombre": "1-9 Agust\u00edn Mart\u00ednez Carrasco",
+        "id": "261"
+    },
+    {
+        "nombre": "1-9 V\u00edctor Castillo Rivera",
+        "id": "262"
+    },
+    {
+        "nombre": "1-9 Antonia Espinoza Jara",
+        "id": "263"
+    },
+    {
+        "nombre": "3-9 Josefina Rojas Silva",
+        "id": "264"
+    },
+    {
+        "nombre": "3-9 David Gonz\u00e1lez Castro",
+        "id": "265"
+    },
+    {
+        "nombre": "3-1 Ricardo Espinoza Contreras",
+        "id": "266"
+    },
+    {
+        "nombre": "1-9 Antonia S\u00e1nchez Hern\u00e1ndez",
+        "id": "267"
+    },
+    {
+        "nombre": "M-3 Jorge Rojas Morales",
+        "id": "268"
+    },
+    {
+        "nombre": "2-9 Bel\u00e9n Sep\u00falveda \u00c1lvarez",
+        "id": "269"
+    },
+    {
+        "nombre": "2-9 Agust\u00edn Mart\u00ednez Vergara",
+        "id": "270"
+    },
+    {
+        "nombre": "3-9 Roc\u00edo P\u00e9rez D\u00edaz",
+        "id": "271"
+    },
+    {
+        "nombre": "2-3 David Riquelme Riquelme",
+        "id": "272"
+    },
+    {
+        "nombre": "4-9 Ricardo Jara Hern\u00e1ndez",
+        "id": "273"
+    },
+    {
+        "nombre": "2-9 Marcelo Fern\u00e1ndez Fern\u00e1ndez",
+        "id": "274"
+    },
+    {
+        "nombre": "2-9 Laura Mart\u00ednez Espinoza",
+        "id": "275"
+    },
+    {
+        "nombre": "1-9 Victoria S\u00e1nchez Sep\u00falveda",
+        "id": "276"
+    },
+    {
+        "nombre": "4-9 Patricio Contreras S\u00e1nchez",
+        "id": "277"
+    },
+    {
+        "nombre": "3-9 Victoria D\u00edaz D\u00edaz",
+        "id": "278"
+    },
+    {
+        "nombre": "2-9 Josefina Riquelme Torres",
+        "id": "279"
+    },
+    {
+        "nombre": "1-9 Camila N\u00fa\u00f1ez D\u00edaz",
+        "id": "280"
+    },
+    {
+        "nombre": "4-9 Jorge Torres G\u00f3mez",
+        "id": "281"
+    },
+    {
+        "nombre": "1-9 Mat\u00edas L\u00f3pez N\u00fa\u00f1ez",
+        "id": "282"
+    },
+    {
+        "nombre": "4-9 Sim\u00f3n Torres Castillo",
+        "id": "283"
+    },
+    {
+        "nombre": "4-9 Ignacio Gonz\u00e1lez Mu\u00f1oz",
+        "id": "284"
+    },
+    {
+        "nombre": "1-9 V\u00edctor Valenzuela Gonz\u00e1lez",
+        "id": "285"
+    },
+    {
+        "nombre": "1-9 Camila Vargas Guti\u00e9rrez",
+        "id": "286"
+    },
+    {
+        "nombre": "1-9 Rodrigo N\u00fa\u00f1ez Figueroa",
+        "id": "287"
+    },
+    {
+        "nombre": "4-9 Crist\u00f3bal L\u00f3pez Carrasco",
+        "id": "288"
+    },
+    {
+        "nombre": "3-9 Benjam\u00edn Espinoza Fuentes",
+        "id": "289"
+    },
+    {
+        "nombre": "2-9 Bel\u00e9n Soto Contreras",
+        "id": "290"
+    },
+    {
+        "nombre": "2-9 Mart\u00edn Figueroa Figueroa",
+        "id": "291"
+    },
+    {
+        "nombre": "2-9 Josefina Valenzuela Mart\u00ednez",
+        "id": "292"
+    },
+    {
+        "nombre": "2-9 Josefina Fern\u00e1ndez Morales",
+        "id": "293"
+    },
+    {
+        "nombre": "1-9 Iv\u00e1n Hern\u00e1ndez P\u00e9rez",
+        "id": "294"
+    },
+    {
+        "nombre": "3-9 Iv\u00e1n Mu\u00f1oz Herrera",
+        "id": "295"
+    },
+    {
+        "nombre": "4-9 Francisca Fern\u00e1ndez D\u00edaz",
+        "id": "296"
+    },
+    {
+        "nombre": "1-9 Pedro Araya Tapia",
+        "id": "297"
+    },
+    {
+        "nombre": "1-9 Camila Reyes Gonz\u00e1lez",
+        "id": "298"
+    },
+    {
+        "nombre": "1-9 Francisco Silva Cort\u00e9s",
+        "id": "299"
+    },
+    {
+        "nombre": "4-9 Francisca Rodr\u00edguez Espinoza",
+        "id": "300"
+    },
+    {
+        "nombre": "3-9 Lorenzo Fern\u00e1ndez Riquelme",
+        "id": "301"
+    }
+]

@@ -1,0 +1,75 @@
+/* Fondo negro y texto blanco */
+body, .main-content {
+  background-color: #000; /* Fondo negro general */
+  color: #fff; /* Texto blanco */
+}
+
+/* Cambia el fondo de las secciones blancas a #393939 */
+.container_despacho, .main-content, .wrapper3 {
+  background-color: #393939;
+}
+
+/* Encabezados y texto */
+h1, h2, p {
+  color: #fff; /* Texto blanco para encabezados y párrafos */
+}
+
+/* Tabla estilizada */
+table {
+  width: 100%;
+  margin-top: 20px;
+  color: #fff;
+}
+
+table th, table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #555; /* Color de línea de separación */
+}
+
+table thead {
+  background-color: #333; /* Fondo para encabezado de tabla */
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #222; /* Alternar color de fondo */
+}
+
+/* Botones y selects */
+button {
+  margin: 10px;
+  padding: 10px 20px;
+}
+
+.form-select {
+  color: #000; /* Texto negro en el dropdown */
+}
+
+/* Estructura general de .main-content */
+.main-content {
+  width: 100%;  /* Toma el 100% del ancho */
+  display: flex;
+  flex-direction: column;  /* Organiza en columna */
+}
+
+/* Contenedor para despacho */
+.container_despacho {
+  display: flex;
+  width: 100%;
+}
+
+/* Columnas dentro del contenedor de despacho */
+.column_desmov {
+  width: 55%;  /* Columna izquierda para el formulario */
+}
+
+.column_despachar {
+  width: 45%;  /* Columna derecha */
+}
+
+/* Contenedor de ancho completo */
+.wrapper3 {
+  display: flex;
+  width: 100%;
+  height: 857px; /* Altura completa de la página */
+}
