@@ -1,0 +1,94 @@
+erDiagram
+
+    EMERGENCIAS {
+        int id_emergencia PK
+        string clave
+        string calle
+        string interseccion
+        datetime fecha
+        float x
+        float y
+    }
+
+    CARROS {
+        int id_carro PK
+        string clave
+        string especialidad1
+        string especialidad2
+        float x
+        float y
+    }
+
+    BOMBEROS {
+        int id_bombero PK
+        string nombre
+        string apellido_p
+        string apellido_m
+        string cargo
+        string cia
+        boolean rescate
+        boolean hazmat
+        int nivel
+        string clave
+    }
+
+    ACCIONES {
+        int id_accion PK
+        string tipo
+        datetime fecha
+        string estado
+        string info
+        int id_emergencia FK
+        int id_carro FK
+        int id_bombero FK
+    }
+
+    ESTADO_CARROS {
+        int id_estadocarro PK
+        float x
+        float y
+        string estado
+        int bomberos
+        datetime fecha
+        int id_carro FK
+        int id_accion FK
+        int cargo FK
+    }
+
+    ESTADO_BOMBEROS {
+        datetime hora
+        int id_emergencia FK
+        int id_bombero FK
+    }
+
+    VICTIMAS {
+        int id_victima PK
+        string nombre
+        string apellido_p
+        string apellido_m
+        int edad
+        string sexo
+    }
+
+    ESTADO_VICTIMAS {
+        string triage
+        string lugar
+        datetime hora
+        string institucion
+        int id_victima FK
+        int id_emergencia FK
+    }
+
+    EMERGENCIAS ||--o{ ACCIONES : genera
+    CARROS ||--o{ ACCIONES : participa
+    BOMBEROS ||--o{ ACCIONES : ejecuta
+
+    CARROS ||--o{ ESTADO_CARROS : tiene
+    ACCIONES ||--o{ ESTADO_CARROS : registra
+    BOMBEROS ||--o{ ESTADO_CARROS : responsable
+
+    EMERGENCIAS ||--o{ ESTADO_BOMBEROS : incluye
+    BOMBEROS ||--o{ ESTADO_BOMBEROS : participa
+
+    EMERGENCIAS ||--o{ ESTADO_VICTIMAS : afecta
+    VICTIMAS ||--o{ ESTADO_VICTIMAS : registra
