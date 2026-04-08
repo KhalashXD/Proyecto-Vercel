@@ -1,6 +1,6 @@
 # Emergency Management and Unit Dispatch System
 
-## Description
+## About the project
 
 This project consists of the development of a web application focused on emergency management and fire unit dispatch. The system allows registering incoming calls, visualizing their location on a map, classifying the type of emergency, assigning vehicles based on predefined rules, and tracking the operational status of each incident.
 
@@ -28,23 +28,6 @@ The system currently includes a functional frontend with the following features:
 
 ---
 
-## Current Limitations
-
-The system does not yet include:
-
-- Backend  
-- Database  
-- Call persistence  
-- History persistence  
-- Real vehicle state management  
-- Real active call management  
-- Operational forms associated with incidents  
-- Morse code generation  
-- Telegram integration  
-- Export of forms to Excel or PDF  
-- Automated dispatch rules connected to real data  
-
----
 
 ## Target Functionalities
 
@@ -157,7 +140,7 @@ The system will allow:
 
 ---
 
-## Project Structure
+## Project Roadmap
 root/
 ├─ frontend/
 │  ├─ src/
@@ -182,7 +165,7 @@ root/
 ├─ docker-compose.yml
 └─ README.md
 ---
-# Development Plan
+# Development Rules
 
 The project will be developed using Scrum methodology in 15 sprints, with the following main epics:
 
@@ -201,6 +184,12 @@ Manage vehicle states, assign units, track active incidents, and record operatio
 ## Epic 4. Technology Platform, Persistence, and Integrations
 
 Build backend, database, history, exports, and external services required to support full system operation.
+
+---
+# License
+juhdhsd
+dhsjdnbs
+dhsjdb
 
 ---
 # Contact
