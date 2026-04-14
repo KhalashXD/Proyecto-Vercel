@@ -58,6 +58,24 @@ Construir la arquitectura backend, la persistencia en base de datos y las integr
 - Dockerización
 
 ---
+##Épica 5. Buffer, bug fixes and final delivery
+
+**Descripción:** 
+Esta épica contempla principalmente el período final del proyecto destinado a la estabilización del sistema, corrección de errores, ajustes de interfaz, optimización de rendimiento y preparación para la entrega final. Incluye la validación integral del flujo operativo, pruebas funcionales del despacho de emergencias, verificación de integraciones externas y generación de la documentación necesaria para su despliegue y uso.
+
+**Incluye:**
+- Corrección de errores generales
+- Corrección de errores detectados durante pruebas funcionales
+- Validación de reglas de despacho y estados de carros
+- Pruebas de integración entre frontend, backend y base de datos
+- Verificación de envío de notificaciones (Telegram)
+- Validación de generación de formularios y exportación Excel/PDF
+- Optimización de rendimiento del sistema
+- Pruebas de escenarios completos de operación
+- Configuración final con Docker
+- Preparación para despliegue y entrega final
+
+--
 
 # 4. Leyenda funcional del sistema para documentación
 
