@@ -94,10 +94,6 @@ bun run dev
 
 ---
 
-
-### Configuration
-
-```md
 ## Configuration
 
 Create environment files for both frontend and backend.
@@ -110,35 +106,38 @@ Create a file named `frontend/.env`:
 VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
 VITE_API_BASE_URL=http://localhost:3000
 VITE_SOCKET_URL=http://localhost:3000
+```
 
+### Backend Environment
+
+Create a file named `backend/.env`:
+
+```env
 PORT=3000
 NODE_ENV=development
-
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/emergency_dispatch
-
 TELEGRAM_BOT_TOKEN=your_telegram_bot_token
 TELEGRAM_CHAT_ID=your_telegram_group_or_channel_id
-
 GOOGLE_MAPS_API_KEY=your_google_maps_api_key
-
 CORS_ORIGIN=http://localhost:5173
+```
 
+Run migrations and seed data:
+
+```bash
 cd backend
 npm run migrate
-
 npm run seed
-
+```
 
 ---
 
-### Usage
-
-```md
 ## Usage
 
 Once the application is running, the intended workflow is:
 
 ### 1. Open the main dashboard
+
 The initial page displays:
 
 - A central map
@@ -147,6 +146,7 @@ The initial page displays:
 - Navigation to active incidents and history
 
 ### 2. Register a new emergency
+
 The operator enters:
 
 - Street A
@@ -161,6 +161,7 @@ The system should then:
 - Load the operational rules linked to that category
 
 ### 3. Review suggested dispatch
+
 Based on the configured rules, the system should determine:
 
 - Required number of units
@@ -169,6 +170,7 @@ Based on the configured rules, the system should determine:
 - Available and unavailable units
 
 ### 4. Dispatch available units
+
 The operator confirms dispatch and the system should:
 
 - Mark units as assigned
@@ -177,6 +179,7 @@ The operator confirms dispatch and the system should:
 - Trigger notifications and dispatch events
 
 ### 5. Manage the active incident
+
 Inside an active incident, the user should be able to complete operational forms such as:
 
 - Arrival confirmation
@@ -187,6 +190,7 @@ Inside an active incident, the user should be able to complete operational forms
 - Incident closure
 
 ### 6. Review incident history
+
 After closure, incidents should remain available in the history view with:
 
 - Timeline of changes
@@ -194,6 +198,8 @@ After closure, incidents should remain available in the history view with:
 - Forms submitted
 - Final incident status
 - Exportable documents
+
+---
 
 ## Release Workflow
 
@@ -234,6 +240,8 @@ Examples:
 - `v1.1.0`
 - `v1.1.1`
 
+---
+
 ## Testing
 
 Testing should cover both business logic and platform behavior.
@@ -260,21 +268,20 @@ Example:
 ```bash
 cd backend
 npm run test
-
+```
 
 ---
 
-### Roadmap
-
-```md
 ## Roadmap
 
 The project is planned around four major epics.
 
 ### Epic 1. Frontend Redesign and Integration Preparation
+
 Refactor and improve the current frontend so it becomes visually clearer, more maintainable, and ready for backend integration.
 
 **Goals:**
+
 - Improve layout and usability
 - Standardize components and navigation
 - Add proper validation and form feedback
@@ -282,9 +289,11 @@ Refactor and improve the current frontend so it becomes visually clearer, more m
 - Improve active incident and history views
 
 ### Epic 2. Emergency Registration and Dispatch Logic
+
 Implement the core business rules for emergency registration, categorization, and resource calculation.
 
 **Goals:**
+
 - Create emergency type catalog
 - Define dispatch rules by emergency type
 - Calculate required units and personnel
@@ -292,9 +301,11 @@ Implement the core business rules for emergency registration, categorization, an
 - Support dispatch confirmation logic
 
 ### Epic 3. Vehicle Management and Active Incident Operations
+
 Develop the logic for vehicle state control and ongoing incident management.
 
 **Goals:**
+
 - Persist vehicle state transitions
 - Manage active incidents in real time
 - Record operational forms during incidents
@@ -302,15 +313,19 @@ Develop the logic for vehicle state control and ongoing incident management.
 - Close incidents with full traceability
 
 ### Epic 4. Persistence, Integrations, and Reporting
+
 Build the backend platform, database, external integrations, and export capabilities required for full production readiness.
 
 **Goals:**
+
 - Implement backend API
 - Design and connect the database
 - Add authentication and role management if needed
 - Integrate Telegram notifications
 - Generate Excel and PDF outputs
 - Store historical records and logs
+
+---
 
 ## Development Rules
 
@@ -368,6 +383,8 @@ A task is considered complete only if:
 - No critical linting or formatting issues remain
 - The feature is deployable within the current environment
 
+---
+
 ## License
 
 This project is currently under academic and internal development.
@@ -385,13 +402,10 @@ Example placeholder:
 ```text
 Copyright (c) 2026
 All rights reserved.
-
+```
 
 ---
 
-### Contact
-
-```md
 ## Contact
 
 **Project Team**
@@ -406,3 +420,4 @@ Example:
 
 ```text
 Email: your-team@email.com
+```
