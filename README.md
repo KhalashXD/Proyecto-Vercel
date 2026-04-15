@@ -87,10 +87,13 @@ cd ..
 docker compose up --build
 cd backend
 npm run dev
+cd ..
 cd frontend
 bun run dev
+```
 
 ---
+
 
 ### Configuration
 
