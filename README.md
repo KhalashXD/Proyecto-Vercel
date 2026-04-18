@@ -57,7 +57,9 @@ Develop a comprehensive platform for emergency call management, vehicle dispatch
 Before running the project, make sure the following tools are installed:
 
 - Node.js 20.x or later
-- Bun
+- Python
+- FastAPI
+- Uvicorn
 - Docker
 - Docker Compose
 - Git
@@ -70,6 +72,43 @@ Before running the project, make sure the following tools are installed:
 - Visual Studio Code
 - Postman or Insomnia
 - DBeaver or pgAdmin
+---
+## Respository Tree
+```text
+root/
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   └── package.json
+│
+├── backend/
+│   └── src/
+│       ├── server.ts
+│       ├── routes/
+│       │   ├── acciones.ts
+│       │   ├── carros.ts
+│       │   ├── despacho.ts
+│       │   └── emergencias.ts
+│       ├── controllers/
+│       ├── services/
+│       └── models/
+│
+├── database/
+│   ├── schema/
+│   ├── seeds/
+│   └── migrations/
+│
+├── docker/
+│   ├── frontend/
+│   ├── backend/
+│   └── database/
+│
+├── docs/
+│   └── epicas.md
+│
+├── docker-compose.yml
+└── README.md
+```
 ---
 ## Installation
 
