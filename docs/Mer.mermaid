@@ -1,0 +1,153 @@
+```mermaid
+erDiagram
+    STATIONS ||--o{ VEHICLES : contains
+    STATIONS ||--o{ DISPATCH_RULES : manages
+    
+    EMERGENCY_TYPES ||--o{ DISPATCH_RULES : defines
+    EMERGENCY_TYPES ||--o{ INCIDENTS : triggers
+    
+    INCIDENTS ||--o{ INCIDENT_VEHICLES : contains
+    INCIDENTS ||--o{ OPERATIONAL_FORMS : requires
+    INCIDENTS ||--o{ INCIDENT_EVENTS : generates
+    INCIDENTS ||--o{ INCIDENT_HISTORY : archives
+    
+    VEHICLES ||--o{ INCIDENT_VEHICLES : assigned_to
+    VEHICLES ||--o{ INCIDENT_EVENTS : participates
+    
+    STATIONS {
+        int id PK
+        string code UK
+        string name UK
+        text address
+        decimal latitude
+        decimal longitude
+        string phone
+        string email
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    EMERGENCY_TYPES {
+        int id PK
+        string code UK
+        string name
+        text description
+        int required_units
+        int required_personnel
+        string morse_code
+        int priority
+        boolean active
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    VEHICLES {
+        int id PK
+        string vehicle_code UK
+        string vehicle_type
+        int station_id FK
+        enum status
+        string driver_name
+        int capacity
+        decimal last_location_lat
+        decimal last_location_lng
+        timestamp last_location_updated
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    DISPATCH_RULES {
+        int id PK
+        int emergency_type_id FK
+        int priority_order
+        string vehicle_type
+        string morse_code
+        text telegram_message
+        int required_count
+        json additional_requirements
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    INCIDENTS {
+        int id PK
+        string incident_code UK
+        int emergency_type_id FK
+        string street_1
+        string street_2
+        decimal latitude
+        decimal longitude
+        text location_notes
+        string caller_name
+        string caller_phone
+        text incident_description
+        enum status
+        int priority
+        timestamp created_at
+        timestamp first_unit_arrival
+        timestamp closed_at
+        timestamp updated_at
+    }
+    
+    INCIDENT_VEHICLES {
+        int id PK
+        int incident_id FK
+        int vehicle_id FK
+        timestamp assigned_at
+        timestamp arrived_at
+        timestamp departure_time
+        text notes
+        timestamp created_at
+    }
+    
+    OPERATIONAL_FORMS {
+        int id PK
+        int incident_id FK UK
+        int personnel_on_scene
+        json equipment_used
+        json patient_info
+        text actions_taken
+        string outcome
+        boolean additional_units_requested
+        boolean ambulance_requested
+        text institutional_support
+        boolean form_completed
+        string completed_by
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    INCIDENT_EVENTS {
+        int id PK
+        int incident_id FK
+        int vehicle_id FK
+        enum event_type
+        text description
+        string user_name
+        timestamp created_at
+    }
+    
+    INCIDENT_HISTORY {
+        int id PK
+        int incident_id
+        string incident_code
+        string emergency_type
+        string location_streets
+        string status
+        time total_response_time
+        int vehicles_assigned
+        json archived_data
+        timestamp archived_at
+    }
+    
+    AUDIT_LOG {
+        int id PK
+        string entity_type
+        int entity_id
+        string action
+        json old_values
+        json new_values
+        string changed_by
+        timestamp created_at
+    }
+```
