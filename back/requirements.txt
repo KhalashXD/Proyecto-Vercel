@@ -23,7 +23,7 @@ jsonschema==4.20.0
 
 # External APIs
 requests==2.31.0
-google-maps==4.10.0
+googlemaps==4.10.0
 python-telegram-bot==20.3
 
 # Caching & Sessions
