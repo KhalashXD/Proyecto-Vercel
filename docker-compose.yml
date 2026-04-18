@@ -1,0 +1,144 @@
+version: '3.9'
+
+services:
+  # ============================================================
+  # PostgreSQL Database
+  # ============================================================
+  database:
+    image: postgres:16-alpine
+    container_name: emergency_db
+    environment:
+      POSTGRES_USER: ${DB_USER:-emergencyuser}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-emergencypass}
+      POSTGRES_DB: ${DB_NAME:-emergency_management}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema:/docker-entrypoint-initdb.d
+    networks:
+      - emergency_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-emergencyuser}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ============================================================
+  # Backend - Python Flask API
+  # ============================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: emergency_backend
+    environment:
+      FLASK_APP: app.py
+      FLASK_ENV: ${FLASK_ENV:-development}
+      DATABASE_URL: postgresql://${DB_USER:-emergencyuser}:${DB_PASSWORD:-emergencypass}@database:5432/${DB_NAME:-emergency_management}
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
+      SECRET_KEY: ${SECRET_KEY:-your-secret-key-change-in-production}
+      JWT_SECRET: ${JWT_SECRET:-your-jwt-secret-change-in-production}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    ports:
+      - "${BACKEND_PORT:-5000}:5000"
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/logs:/app/logs
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - emergency_network
+    restart: unless-stopped
+    command: python app.py
+
+  # ============================================================
+  # Frontend - React + Vite
+  # ============================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:5000}
+        VITE_GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+    container_name: emergency_frontend
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:5000}
+      VITE_GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+      NODE_ENV: ${NODE_ENV:-development}
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - node_modules:/app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - emergency_network
+    restart: unless-stopped
+
+  # ============================================================
+  # Redis - Cache y Session Management (Opcional)
+  # ============================================================
+  redis:
+    image: redis:7-alpine
+    container_name: emergency_redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - emergency_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  # ============================================================
+  # pgAdmin - Herramienta de Administración de PostgreSQL
+  # ============================================================
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: emergency_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@emergency.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - database
+    networks:
+      - emergency_network
+    restart: unless-stopped
+
+# ============================================================
+# Volúmenes Persistentes
+# ============================================================
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+  node_modules:
+    driver: local
+
+# ============================================================
+# Redes
+# ============================================================
+networks:
+  emergency_network:
+    driver: bridge
