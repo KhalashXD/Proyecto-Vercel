@@ -1,3 +1,4 @@
+erDiagram
     STATIONS ||--o{ VEHICLES : contains
     STATIONS ||--o{ DISPATCH_RULES : manages
     
@@ -14,44 +15,37 @@
     
     STATIONS {
         int id PK
-        string code UK
-        string name UK
-        text address
-        decimal latitude
-        decimal longitude
+        string code
+        string name
+        string address
+        float latitude
+        float longitude
         string phone
         string email
-        timestamp created_at
-        timestamp updated_at
     }
     
     EMERGENCY_TYPES {
         int id PK
-        string code UK
+        string code
         string name
-        text description
+        string description
         int required_units
         int required_personnel
         string morse_code
         int priority
         boolean active
-        timestamp created_at
-        timestamp updated_at
     }
     
     VEHICLES {
         int id PK
-        string vehicle_code UK
+        string vehicle_code
         string vehicle_type
         int station_id FK
-        enum status
+        string status
         string driver_name
         int capacity
-        decimal last_location_lat
-        decimal last_location_lng
-        timestamp last_location_updated
-        timestamp created_at
-        timestamp updated_at
+        float last_location_lat
+        float last_location_lng
     }
     
     DISPATCH_RULES {
@@ -60,69 +54,50 @@
         int priority_order
         string vehicle_type
         string morse_code
-        text telegram_message
+        string telegram_message
         int required_count
-        json additional_requirements
-        timestamp created_at
-        timestamp updated_at
     }
     
     INCIDENTS {
         int id PK
-        string incident_code UK
+        string incident_code
         int emergency_type_id FK
         string street_1
         string street_2
-        decimal latitude
-        decimal longitude
-        text location_notes
+        float latitude
+        float longitude
+        string location_notes
         string caller_name
         string caller_phone
-        text incident_description
-        enum status
+        string incident_description
+        string status
         int priority
-        timestamp created_at
-        timestamp first_unit_arrival
-        timestamp closed_at
-        timestamp updated_at
     }
     
     INCIDENT_VEHICLES {
         int id PK
         int incident_id FK
         int vehicle_id FK
-        timestamp assigned_at
-        timestamp arrived_at
-        timestamp departure_time
-        text notes
-        timestamp created_at
+        string notes
     }
     
     OPERATIONAL_FORMS {
         int id PK
-        int incident_id FK UK
+        int incident_id FK
         int personnel_on_scene
-        json equipment_used
-        json patient_info
-        text actions_taken
+        string actions_taken
         string outcome
         boolean additional_units_requested
         boolean ambulance_requested
-        text institutional_support
-        boolean form_completed
-        string completed_by
-        timestamp created_at
-        timestamp updated_at
     }
     
     INCIDENT_EVENTS {
         int id PK
         int incident_id FK
         int vehicle_id FK
-        enum event_type
-        text description
+        string event_type
+        string description
         string user_name
-        timestamp created_at
     }
     
     INCIDENT_HISTORY {
@@ -132,10 +107,7 @@
         string emergency_type
         string location_streets
         string status
-        time total_response_time
         int vehicles_assigned
-        json archived_data
-        timestamp archived_at
     }
     
     AUDIT_LOG {
@@ -143,8 +115,5 @@
         string entity_type
         int entity_id
         string action
-        json old_values
-        json new_values
         string changed_by
-        timestamp created_at
     }
