@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./LoginSignup.css";
 import Navbar from './Navbar';
 import { auth } from "./firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
@@ -11,26 +11,26 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const signUp = (e) => {
+  const signUp = async (e) => {
     e.preventDefault();
 
-    
-    const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
+    try {
+      const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-        localStorage.setItem("userDisplayName", capitalizedName);
-        localStorage.setItem("userEmail", email);
+      await sendEmailVerification(user);
 
-        console.log("User name:", capitalizedName);
+      localStorage.setItem("userDisplayName", capitalizedName);
+      localStorage.setItem("userEmail", email);
 
-        navigate("/");
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      alert("Cuenta creada. Revisa tu correo y verifica tu email antes de activar el SMS.");
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+      alert("Error al registrar usuario.");
+    }
   };
 
   return (
@@ -40,8 +40,8 @@ const SignUp = () => {
         <section className="wrapper2">
           <div className="heading">
             <h1 className="text text-large"><strong>Registrar</strong></h1>
-            <p className="text text-normal">Ya eres un usuario? <span><a href="/login" className="text text-links">Login</a></span></p>
           </div>
+
           <form onSubmit={signUp}>
             <div className="input-control">
               <input
@@ -52,6 +52,7 @@ const SignUp = () => {
                 className="input-field"
               />
             </div>
+
             <div className="input-control">
               <input
                 type="email"
@@ -61,6 +62,7 @@ const SignUp = () => {
                 className="input-field"
               />
             </div>
+
             <div className="input-control">
               <input
                 type="password"
@@ -70,7 +72,8 @@ const SignUp = () => {
                 className="input-field"
               />
             </div>
-            <button type="submit" name="submit" className="input-submit" value="Sign In">Submit</button>
+
+            <button type="submit" className="input-submit">Submit</button>
           </form>
         </section>
       </div>

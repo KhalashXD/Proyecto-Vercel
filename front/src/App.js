@@ -12,6 +12,7 @@ import Login from './Login';
 import SignUp from './SignUp';
 import { auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import EnrollMFA from "./EnrollMFA";
 
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
           <Route path="/emergencia/:id" element={<ExpandingSection />} />
           <Route path="/" element={<Login />} />
           <Route path="/SignUp" element={<SignUp />} />
+          <Route path="/activar-sms" element={<EnrollMFA />} />
       </Routes>
       
     </Router>
