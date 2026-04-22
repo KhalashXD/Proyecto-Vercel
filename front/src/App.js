@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Despacho from './Despacho';
 import ExpandingSection from './Prueba';
 import Emergencias from './Emergencias';
-import Emergencia from './Emergencia';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';

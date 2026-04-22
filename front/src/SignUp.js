@@ -40,6 +40,14 @@ const SignUp = () => {
         <section className="wrapper2">
           <div className="heading">
             <h1 className="text text-large"><strong>Registrar</strong></h1>
+            <p className="text text-normal">
+              ¿Ya tienes cuenta?{" "}
+              <span>
+                <a href="/" className="text text-links">
+                  Volver a Login
+                </a>
+              </span>
+            </p>
           </div>
 
           <form onSubmit={signUp}>

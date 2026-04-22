@@ -23,22 +23,37 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const setupRecaptcha = () => {
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(
-        auth,
-        "recaptcha-container",
-        {
-          size: "normal",
-          callback: () => {
-            console.log("reCAPTCHA resuelto");
-          },
-          "expired-callback": () => {
-            console.log("reCAPTCHA expirado");
-          },
-        }
-      );
+  const setupRecaptcha = async () => {
+    if (window.recaptchaVerifier) {
+      try {
+        window.recaptchaVerifier.clear();
+      } catch (e) {
+        console.log("No se pudo limpiar el reCAPTCHA anterior:", e);
+      }
+      window.recaptchaVerifier = null;
     }
+
+    const container = document.getElementById("recaptcha-container");
+    if (container) {
+      container.innerHTML = "";
+    }
+
+    window.recaptchaVerifier = new RecaptchaVerifier(
+      auth,
+      "recaptcha-container",
+      {
+        size: "invisible",
+        callback: () => {
+          console.log("reCAPTCHA resuelto");
+        },
+        "expired-callback": () => {
+          console.log("reCAPTCHA expirado");
+          setError("El reCAPTCHA expiró. Intenta de nuevo.");
+        },
+      }
+    );
+
+    await window.recaptchaVerifier.render();
   };
 
   const signIn = async (e) => {
@@ -49,25 +64,30 @@ const Login = () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Si el usuario aún no tiene segundo factor inscrito
       if (multiFactor(user).enrolledFactors.length === 0) {
         navigate("/activar-sms");
         return;
       }
 
-      // Si entra normal
       navigate("/Despacho");
     } catch (err) {
       console.error("Error login:", err);
 
       if (err.code === "auth/multi-factor-auth-required") {
         try {
-          setupRecaptcha();
-
           const mfaResolver = getMultiFactorResolver(auth, err);
           setResolver(mfaResolver);
 
-          const selectedHint = mfaResolver.hints[0];
+          const selectedHint = mfaResolver.hints.find(
+            (hint) => hint.factorId === "phone"
+          );
+
+          if (!selectedHint) {
+            setError("No se encontró un segundo factor SMS configurado para este usuario.");
+            return;
+          }
+
+          await setupRecaptcha();
 
           const phoneInfoOptions = {
             multiFactorHint: selectedHint,
@@ -84,8 +104,8 @@ const Login = () => {
           setVerificationId(newVerificationId);
           setShowSmsStep(true);
         } catch (mfaErr) {
-          console.error("Error MFA:", mfaErr);
-          setError("No se pudo enviar el código SMS.");
+          console.error("Error MFA completo:", mfaErr);
+          setError(`${mfaErr.code}: ${mfaErr.message}`);
         }
       } else if (err.code === "auth/invalid-email") {
         setError("Correo inválido.");
@@ -96,7 +116,7 @@ const Login = () => {
       ) {
         setError("Correo o contraseña incorrectos.");
       } else {
-        setError("No se pudo iniciar sesión.");
+        setError(`${err.code}: ${err.message}`);
       }
     }
   };
@@ -118,7 +138,7 @@ const Login = () => {
       navigate("/Despacho");
     } catch (err) {
       console.error("Error verificando SMS:", err);
-      setError("Código SMS incorrecto o expirado.");
+      setError(`${err.code}: ${err.message}`);
     }
   };
 
