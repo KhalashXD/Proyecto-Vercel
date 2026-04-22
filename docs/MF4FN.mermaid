@@ -1,0 +1,225 @@
+erDiagram
+
+    LOCATIONS {
+        int id PK
+        float latitude
+        float longitude
+        string address
+        datetime created_at
+    }
+
+    STATIONS {
+        int id PK
+        string code
+        string name
+        string address
+        string phone
+        string email
+        int station_location_id FK
+        datetime created_at
+        datetime updated_at
+    }
+
+    VEHICLE_TYPES {
+        int id PK
+        string code
+        string name
+        string description
+    }
+
+    VEHICLE_STATUS_TYPES {
+        int id PK
+        string code
+        string name
+        string description
+    }
+
+    VEHICLES {
+        int id PK
+        string vehicle_code
+        int vehicle_type_id FK
+        int station_id FK
+        int status_id FK
+        string driver_name
+        int capacity
+        datetime created_at
+        datetime updated_at
+    }
+
+    VEHICLE_LOCATIONS {
+        int id PK
+        int vehicle_id FK
+        int location_id FK
+        datetime timestamp
+    }
+
+    EMERGENCY_TYPES {
+        int id PK
+        string code
+        string name
+        string description
+        int required_units
+        int required_personnel
+        string morse_code
+        int priority
+        boolean active
+    }
+
+    INCIDENT_STATUS_TYPES {
+        int id PK
+        string code
+        string name
+        string description
+    }
+
+    INCIDENTS {
+        int id PK
+        string incident_code
+        int emergency_type_id FK
+        int incident_location_id FK
+        int status_id FK
+        string caller_name
+        string caller_phone
+        string incident_description
+        int priority
+        datetime created_at
+        datetime closed_at
+        datetime updated_at
+    }
+
+    INCIDENT_VEHICLES {
+        int id PK
+        int incident_id FK
+        int vehicle_id FK
+        datetime assigned_at
+        datetime arrived_at
+        datetime departure_time
+    }
+
+    EVENT_TYPES {
+        int id PK
+        string code
+        string name
+        string description
+    }
+
+    INCIDENT_VEHICLE_EVENTS {
+        int id PK
+        int incident_vehicle_id FK
+        int event_type_id FK
+        string description
+        datetime timestamp
+        string user_name
+    }
+
+    OPERATIONAL_FORMS {
+        int id PK
+        int incident_id FK
+        string personnel_on_scene
+        string actions_taken
+        string outcome
+        boolean ambulance_requested
+        boolean institutional_support
+        string completed_by
+        datetime created_at
+        datetime updated_at
+    }
+
+    FORM_EQUIPMENT_USED {
+        int id PK
+        int form_id FK
+        string equipment_name
+        int equipment_quantity
+    }
+
+    FORM_PATIENT_INFO {
+        int id PK
+        int form_id FK
+        string patient_name
+        int patient_age
+        string patient_condition
+        string treatment_provided
+    }
+
+    DISPATCH_RULES {
+        int id PK
+        int emergency_type_id FK
+        int priority_order
+        int required_count
+    }
+
+    DISPATCH_RULE_VEHICLE_TYPES {
+        int id PK
+        int dispatch_rule_id FK
+        int vehicle_type_id FK
+        int sequence_order
+    }
+
+    DISPATCH_RULE_NOTIFICATIONS {
+        int id PK
+        int dispatch_rule_id FK
+        string morse_code
+        string telegram_message
+        string notification_type
+    }
+
+    INCIDENT_EVENTS {
+        int id PK
+        int incident_id FK
+        int event_type_id FK
+        string description
+        datetime created_at
+    }
+
+    AUDIT_LOG {
+        int id PK
+        string entity_type
+        int entity_id
+        string action
+        json old_values
+        json new_values
+        string changed_by
+        datetime created_at
+    }
+
+    INCIDENT_HISTORY {
+        int id PK
+        int incident_id
+        string snapshot_data
+        datetime archived_at
+    }
+
+    %% =========================
+    %% RELACIONES PRINCIPALES
+    %% =========================
+
+    LOCATIONS ||--o{ STATIONS : "station_location"
+    LOCATIONS ||--o{ INCIDENTS : "incident_location"
+    LOCATIONS ||--o{ VEHICLE_LOCATIONS : "vehicle_tracking"
+
+    STATIONS ||--o{ VEHICLES : "contains"
+
+    VEHICLE_TYPES ||--o{ VEHICLES : "type"
+    VEHICLE_STATUS_TYPES ||--o{ VEHICLES : "status"
+
+    VEHICLES ||--o{ VEHICLE_LOCATIONS : "moves"
+
+    EMERGENCY_TYPES ||--o{ INCIDENTS : "classifies"
+    INCIDENT_STATUS_TYPES ||--o{ INCIDENTS : "status"
+
+    INCIDENTS ||--o{ INCIDENT_VEHICLES : "assigns"
+    VEHICLES ||--o{ INCIDENT_VEHICLES : "responds"
+
+    INCIDENT_VEHICLES ||--o{ INCIDENT_VEHICLE_EVENTS : "events"
+    EVENT_TYPES ||--o{ INCIDENT_VEHICLE_EVENTS : "type"
+
+    INCIDENTS ||--o{ INCIDENT_EVENTS : "incident_events"
+
+    INCIDENTS ||--o{ OPERATIONAL_FORMS : "forms"
+    OPERATIONAL_FORMS ||--o{ FORM_EQUIPMENT_USED : "equipment"
+    OPERATIONAL_FORMS ||--o{ FORM_PATIENT_INFO : "patients"
+
+    DISPATCH_RULES ||--o{ DISPATCH_RULE_VEHICLE_TYPES : "vehicles"
+    DISPATCH_RULES ||--o{ DISPATCH_RULE_NOTIFICATIONS : "notifications"
+
+    INCIDENTS ||--o{ INCIDENT_HISTORY : "archived"
