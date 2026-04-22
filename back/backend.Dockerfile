@@ -32,7 +32,7 @@ RUN pip install --upgrade pip setuptools wheel && \
 COPY src/ /app/src/
 COPY app.py /app/
 COPY config.py /app/
-COPY .env.example /app/.env.example
+COPY env.example /app/.env.example
 
 # Crear directorio de logs
 RUN mkdir -p /app/logs
