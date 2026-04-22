@@ -31,8 +31,8 @@ services:
   # ============================================================
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: ./back
+      dockerfile: backend.Dockerfile
     container_name: emergency_backend
     environment:
       FLASK_APP: app.py
@@ -62,8 +62,8 @@ services:
   # ============================================================
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: ./front
+      dockerfile: frontend.Dockerfile
       args:
         VITE_API_URL: ${VITE_API_URL:-http://localhost:5000}
         VITE_GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
