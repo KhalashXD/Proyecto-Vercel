@@ -152,9 +152,9 @@ VITE_SOCKET_URL=http://localhost:3000
 Create a file named `backend/.env`:
 
 ```env
-PORT=3000
+PORT=5000
 NODE_ENV=development
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/emergency_dispatch
+DATABASE_URL=mysql+pymysql://emergencyuser:emergencypass@localhost:3306/emergency_management
 TELEGRAM_BOT_TOKEN=your_telegram_bot_token
 TELEGRAM_CHAT_ID=your_telegram_group_or_channel_id
 GOOGLE_MAPS_API_KEY=your_google_maps_api_key

@@ -8,7 +8,7 @@ class Config:
     # Formato: postgresql://usuario:password@host:puerto/db
     SQLALCHEMY_DATABASE_URI = os.getenv(
         "DATABASE_URL",
-        "postgresql://emergencyuser:emergencypass@database:5432/emergency_management"
+        "mysql+pymysql://emergencyuser:emergencypass@database:3306/emergency_management"
     )
 
 

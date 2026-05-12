@@ -4,58 +4,71 @@ services:
   # ============================================================
   # PostgreSQL Database
   # ============================================================
+
   database:
-    image: postgres:16-alpine
+    image: mariadb:11
     container_name: emergency_db
+
     environment:
-      POSTGRES_USER: ${DB_USER:-emergencyuser}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-emergencypass}
-      POSTGRES_DB: ${DB_NAME:-emergency_management}
-      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: emergency_management
+      MYSQL_USER: emergencyuser
+      MYSQL_PASSWORD: emergencypass
+
     ports:
-      - "${DB_PORT:-5432}:5432"
+      - "3306:3306"
+
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mariadb_data:/var/lib/mysql
       - ./database/schema:/docker-entrypoint-initdb.d
+
     networks:
       - emergency_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-emergencyuser}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+        test: ["CMD", "mariadb-admin", "ping", "-h", "localhost"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+
     restart: unless-stopped
 
-  # ============================================================
-  # Backend - Python Flask API
-  # ============================================================
+
+# ============================================================
+# Backend - FastAPI
+# ============================================================
   backend:
     build:
       context: ./back
       dockerfile: backend.Dockerfile
+
     container_name: emergency_backend
+
     environment:
-      FLASK_APP: app.py
-      FLASK_ENV: ${FLASK_ENV:-development}
-      DATABASE_URL: postgresql://${DB_USER:-emergencyuser}:${DB_PASSWORD:-emergencypass}@database:5432/${DB_NAME:-emergency_management}
+      DATABASE_URL: mysql+pymysql://emergencyuser:emergencypass@database:3306/emergency_management
       GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
       SECRET_KEY: ${SECRET_KEY:-your-secret-key-change-in-production}
       JWT_SECRET: ${JWT_SECRET:-your-jwt-secret-change-in-production}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
+
     ports:
-      - "${BACKEND_PORT:-5000}:5000"
+        - "${BACKEND_PORT:-5000}:8000"
+
     volumes:
-      - ./backend/src:/app/src
-      - ./backend/logs:/app/logs
+      - ./back/src:/app/src
+      - ./back/logs:/app/logs
+
     depends_on:
       database:
         condition: service_healthy
+
     networks:
       - emergency_network
+
     restart: unless-stopped
-    command: python app.py
+
+    command: uvicorn app:app --host 0.0.0.0 --port 8000 --reload
 
   # ============================================================
   # Frontend - React + Vite
@@ -104,35 +117,16 @@ services:
     restart: unless-stopped
     command: redis-server --appendonly yes
 
-  # ============================================================
-  # pgAdmin - Herramienta de Administración de PostgreSQL
-  # ============================================================
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: emergency_pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
-    ports:
-      - "${PGADMIN_PORT:-5050}:80"
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
-    depends_on:
-      - database
-    networks:
-      - emergency_network
-    restart: unless-stopped
-
 # ============================================================
 # Volúmenes Persistentes
 # ============================================================
 volumes:
-  postgres_data:
+  mariadb_data:
     driver: local
+
   redis_data:
     driver: local
-  pgadmin_data:
-    driver: local
+
   node_modules:
     driver: local
 
