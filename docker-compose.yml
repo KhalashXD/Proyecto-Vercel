@@ -20,7 +20,8 @@ services:
 
     volumes:
       - mariadb_data:/var/lib/mysql
-      - ./database/schema:/docker-entrypoint-initdb.d
+      #- ./database/schema:/docker-entrypoint-initdb.d
+      - ./back/Esquema.sql:/docker-entrypoint-initdb.d/Esquema.sql
 
     networks:
       - emergency_network

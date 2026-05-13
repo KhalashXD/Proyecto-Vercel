@@ -32,6 +32,8 @@ RUN pip install --upgrade pip setuptools wheel && \
 COPY src/ /app/src/
 COPY app.py /app/
 COPY config.py /app/
+COPY schemas/ /app/schemas/
+COPY services/ /app/services/
 COPY env.example /app/.env.example
 
 # Crear logs
