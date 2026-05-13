@@ -1,67 +1,73 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Authentication from './Authentication';
-import Sidebar from './Sidebar';
-import './Emergencias.css';  
+import MainLayout from './MainLayout';
 
 const Emergencias = () => {
-    const [data, setData] = useState({ ids: [], texts: [], dates: [] });
-    const navigate = useNavigate();
+  const [data, setData] = useState({ ids: [], texts: [], dates: [] });
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-    const fetchData = async () => {
-        try {
-            const response = await fetch('/emergencias');
-            const result = await response.json();
-            setData(result);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
-    };
+  const fetchData = async () => {
+    try {
+      const response = await fetch('/emergencias');
+      const result = await response.json();
+      setData(result);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
-    const handleNavigate = (id) => {
-      navigate(`/emergencia/${id}`);
-    };
+  const handleNavigate = (id) => {
+    navigate(`/emergencia/${id}`);
+  };
 
-    return (
-      <div>
-        <Authentication/>
-        <div className='wrapper3'>
-          <div className='sidebar estado-carros'>
-            <h3>Estado Carros</h3>
-            <Sidebar />
-          </div>
-          <div className="content">
-              <h2 style={{color: 'white'}}>Emergencias activas</h2>
-              <table className="emergencias-table">
+  return (
+    <MainLayout
+      title="Emergencias Activas"
+      subtitle="Monitoreo de incidentes actualmente en curso"
+    >
+      <section className="content-card">
+        {data.ids.length > 0 ? (
+          <div className="data-table-wrap">
+            <table className="data-table">
               <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Llamado</th>
-                        <th>Modificar</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {data.ids.map((id, index) => (
-                        <tr key={id}>
-                            <td>{data.dates[index]}</td>
-                            <td>{data.texts[index]}</td>
-                            <td>
-                                <button onClick={() => handleNavigate(id)} className="navigate-button">
-                                  <img src="/fire-extinguisher.png" alt="Go to Emergencias" className="icon" />
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Llamado</th>
+                  <th>Modificar</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {data.ids.map((id, index) => (
+                  <tr key={id}>
+                    <td>{data.dates[index]}</td>
+                    <td>{data.texts[index]}</td>
+                    <td>
+                      <button
+                        type="button"
+                        onClick={() => handleNavigate(id)}
+                        className="app-btn app-btn-primary"
+                      >
+                        Abrir
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </div>
-        </div>
-      </div>
-    );
+        ) : (
+          <div className="empty-state">
+            No hay emergencias activas en este momento.
+          </div>
+        )}
+      </section>
+    </MainLayout>
+  );
 };
 
 export default Emergencias;

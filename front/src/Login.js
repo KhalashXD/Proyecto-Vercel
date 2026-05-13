@@ -30,10 +30,12 @@ const Login = () => {
       } catch (e) {
         console.log("No se pudo limpiar el reCAPTCHA anterior:", e);
       }
+
       window.recaptchaVerifier = null;
     }
 
     const container = document.getElementById("recaptcha-container");
+
     if (container) {
       container.innerHTML = "";
     }
@@ -48,7 +50,7 @@ const Login = () => {
         },
         "expired-callback": () => {
           console.log("reCAPTCHA expirado");
-          setError("El reCAPTCHA expiró. Intenta de nuevo.");
+          setError("El reCAPTCHA expiró. Intenta nuevamente.");
         },
       }
     );
@@ -61,7 +63,12 @@ const Login = () => {
     setError("");
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
       const user = userCredential.user;
 
       if (multiFactor(user).enrolledFactors.length === 0) {
@@ -83,7 +90,9 @@ const Login = () => {
           );
 
           if (!selectedHint) {
-            setError("No se encontró un segundo factor SMS configurado para este usuario.");
+            setError(
+              "No se encontró un segundo factor SMS configurado para este usuario."
+            );
             return;
           }
 
@@ -96,10 +105,11 @@ const Login = () => {
 
           const phoneAuthProvider = new PhoneAuthProvider(auth);
 
-          const newVerificationId = await phoneAuthProvider.verifyPhoneNumber(
-            phoneInfoOptions,
-            window.recaptchaVerifier
-          );
+          const newVerificationId =
+            await phoneAuthProvider.verifyPhoneNumber(
+              phoneInfoOptions,
+              window.recaptchaVerifier
+            );
 
           setVerificationId(newVerificationId);
           setShowSmsStep(true);
@@ -135,6 +145,7 @@ const Login = () => {
       const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
 
       await resolver.resolveSignIn(multiFactorAssertion);
+
       navigate("/Despacho");
     } catch (err) {
       console.error("Error verificando SMS:", err);
@@ -145,20 +156,30 @@ const Login = () => {
   return (
     <>
       <Navbar />
+
       <div className="container-signin">
         <section className="wrapper2">
           <div className="heading">
             <h1 className="text text-large">
-              <strong>Ingresar</strong>
+              <strong>{showSmsStep ? "Verificación" : "Ingresar"}</strong>
             </h1>
-            <p className="text text-normal">
-              New user?{" "}
-              <span>
-                <a href="/signup" className="text text-links">
-                  Create an account
-                </a>
-              </span>
-            </p>
+
+            {!showSmsStep && (
+              <p className="text text-normal">
+                ¿Usuario nuevo?{" "}
+                <span>
+                  <a href="/signup" className="text text-links">
+                    Crear cuenta
+                  </a>
+                </span>
+              </p>
+            )}
+
+            {showSmsStep && (
+              <p className="text text-normal">
+                Ingresa el código enviado por SMS para continuar.
+              </p>
+            )}
           </div>
 
           {!showSmsStep ? (
@@ -166,31 +187,31 @@ const Login = () => {
               <div className="input-control">
                 <input
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder="Correo electrónico"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="input-field"
+                  autoComplete="email"
                 />
               </div>
 
               <div className="input-control">
                 <input
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder="Contraseña"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="input-field"
+                  autoComplete="current-password"
                 />
               </div>
 
-              <div id="recaptcha-container" style={{ marginBottom: "16px" }}></div>
+              <div
+                id="recaptcha-container"
+                style={{ marginBottom: "16px" }}
+              />
 
-              <button
-                type="submit"
-                name="submit"
-                className="input-submit"
-                value="Sign In"
-              >
+              <button type="submit" className="input-submit">
                 Ingresar
               </button>
             </form>
@@ -199,10 +220,11 @@ const Login = () => {
               <div className="input-control">
                 <input
                   type="text"
-                  placeholder="Ingresa el código SMS"
+                  placeholder="Código SMS"
                   value={smsCode}
                   onChange={(e) => setSmsCode(e.target.value)}
                   className="input-field"
+                  autoComplete="one-time-code"
                 />
               </div>
 

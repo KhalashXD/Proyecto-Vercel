@@ -1,75 +1,184 @@
-/* Fondo negro y texto blanco */
-body, .main-content {
-  background-color: #000; /* Fondo negro general */
-  color: #fff; /* Texto blanco */
+.incident-card {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01)),
+    var(--bg-surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  padding: 22px;
 }
 
-/* Cambia el fondo de las secciones blancas a #393939 */
-.container_despacho, .main-content, .wrapper3 {
-  background-color: #393939;
+.incident-card h2 {
+  color: var(--text-main);
+  font-size: 1.45rem;
+  font-weight: 900;
+  margin: 0 0 18px;
 }
 
-/* Encabezados y texto */
-h1, h2, p {
-  color: #fff; /* Texto blanco para encabezados y párrafos */
+.incident-card h3 {
+  color: var(--text-main);
+  font-size: 1.15rem;
+  font-weight: 900;
+  margin: 0 0 16px;
 }
 
-/* Tabla estilizada */
-table {
-  width: 100%;
-  margin-top: 20px;
+.incident-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.incident-tab {
+  border: none;
+  border-radius: 12px;
+  padding: 11px 18px;
+  font-weight: 900;
+  cursor: pointer;
   color: #fff;
+  background: #1d1f27;
+  transition: 0.18s ease;
 }
 
-table th, table td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #555; /* Color de línea de separación */
+.incident-tab:hover {
+  background: #2b2d36;
+  transform: translateY(-1px);
 }
 
-table thead {
-  background-color: #333; /* Fondo para encabezado de tabla */
+.incident-tab.active {
+  background: var(--primary);
 }
 
-table tbody tr:nth-child(even) {
-  background-color: #222; /* Alternar color de fondo */
-}
-
-/* Botones y selects */
-button {
-  margin: 10px;
-  padding: 10px 20px;
-}
-
-.form-select {
-  color: #000; /* Texto negro en el dropdown */
-}
-
-/* Estructura general de .main-content */
-.main-content {
-  width: 100%;  /* Toma el 100% del ancho */
+.action-grid {
   display: flex;
-  flex-direction: column;  /* Organiza en columna */
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
 }
 
-/* Contenedor para despacho */
-.container_despacho {
-  display: flex;
+.action-chip {
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: #1d1f27;
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.18s ease;
+}
+
+.action-chip:hover {
+  background: #2b2d36;
+  transform: translateY(-1px);
+}
+
+.action-chip.active {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.action-panel {
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  padding: 18px;
+}
+
+.action-panel form {
+  margin: 0;
+}
+
+.action-panel label,
+.wrapper-carros label {
+  display: block;
+  color: var(--text-main);
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.action-panel input,
+.action-panel select,
+.wrapper-carros input,
+.wrapper-carros select {
   width: 100%;
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--border-soft);
+  padding: 10px 13px;
+  background: #f1f1f1;
+  color: #222;
+  outline: none;
+  margin: 8px 0 12px;
 }
 
-/* Columnas dentro del contenedor de despacho */
-.column_desmov {
-  width: 55%;  /* Columna izquierda para el formulario */
+.action-panel input:focus,
+.action-panel select:focus,
+.wrapper-carros input:focus,
+.wrapper-carros select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(244, 118, 51, 0.18);
 }
 
-.column_despachar {
-  width: 45%;  /* Columna derecha */
+.action-panel .app-btn,
+.wrapper-carros .app-btn {
+  margin-top: 8px;
 }
 
-/* Contenedor de ancho completo */
-.wrapper3 {
-  display: flex;
-  width: 100%;
-  height: 857px; /* Altura completa de la página */
+.wrapper-carros {
+  display: grid;
+  grid-template-columns: 1fr 1fr 360px;
+  gap: 16px;
+}
+
+.activos-column,
+.disponibles-columna,
+.despacho {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.activos-column h2,
+.disponibles-columna h2,
+.despacho h2 {
+  font-size: 1.2rem;
+  margin: 0 0 14px;
+  color: var(--text-main);
+  font-weight: 900;
+}
+
+.despacho form {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.despacho p {
+  color: var(--text-soft);
+  margin: 0;
+}
+
+@media (max-width: 1200px) {
+  .wrapper-carros {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .incident-card {
+    padding: 16px;
+  }
+
+  .incident-tabs,
+  .action-grid {
+    gap: 8px;
+  }
+
+  .incident-tab,
+  .action-chip {
+    width: 100%;
+  }
 }

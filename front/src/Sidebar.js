@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './Sidebar.css';
 
 const Sidebar = React.memo(() => {
   const [dataCarro, setDataCarro] = useState([]);
@@ -6,29 +7,36 @@ const Sidebar = React.memo(() => {
 
   useEffect(() => {
     const fetchDataCarro = async () => {
-      const response = await fetch('/carros.json');
-      const result = await response.json();
-      setDataCarro(result);
+      try {
+        const response = await fetch('/carros.json');
+        const result = await response.json();
+        setDataCarro(result);
+      } catch (error) {
+        console.error('Error fetching carros:', error);
+      }
     };
 
-    // Fetch data initially
     fetchDataCarro();
 
-    // Polling every 10 seconds for updates
     const interval = setInterval(fetchDataCarro, 10000);
 
-    // Clean up interval on component unmount
     return () => clearInterval(interval);
   }, []);
 
   const getColorByStatus = (estado) => {
     switch (estado) {
-      case 0: return 'green';
-      case 1: return 'orange';
-      case 2: return 'blue';
-      case 3: return 'grey';
-      case 4: return 'red';
-      default: return 'white';
+      case 0:
+        return '#078b16'; // Disponible
+      case 1:
+        return '#f4a300'; // Despachado / En proceso
+      case 2:
+        return '#2f80ed'; // En cuartel
+      case 3:
+        return '#6f6f6f'; // No disponible / Sin estado
+      case 4:
+        return '#d84b4b'; // Fuera
+      default:
+        return '#ffffff';
     }
   };
 
@@ -45,7 +53,7 @@ const Sidebar = React.memo(() => {
         },
         body: JSON.stringify({ carro, button }),
       });
-      // Close the section after the button is clicked
+
       setOpenItemIndex(null);
     } catch (error) {
       console.error('Error updating status:', error);
@@ -54,43 +62,73 @@ const Sidebar = React.memo(() => {
 
   return (
     <div>
-      <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+      <div className="sidebar-grid">
         {dataCarro.map((item, index) => (
-          <div key={index} style={{ width: '150px', marginBottom: '2px' }}>
-            <div 
+          <div key={index}>
+            <div
               onClick={() => toggleOpenItem(index)}
-              style={{
-                backgroundColor: getColorByStatus(item.estado),
-                color: 'white',
-                padding: '20px',
-                height: '55px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                textAlign: 'center',
-                cursor: 'pointer',
-              }}
+              className="sidebar-unit"
+              style={{ backgroundColor: getColorByStatus(item.estado) }}
             >
-              <div style={{ fontSize: '20px', fontWeight: 'bold' }}>{item.carro}</div>
+              {item.carro}
             </div>
 
-            {/* Expanded section with buttons */}
             {openItemIndex === index && (
-              <div style={{
-                backgroundColor: '#393939',
-                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                textAlign: 'center',
-                marginTop: '5px',
-              }}>
-                <button onClick={() => handleButtonClick(item.carro, '0')} style={{width: '120px', borderRadius: '5px', cursor: 'pointer'}}>Disponible</button>
-                <button onClick={() => handleButtonClick(item.carro, '0')} style={{width: '120px', borderRadius: '5px', cursor: 'pointer'}}>Cuartel</button>
-                <button onClick={() => handleButtonClick(item.carro, '4')} style={{width: '120px', borderRadius: '5px', cursor: 'pointer'}}>Fuera</button>
+              <div className="sidebar-actions">
+                <button
+                  type="button"
+                  className="btn-disponible"
+                  onClick={() => handleButtonClick(item.carro, '0')}
+                >
+                  Disponible
+                </button>
+
+                <button
+                  type="button"
+                  className="btn-cuartel"
+                  onClick={() => handleButtonClick(item.carro, '2')}
+                >
+                  Cuartel
+                </button>
+
+                <button
+                  type="button"
+                  className="btn-fuera"
+                  onClick={() => handleButtonClick(item.carro, '4')}
+                >
+                  Fuera
+                </button>
               </div>
             )}
           </div>
         ))}
+      </div>
+
+      <div className="sidebar-legend">
+        <div className="sidebar-legend-item">
+          <span className="sidebar-dot" style={{ background: '#078b16' }} />
+          Disponible
+        </div>
+
+        <div className="sidebar-legend-item">
+          <span className="sidebar-dot" style={{ background: '#f4a300' }} />
+          Despachado
+        </div>
+
+        <div className="sidebar-legend-item">
+          <span className="sidebar-dot" style={{ background: '#2f80ed' }} />
+          En cuartel
+        </div>
+
+        <div className="sidebar-legend-item">
+          <span className="sidebar-dot" style={{ background: '#6f6f6f' }} />
+          Sin estado
+        </div>
+
+        <div className="sidebar-legend-item">
+          <span className="sidebar-dot" style={{ background: '#d84b4b' }} />
+          Fuera
+        </div>
       </div>
     </div>
   );

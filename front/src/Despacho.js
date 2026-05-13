@@ -5,38 +5,35 @@ import Select from 'react-select';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import './Despacho.css';
-import Sidebar from './Sidebar';
-import Authentication from './Authentication';
+import MainLayout from './MainLayout';
 
-// Custom icon for fixed markers (blue with a house)
 const houseIcon = new L.Icon({
-  iconUrl: '/house-icon.png',  // Path to your custom house icon image
-  iconSize: [30, 41],  // Size of the icon
-  iconAnchor: [12, 41],  // Anchor point of the icon
+  iconUrl: '/house-icon.png',
+  iconSize: [30, 41],
+  iconAnchor: [12, 41],
   popupAnchor: [1, -34],
   shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
   shadowSize: [41, 41],
 });
 
-// Custom icon for intersection markers (red with a flame)
 const flameIcon = new L.Icon({
-  iconUrl: '/flame-icon.png',  // Path to your custom flame icon image
-  iconSize: [30, 41],  // Size of the icon
-  iconAnchor: [12, 41],  // Anchor point of the icon
+  iconUrl: '/flame-icon.png',
+  iconSize: [30, 41],
+  iconAnchor: [12, 41],
   popupAnchor: [1, -34],
   shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
   shadowSize: [41, 41],
 });
 
-
-// Helper component to update the map view when a marker is placed
 function SetMapView({ position }) {
   const map = useMap();
+
   useEffect(() => {
     if (position) {
-      map.setView(position, 16);  // Center the map on the marker's position
+      map.setView(position, 16);
     }
   }, [position, map]);
+
   return null;
 }
 
@@ -46,19 +43,26 @@ function Despacho() {
   const [selectedStreet, setSelectedStreet] = useState('');
   const [selectedIntersection, setSelectedIntersection] = useState('');
   const [coordinates, setCoordinates] = useState({ x: [], y: [] });
-  const [markerPosition, setMarkerPosition] = useState(null);  // Position for the map marker
+  const [markerPosition, setMarkerPosition] = useState(null);
   const [data, setData] = useState([]);
-  const [clave, setClave] = useState('');  // Clave input
-  const [textInput1, setTextInput1] = useState('');  // First text input
+  const [clave, setClave] = useState('');
+  const [textInput1, setTextInput1] = useState('');
   const [textInput2, setTextInput2] = useState('');
   const [despacho, setDespacho] = useState([]);
-  const [data2, setData2] = useState([]); // Opciones para los selects de Prueba.js
-  const [selectedOptions, setSelectedOptions] = useState({}); // Estado para múltiples selects dinámicos
+  const [data2, setData2] = useState([]);
+  const [selectedOptions, setSelectedOptions] = useState({});
   const [integerValues, setIntegerValues] = useState({});
   const [emergencyId, setEmergencyId] = useState(null);
 
+  const defaultCenter = [-33.04903608163022, -71.3756133238521];
 
-  // Cargar datos desde el JSON para el select de Prueba.js
+  const fixedPins = [
+    { lat: -33.04826497621013, lng: -71.37766983702313, name: '1era Compañía' },
+    { lat: -33.04348848857053, lng: -71.37182416898918, name: '2da Compañía' },
+    { lat: -33.04649840040579, lng: -71.3530632234065, name: '3ra Compañía' },
+    { lat: -33.05599775894304, lng: -71.3911704295499, name: '4ta Compañía' },
+  ];
+
   useEffect(() => {
     fetch('/data.json')
       .then((response) => response.json())
@@ -67,23 +71,25 @@ function Despacho() {
           value: item.id,
           label: item.nombre,
         }));
-        setData2(options); // Guardar opciones transformadas
+
+        setData2(options);
       })
       .catch((error) => {
         console.error('Error al cargar el JSON:', error);
       });
   }, []);
 
-  // Default map center coordinates
-  const defaultCenter = [-33.04903608163022, -71.3756133238521];  // Villa Alemana default
-
-  // Load streets and intersections from the JSON file
   useEffect(() => {
-    fetch('/calles.json')  // The path to the file in the public folder
+    fetch('/calles.json')
       .then((response) => response.json())
-      .then((data) => {
-        setData(data);  // Save fetched data to the state
-        const streetOptions = data.map(item => ({ label: item.Calles, value: item.Calles }));  // Extract street names as options
+      .then((jsonData) => {
+        setData(jsonData);
+
+        const streetOptions = jsonData.map((item) => ({
+          label: item.Calles,
+          value: item.Calles,
+        }));
+
         setStreets(streetOptions);
       })
       .catch((error) => console.error('Error fetching the JSON file:', error));
@@ -92,78 +98,79 @@ function Despacho() {
   useEffect(() => {
     const savedDespacho = localStorage.getItem('despacho');
     const savedEmergencyId = localStorage.getItem('emergencyId');
-  
+
     if (savedDespacho && savedEmergencyId) {
-      setDespacho(JSON.parse(savedDespacho));  // Parse despacho back to array
+      setDespacho(JSON.parse(savedDespacho));
       setEmergencyId(savedEmergencyId);
     }
   }, []);
-  
-
-  const fixedPins = [
-    { lat: -33.04826497621013, lng: -71.37766983702313, name: "1era Compañía" },
-    { lat: -33.04348848857053, lng: -71.37182416898918, name: "2da Compañía" },
-    { lat: -33.04649840040579, lng: -71.3530632234065, name: "3ra Compañía" },
-    { lat: -33.05599775894304, lng: -71.3911704295499, name: "4ta Compañía" },
-  ];
-
 
   const handleStreetChange = (selectedOption) => {
     const selected = selectedOption ? selectedOption.value : '';
     setSelectedStreet(selected);
-    const selectedData = data.find(item => item.Calles === selected);
-    
-    // Parse the intersections and coordinates (X and Y) from string to array
-    const parsedIntersections = selectedData ? JSON.parse(selectedData.Intersecciones.replace(/'/g, '"')) : [];
-    const parsedX = selectedData ? JSON.parse(selectedData.X.replace(/'/g, '"')) : [];
-    const parsedY = selectedData ? JSON.parse(selectedData.Y.replace(/'/g, '"')) : [];
-    
-    // Create intersection options
+
+    const selectedData = data.find((item) => item.Calles === selected);
+
+    const parsedIntersections = selectedData
+      ? JSON.parse(selectedData.Intersecciones.replace(/'/g, '"'))
+      : [];
+
+    const parsedX = selectedData
+      ? JSON.parse(selectedData.X.replace(/'/g, '"'))
+      : [];
+
+    const parsedY = selectedData
+      ? JSON.parse(selectedData.Y.replace(/'/g, '"'))
+      : [];
+
     const intersectionOptions = parsedIntersections.map((intersection, index) => ({
       label: intersection,
-      value: index
+      value: index,
     }));
 
     setIntersections(intersectionOptions);
     setCoordinates({
       x: parsedX,
-      y: parsedY
+      y: parsedY,
     });
 
-    // Clear the marker position when the street changes
     setMarkerPosition(null);
     setSelectedIntersection('');
   };
 
   const handleIntersectionChange = (selectedOption) => {
     const index = selectedOption ? selectedOption.value : null;
+
+    if (index === null) {
+      setSelectedIntersection('');
+      setMarkerPosition(null);
+      return;
+    }
+
     setSelectedIntersection(intersections[index]?.label);
 
-    const lat = coordinates.x[index];  // Y should be latitude
-    const lng = coordinates.y[index];  // X should be longitude
+    const lat = coordinates.x[index];
+    const lng = coordinates.y[index];
 
-    // Validate the latitude and longitude values
     if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
-      setMarkerPosition([lat, lng]);  // Set the valid coordinates
+      setMarkerPosition([lat, lng]);
     } else {
       console.error('Invalid coordinates: ', lat, lng);
-      setMarkerPosition(null);  // Clear the marker if the coordinates are invalid
+      setMarkerPosition(null);
     }
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent the form from actually submitting
+    e.preventDefault();
 
-    // Prepare the data to be sent
     const formData = {
-      clave: clave,
+      clave,
       calle: selectedStreet,
       interseccion: selectedIntersection,
       direccion: textInput1,
       informacion: textInput2,
     };
-    
-    // Show an alert for now, you can handle the form submission logic
+
     const alertData = `
       Clave: ${formData.clave}
       Calle: ${formData.calle}
@@ -171,6 +178,7 @@ function Despacho() {
       Dirección: ${formData.direccion}
       Información: ${formData.informacion}
     `;
+
     alert(`DESPACHO ${alertData}`);
 
     try {
@@ -184,10 +192,11 @@ function Despacho() {
 
       if (response.ok) {
         const result = await response.json();
+
         console.log('Data successfully sent:', result);
-        alert(result.resultado)
-        
-        localStorage.setItem('despacho', JSON.stringify(result.despacho)); // Save despacho as a JSON string
+        alert(result.resultado);
+
+        localStorage.setItem('despacho', JSON.stringify(result.despacho));
         localStorage.setItem('emergencyId', result.id);
 
         setDespacho(result.despacho);
@@ -203,7 +212,7 @@ function Despacho() {
   const handleDespachoChange = (index, selectedOption) => {
     setSelectedOptions((prevState) => ({
       ...prevState,
-      [index]: selectedOption, // Cambia solo el select correspondiente
+      [index]: selectedOption,
     }));
   };
 
@@ -214,20 +223,20 @@ function Despacho() {
     }));
   };
 
-  // Enviar el despacho con los selects dinámicos
   const handleDespachoSubmit = async (index) => {
     const selectedOption = selectedOptions[index];
-    const integerValue = integerValues[index]; // Get the integer value for this form
-    if (!selectedOption || integerValue === undefined) {
+    const integerValue = integerValues[index];
+
+    if (!selectedOption || integerValue === undefined || Number.isNaN(integerValue)) {
       alert('Selecciona una opción y proporciona un número entero para este despacho');
       return;
     }
 
     const despachoData = {
       despachoIndex: index,
-      selectedId: parseFloat(selectedOption.value)+parseFloat(1),
+      selectedId: parseFloat(selectedOption.value) + 1,
       integerValue,
-      despacho: despacho,
+      despacho,
     };
 
     try {
@@ -238,46 +247,40 @@ function Despacho() {
         },
         body: JSON.stringify(despachoData),
       });
-      if (response.ok) {
-        const result = await response.json();
-      } else {
+
+      if (!response.ok) {
         console.error('Error sending despacho item:', response.statusText);
       }
     } catch (error) {
       console.error('Error:', error);
     }
 
-    let updatedDespacho = [...despacho]; // Copy the current despacho list
-    updatedDespacho.splice(index, 1);    // Remove the item at the submitted index
+    const updatedDespacho = [...despacho];
+    updatedDespacho.splice(index, 1);
 
-    // Update the state with the new despacho list
     setDespacho(updatedDespacho);
-
-    // Update the local storage with the new list
     localStorage.setItem('despacho', JSON.stringify(updatedDespacho));
   };
 
   return (
-    <div>
-    <Authentication />
-      <div className="wrapper">
-        {/* Sidebar (15%) */}
-        <div className="sidebar">
-          <h3>Estado Carros</h3>
-          <Sidebar />
-        </div>
-
-        {/* Main Content (85%) */}
-        <div className="main-content">
-        <div className='form-container'>
-        <div className='form-column'>
-          <MapContainer center={defaultCenter} zoom={13} style={{ height: '400px', width: '100%' }}>
+    <MainLayout
+      title="Despacho de Emergencias"
+      subtitle="Registro, ubicación y asignación inicial de unidades"
+    >
+      <div className="dispatch-layout">
+        <section className="dispatch-main-card">
+          <MapContainer
+            center={defaultCenter}
+            zoom={13}
+            className="dispatch-map"
+          >
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> PhoenixSOS'
             />
-            {/* Update the view only when a marker position is selected */}
+
             <SetMapView position={markerPosition} />
+
             {markerPosition && (
               <Marker position={markerPosition} icon={flameIcon}>
                 <Popup>
@@ -285,81 +288,91 @@ function Despacho() {
                 </Popup>
               </Marker>
             )}
-            {fixedPins.map((pin, index) => (
-                <Marker key={index} position={[pin.lat, pin.lng]} icon={houseIcon}>
-                  <Popup>{pin.name}</Popup>
-                </Marker>
-              ))}
-          </MapContainer>
-          <form onSubmit={handleSubmit}>
-            
-          <div className='row-container'>
-            <div className='left-center-top-column'>
-            <label htmlFor="street-select" className="label-white">Seleccione Calle:</label>
-            <div className='select'>
-              <Select
-                id="street-select"
-                options={streets}
-                onChange={handleStreetChange}
-                isClearable
-                placeholder="SELECCIONE UNA CALLE"
-              />
-            </div>
-            </div>
 
-            <div className="right-center-top-column">
-              <label htmlFor="intersection-select" >Seleccione Intersección:</label>
-              <div className='select'>
-                <Select
-                  id="intersection-select"
-                  options={intersections}
-                  onChange={handleIntersectionChange}
-                  isClearable
-                  isDisabled={!selectedStreet}
-                  placeholder="SELECCIONE UNA INTERSECCIÓN"
-                />
+            {fixedPins.map((pin, index) => (
+              <Marker key={index} position={[pin.lat, pin.lng]} icon={houseIcon}>
+                <Popup>{pin.name}</Popup>
+              </Marker>
+            ))}
+          </MapContainer>
+
+          <form className="dispatch-form" onSubmit={handleSubmit}>
+            <div className="dispatch-row">
+              <div>
+                <label htmlFor="street-select">Seleccione Calle</label>
+
+                <div className="dispatch-select">
+                  <Select
+                    id="street-select"
+                    options={streets}
+                    onChange={handleStreetChange}
+                    isClearable
+                    placeholder="SELECCIONE UNA CALLE"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="intersection-select">Seleccione Intersección</label>
+
+                <div className="dispatch-select">
+                  <Select
+                    id="intersection-select"
+                    options={intersections}
+                    onChange={handleIntersectionChange}
+                    isClearable
+                    isDisabled={!selectedStreet}
+                    placeholder="SELECCIONE UNA INTERSECCIÓN"
+                  />
+                </div>
               </div>
             </div>
-            </div>         
-            
-            <div className="center-down">
-            <label>
-              Seleccione Llamado:
+
+            <div>
+              <label htmlFor="clave-select">Seleccione Llamado</label>
+
               <select
+                id="clave-select"
                 name="selectOption"
                 value={clave}
                 onChange={(e) => setClave(e.target.value)}
-                placeholder="Seleccione una clave"
               >
-                <option value="" disabled selected>SELECCIONE UNA CLAVE</option>
-                {/* All the options from Despacho.js here */}
+                <option value="" disabled>
+                  SELECCIONE UNA CLAVE
+                </option>
+
                 <optgroup label="Clave 1: Incendio Estructural">
                   <option value="1-1">1-1: INCENDIO ESTRUCTURAL BÁSICO</option>
                   <option value="1-2">1-2: INCENDIO ESTRUCTURAL EN ALTURA</option>
                   <option value="1-3">1-3: INCENDIO ESTRUCTURAL EN LUGAR PÚBLICO O MASIVO</option>
                 </optgroup>
+
                 <optgroup label="Clave 2: Incendio Forestal">
                   <option value="2-1">2-1: INCENDIO FORESTAL URBANO</option>
                   <option value="2-2">2-2: INCENDIO FORESTAL DE INTERFASE</option>
                   <option value="2-3">2-3: INCENDIO FORESTAL RURAL</option>
                   <option value="2-4">2-4: INCENDIO EN VERTEDERO, MICRO BASURALES, BASUREROS</option>
                 </optgroup>
+
                 <optgroup label="Clave 3: Incendio Vehicular">
                   <option value="3-1">3-1: INCENDIO VEHICULAR MENOR</option>
                   <option value="3-2">3-2: INCENDIO VEHICULAR MAYOR</option>
                   <option value="3-3">3-3: INCENDIO VEHICULAR CON CARGA PELIGROSA</option>
                 </optgroup>
+
                 <optgroup label="Clave 4: Materiales Peligrosos">
                   <option value="4-1">4-1: HAZ-MAT DOMICILIARIA</option>
                   <option value="4-2">4-2: HAZ-MAT EN VÍA PÚBLICA</option>
                   <option value="4-3">4-3: HAZ-MAT INDUSTRIAL</option>
                 </optgroup>
+
                 <optgroup label="Clave 5: Rescate Vehicular">
                   <option value="5-1">5-1: RESCATE VEHICULAR LIVIANO</option>
                   <option value="5-2">5-2: RESCATE VEHICULAR PESADO</option>
                   <option value="5-3">5-3: RESCATE VEHICULAR CON MATERIALES PELIGROSOS</option>
                   <option value="5-4">5-4: RESCATE AÉREO, FERROVIARIO O DE BLINDADOS</option>
                 </optgroup>
+
                 <optgroup label="Clave 6: Rescate">
                   <option value="6-1">6-1: APOYO A SAMU Y/O CARABINEROS</option>
                   <option value="6-2">6-2: PERSONA EXTRAVIADA</option>
@@ -369,21 +382,23 @@ function Despacho() {
                   <option value="6-6">6-6: RESCATE EN ESTRUCTURAS COLAPSADAS</option>
                   <option value="6-7">6-7: RESCATE EN ESPACIOS CONFINADOS</option>
                 </optgroup>
+
                 <optgroup label="Otros Incidentes">
-                  <option value="7-1">9: ACUARTELAMIENTO GENERAL </option>
+                  <option value="7-1">9: ACUARTELAMIENTO GENERAL</option>
                   <option value="9-1">9: EMERGENCIA INDUSTRIAL</option>
                   <option value="10-1">10-1: TRASLADO DE BOMBERO ACCIDENTADO</option>
                   <option value="10-2">10-2: ABASTECIMIENTO DE AGUA</option>
                   <option value="10-3">10-3: ABRIR PUERTAS</option>
                   <option value="10-4">10-4: COLOCAR DRIZAS</option>
                   <option value="10-5">10-5: EMERGENCIA CLIMATOLÓGICA</option>
-                  <option value="10-5">10-6: VISITA INSPECTIVA</option>
-                  <option value="10-5">10-8: SALIDA A TALLER</option>
-                  <option value="10-5">10-9: INVESTIGACIÓN DE INCENDIOS</option>
+                  <option value="10-6">10-6: VISITA INSPECTIVA</option>
+                  <option value="10-8">10-8: SALIDA A TALLER</option>
+                  <option value="10-9">10-9: INVESTIGACIÓN DE INCENDIOS</option>
                   <option value="11-1">11: PREVENCIÓN DE EMERGENCIAS ESTRUCTURALES</option>
                   <option value="13-1">13: REBROTE DE INCENDIO</option>
                   <option value="15-1">15: EMERGENCIA NO CLASIFICADA</option>
                 </optgroup>
+
                 <optgroup label="Clave 8: Apoyo a Otros Cuerpos">
                   <option value="8-1">Clave 1-1</option>
                   <option value="8-2">Clave 1-2</option>
@@ -410,6 +425,7 @@ function Despacho() {
                   <option value="8-23">Clave 6-6</option>
                   <option value="8-24">Clave 6-7</option>
                 </optgroup>
+
                 <optgroup label="Clave 13: Simulacro de Incidente">
                   <option value="13-1">Clave 1-1</option>
                   <option value="13-2">Clave 1-2</option>
@@ -436,101 +452,100 @@ function Despacho() {
                   <option value="13-23">Clave 6-6</option>
                   <option value="13-24">Clave 6-7</option>
                 </optgroup>
-                {/* Add other optgroups as necessary */}
               </select>
-            </label>
             </div>
 
-            <div className='row-container'>
-            <div className='left-center-down-column'>
-            <label htmlFor="text-input1" >Dirección Exacta:</label>
-            <input
-              id="text-input1"
-              type="text"
-              value={textInput1}
-              onChange={(e) => setTextInput1(e.target.value)}
-              placeholder="Ingrese dirección exacta"
-              style={{ width: '100%', }}
-            />
+            <div className="dispatch-row">
+              <div>
+                <label htmlFor="text-input1">Dirección Exacta</label>
+
+                <input
+                  id="text-input1"
+                  type="text"
+                  value={textInput1}
+                  onChange={(e) => setTextInput1(e.target.value)}
+                  placeholder="Ingrese dirección exacta"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="text-input2">Información Adicional</label>
+
+                <input
+                  id="text-input2"
+                  type="text"
+                  value={textInput2}
+                  onChange={(e) => setTextInput2(e.target.value)}
+                  placeholder="Ingrese información adicional"
+                />
+              </div>
             </div>
 
-            <div className="right-center-down-column">
-            <label htmlFor="text-input2" className="label-white">Información Adicional:</label>
-            <input
-              id="text-input2"
-              type="text"
-              value={textInput2}
-              onChange={(e) => setTextInput2(e.target.value)}
-              placeholder="Ingrese información adicional"
-              style={{ width: '100%' }}
-            />
-            </div>
-            </div>
-
-            <div className="d-grid gap-2">
-              <button 
-                className="btn btn-primary" 
-                type="button" 
-                onClick={handleSubmit}
-                style={{ width: '100%', height: '100px' }}
-              >
-                Despacho
-              </button>
-            </div>
-          </form>
-          </div>
-          <div className="right-column">
-            {despacho.length > 0 ? (
-              despacho.map((item, index) => (
-                <form key={index} onSubmit={(e) => { 
-                  e.preventDefault(); 
-                  handleDespachoSubmit(index); // Prevent page refresh and handle the form submit
-                  }}
-                  style={{ marginBottom: '20px' }} 
-                >
-                  <label>Unidad {item}</label>
-                  <div className='select' style={{ marginBottom: '10px' }}>
-                    <Select
-                      value={selectedOptions[index] || null}
-                      onChange={(option) => handleDespachoChange(index, option)}
-                      options={data2}
-                      placeholder={`Busca un nombre`}
-                      isClearable
-                    />
-                  </div>
-                  <input
-                    type="number"
-                    placeholder="Ingrese cantidad de bomberos"
-                    value={integerValues[index] || ''}
-                    onChange={(e) => handleIntegerChange(index, parseInt(e.target.value, 10))}
-                    style={{ marginBottom: '10px' }}
-                  />
-                  <button type="submit" class="btn btn-success">Registar Despacho</button>  {/* Ensure this button is within a form and doesn't refresh */}
-                </form>
-              ))
-            ) : (
-              <p>No hay unidades despachadas</p>
-            )}
-
-          <div>
-            <Link to={`/emergencia/${emergencyId}`}>
-            <button 
-              type="button" 
-              className="btn btn-primary" 
-              onClick={() => {
-              localStorage.removeItem('emergencyId');
-            }}
-            style={{ minWidth: '220px' }} 
-          >
-              Ultimo Despacho
+            <button className="dispatch-button" type="submit">
+              Despacho
             </button>
-            </Link>
+          </form>
+        </section>
+
+        <aside className="dispatch-side-card">
+          <h2 className="dispatch-side-title">Unidades por registrar</h2>
+
+          {despacho.length > 0 ? (
+            despacho.map((item, index) => (
+              <form
+                key={index}
+                className="dispatch-unit-card"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleDespachoSubmit(index);
+                }}
+              >
+                <label>Unidad {item}</label>
+
+                <div className="dispatch-select">
+                  <Select
+                    value={selectedOptions[index] || null}
+                    onChange={(option) => handleDespachoChange(index, option)}
+                    options={data2}
+                    placeholder="Busca un nombre"
+                    isClearable
+                  />
+                </div>
+
+                <input
+                  type="number"
+                  placeholder="Cantidad de bomberos"
+                  value={integerValues[index] || ''}
+                  onChange={(e) =>
+                    handleIntegerChange(index, parseInt(e.target.value, 10))
+                  }
+                />
+
+                <button type="submit" className="btn btn-success">
+                  Registrar Despacho
+                </button>
+              </form>
+            ))
+          ) : (
+            <div className="dispatch-empty">
+              No hay unidades despachadas
             </div>
-          </div>
-        </div>
-        </div>
+          )}
+
+          <Link to={`/emergencia/${emergencyId}`}>
+            <button
+              type="button"
+              className="btn btn-primary last-dispatch-button"
+              onClick={() => {
+                localStorage.removeItem('emergencyId');
+              }}
+            >
+              Último Despacho
+            </button>
+          </Link>
+        </aside>
       </div>
-      </div>
+    </MainLayout>
   );
 }
 
