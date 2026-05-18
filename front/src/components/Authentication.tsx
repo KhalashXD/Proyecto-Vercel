@@ -1,12 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth } from "./firebase";
-import "./Navbar.css";
+import { onAuthStateChanged, signOut, User } from "firebase/auth";
+import { auth } from "../firebase";
+import "../styles/Navbar.css";
 
-const Authentication = () => {
-  const [authenticatedUser, setAuthenticatedUser] = useState(null);
-  const [weatherData, setWeatherData] = useState(null);
+interface WeatherData {
+  icon?: string;
+  temperature: number;
+  humidity: number;
+  wind_speed: number;
+  wind_dir: string;
+  precipitation: number;
+  FWI: number | string;
+  FWI_score: string;
+}
+
+const Authentication: React.FC = () => {
+  const [authenticatedUser, setAuthenticatedUser] = useState<User | null>(null);
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
 
   const navigate = useNavigate();
 
@@ -19,10 +30,10 @@ const Authentication = () => {
   }, []);
 
   useEffect(() => {
-    const fetchWeatherData = async () => {
+    const fetchWeatherData = async (): Promise<void> => {
       try {
         const response = await fetch("/api/fire-risk");
-        const data = await response.json();
+        const data: WeatherData = await response.json();
         setWeatherData(data);
       } catch (error) {
         console.error("Error fetching fire risk data:", error);
@@ -31,12 +42,12 @@ const Authentication = () => {
 
     fetchWeatherData();
 
-    const intervalId = setInterval(fetchWeatherData, 60000);
+    const intervalId = window.setInterval(fetchWeatherData, 60000);
 
-    return () => clearInterval(intervalId);
+    return () => window.clearInterval(intervalId);
   }, []);
 
-  const userSignOut = async () => {
+  const userSignOut = async (): Promise<void> => {
     try {
       await signOut(auth);
       navigate("/");

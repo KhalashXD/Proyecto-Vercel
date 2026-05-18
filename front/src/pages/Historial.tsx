@@ -1,32 +1,44 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import MainLayout from './MainLayout';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import MainLayout from "../components/MainLayout";
 
-const Historial = () => {
-  const [data, setData] = useState({ ids: [], texts: [], dates: [] });
-  const [currentPage, setCurrentPage] = useState(1);
+interface HistorialData {
+  ids: string[];
+  texts: string[];
+  dates: string[];
+}
+
+const Historial: React.FC = () => {
+  const [data, setData] = useState<HistorialData>({
+    ids: [],
+    texts: [],
+    dates: [],
+  });
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 12;
+
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  const fetchData = async () => {
+  const fetchData = async (): Promise<void> => {
     try {
-      const response = await fetch('/historial');
-      const result = await response.json();
+      const response = await fetch("/historial");
+      const result: HistorialData = await response.json();
       setData(result);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
   };
 
-  const handleNavigate = (id) => {
+  const handleNavigate = (id: string): void => {
     navigate(`/emergencia/${id}`);
   };
 
-  const handlePageChange = (pageNumber) => {
+  const handlePageChange = (pageNumber: number): void => {
     setCurrentPage(pageNumber);
   };
 
@@ -84,8 +96,8 @@ const Historial = () => {
                     style={{
                       background:
                         currentPage === pageIndex + 1
-                          ? 'var(--primary)'
-                          : '#1d1f27',
+                          ? "var(--primary)"
+                          : "#1d1f27",
                     }}
                   >
                     {pageIndex + 1}

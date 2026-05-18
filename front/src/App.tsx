@@ -1,19 +1,19 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
-import Despacho from "./Despacho";
-import ExpandingSection from "./Prueba";
-import Emergencias from "./Emergencias";
-import Historial from "./Historial";
-import Login from "./Login";
-import SignUp from "./SignUp";
-import EnrollMFA from "./EnrollMFA";
+import Despacho from "./pages/Despacho";
+import ExpandingSection from "./pages/Prueba";
+import Emergencias from "./pages/Emergencias";
+import Historial from "./pages/Historial";
+import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
+import EnrollMFA from "./pages/EnrollMFA";
 
-import "./App.css";
+import "./styles/App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
 
-function App() {
+const App: React.FC = () => {
   return (
     <Router>
       <Routes>
@@ -33,6 +33,6 @@ function App() {
       </Routes>
     </Router>
   );
-}
+};
 
 export default App;

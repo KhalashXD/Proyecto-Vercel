@@ -1,26 +1,37 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import MainLayout from './MainLayout';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import MainLayout from "../components/MainLayout";
 
-const Emergencias = () => {
-  const [data, setData] = useState({ ids: [], texts: [], dates: [] });
+interface EmergenciasData {
+  ids: string[];
+  texts: string[];
+  dates: string[];
+}
+
+const Emergencias: React.FC = () => {
+  const [data, setData] = useState<EmergenciasData>({
+    ids: [],
+    texts: [],
+    dates: [],
+  });
+
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  const fetchData = async () => {
+  const fetchData = async (): Promise<void> => {
     try {
-      const response = await fetch('/emergencias');
-      const result = await response.json();
+      const response = await fetch("/emergencias");
+      const result: EmergenciasData = await response.json();
       setData(result);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
   };
 
-  const handleNavigate = (id) => {
+  const handleNavigate = (id: string): void => {
     navigate(`/emergencia/${id}`);
   };
 

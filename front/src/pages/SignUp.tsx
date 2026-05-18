@@ -1,27 +1,31 @@
 import React, { useState } from "react";
-import "./LoginSignup.css";
-import Navbar from "./Navbar";
-import { auth } from "./firebase";
+import "../styles/LoginSignup.css";
+import Navbar from "../components/Navbar";
+import { auth } from "../firebase";
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
-const SignUp = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const SignUp: React.FC = () => {
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
   const navigate = useNavigate();
 
-  const signUp = async (e) => {
+  const signUp = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
 
     try {
       const cleanName = name.trim();
       const capitalizedName =
-        cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+        cleanName.length > 0
+          ? cleanName.charAt(0).toUpperCase() + cleanName.slice(1)
+          : "";
 
       const userCredential = await createUserWithEmailAndPassword(
         auth,

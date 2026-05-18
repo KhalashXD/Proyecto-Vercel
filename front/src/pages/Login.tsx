@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import "./LoginSignup.css";
-import Navbar from "./Navbar";
-import { auth } from "./firebase";
+import "../styles/LoginSignup.css";
+import Navbar from "../components/Navbar";
+import { auth } from "../firebase";
 import {
   signInWithEmailAndPassword,
   multiFactor,
@@ -9,21 +9,22 @@ import {
   RecaptchaVerifier,
   PhoneAuthProvider,
   PhoneMultiFactorGenerator,
+  MultiFactorResolver,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
-const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [smsCode, setSmsCode] = useState("");
-  const [error, setError] = useState("");
-  const [resolver, setResolver] = useState(null);
-  const [verificationId, setVerificationId] = useState("");
-  const [showSmsStep, setShowSmsStep] = useState(false);
+const Login: React.FC = () => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [smsCode, setSmsCode] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [resolver, setResolver] = useState<MultiFactorResolver | null>(null);
+  const [verificationId, setVerificationId] = useState<string>("");
+  const [showSmsStep, setShowSmsStep] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
-  const setupRecaptcha = async () => {
+  const setupRecaptcha = async (): Promise<void> => {
     if (window.recaptchaVerifier) {
       try {
         window.recaptchaVerifier.clear();
@@ -58,7 +59,7 @@ const Login = () => {
     await window.recaptchaVerifier.render();
   };
 
-  const signIn = async (e) => {
+  const signIn = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setError("");
 
@@ -77,7 +78,7 @@ const Login = () => {
       }
 
       navigate("/Despacho");
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error login:", err);
 
       if (err.code === "auth/multi-factor-auth-required") {
@@ -105,15 +106,14 @@ const Login = () => {
 
           const phoneAuthProvider = new PhoneAuthProvider(auth);
 
-          const newVerificationId =
-            await phoneAuthProvider.verifyPhoneNumber(
-              phoneInfoOptions,
-              window.recaptchaVerifier
-            );
+          const newVerificationId = await phoneAuthProvider.verifyPhoneNumber(
+            phoneInfoOptions,
+            window.recaptchaVerifier
+          );
 
           setVerificationId(newVerificationId);
           setShowSmsStep(true);
-        } catch (mfaErr) {
+        } catch (mfaErr: any) {
           console.error("Error MFA completo:", mfaErr);
           setError(`${mfaErr.code}: ${mfaErr.message}`);
         }
@@ -131,7 +131,9 @@ const Login = () => {
     }
   };
 
-  const verifySecondFactor = async (e) => {
+  const verifySecondFactor = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
     setError("");
 
@@ -147,7 +149,7 @@ const Login = () => {
       await resolver.resolveSignIn(multiFactorAssertion);
 
       navigate("/Despacho");
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error verificando SMS:", err);
       setError(`${err.code}: ${err.message}`);
     }
@@ -206,10 +208,7 @@ const Login = () => {
                 />
               </div>
 
-              <div
-                id="recaptcha-container"
-                style={{ marginBottom: "16px" }}
-              />
+              <div id="recaptcha-container" style={{ marginBottom: "16px" }} />
 
               <button type="submit" className="input-submit">
                 Ingresar

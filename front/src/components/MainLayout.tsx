@@ -1,15 +1,30 @@
-import React from 'react';
-import Authentication from './Authentication';
-import Sidebar from './Sidebar';
+import React, { ReactNode } from "react";
+import Authentication from "./Authentication";
+import Sidebar from "./Sidebar";
 
-const MainLayout = ({ title, subtitle, children }) => {
+interface MainLayoutProps {
+  title?: string;
+  subtitle?: string;
+  children: ReactNode;
+}
+
+const MainLayout: React.FC<MainLayoutProps> = ({
+  title,
+  subtitle,
+  children,
+}) => {
   return (
     <div className="app-shell">
       <Authentication />
 
       <div className="page-layout">
         <aside className="page-sidebar">
-          <h3>Estado<br />Carros</h3>
+          <h3>
+            Estado
+            <br />
+            Carros
+          </h3>
+
           <Sidebar />
         </aside>
 

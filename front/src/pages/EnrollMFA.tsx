@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import Navbar from "./Navbar";
-import { auth } from "./firebase";
+import Navbar from "../components/Navbar";
+import { auth } from "../firebase";
 import {
   RecaptchaVerifier,
   PhoneAuthProvider,
@@ -8,18 +8,18 @@ import {
   multiFactor,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import "./LoginSignup.css";
+import "../styles/LoginSignup.css";
 
-const EnrollMFA = () => {
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [code, setCode] = useState("");
-  const [verificationId, setVerificationId] = useState("");
-  const [step, setStep] = useState(1);
-  const [error, setError] = useState("");
+const EnrollMFA: React.FC = () => {
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [code, setCode] = useState<string>("");
+  const [verificationId, setVerificationId] = useState<string>("");
+  const [step, setStep] = useState<number>(1);
+  const [error, setError] = useState<string>("");
 
   const navigate = useNavigate();
 
-  const setupRecaptcha = async () => {
+  const setupRecaptcha = async (): Promise<void> => {
     if (window.recaptchaVerifier) {
       try {
         window.recaptchaVerifier.clear();
@@ -53,7 +53,9 @@ const EnrollMFA = () => {
     await window.recaptchaVerifier.render();
   };
 
-  const sendSms = async (e) => {
+  const sendSms = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
     setError("");
 
@@ -88,13 +90,15 @@ const EnrollMFA = () => {
 
       setVerificationId(id);
       setStep(2);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       setError(err.message || "No se pudo enviar el SMS.");
     }
   };
 
-  const verifyAndEnroll = async (e) => {
+  const verifyAndEnroll = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
     setError("");
 
@@ -116,7 +120,7 @@ const EnrollMFA = () => {
 
       alert("Segundo factor activado correctamente.");
       navigate("/Despacho");
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       setError(err.message || "No se pudo verificar el código.");
     }

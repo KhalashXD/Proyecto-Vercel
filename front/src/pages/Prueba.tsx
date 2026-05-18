@@ -1,36 +1,50 @@
-import React, { useState, useEffect } from 'react';
-import Select from 'react-select';
-import { useParams } from 'react-router-dom';
-import MainLayout from './MainLayout';
-import './Prueba.css';
+import React, { useState, useEffect } from "react";
+import Select from "react-select";
+import { useParams } from "react-router-dom";
+import MainLayout from "../components/MainLayout";
+import "../styles/Prueba.css";
 
-const MultiSectionToggle = ({ eventId }) => {
-  const { id } = useParams();
+interface MultiSectionToggleProps {
+  eventId?: string | number | null;
+}
 
-  const [activeSection, setActiveSection] = useState(null);
-  const [dataE, setDataE] = useState(null);
-  const [dataA, setDataA] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('info');
+interface FormProps {
+  eventId?: string | number | null;
+  switchToTabA: () => void;
+}
 
-  const switchToTabA = () => {
-    setActiveTab('info');
+interface SelectOption {
+  value: string | number;
+  label: string;
+}
+
+const MultiSectionToggle: React.FC<MultiSectionToggleProps> = ({ eventId }) => {
+  const { id } = useParams<{ id: string }>();
+
+  const [activeSection, setActiveSection] = useState<number | null>(null);
+  const [dataE, setDataE] = useState<any[] | null>(null);
+  const [dataA, setDataA] = useState<any[] | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [activeTab, setActiveTab] = useState<"info" | "actions">("info");
+
+  const switchToTabA = (): void => {
+    setActiveTab("info");
     setActiveSection(null);
   };
 
   const sections = [
-    { id: 1, label: 'Unidades', content: <Form1 switchToTabA={switchToTabA} /> },
-    { id: 2, label: 'Evaluación', content: <Form2 switchToTabA={switchToTabA} /> },
-    { id: 3, label: 'Clave', content: <Form3 switchToTabA={switchToTabA} /> },
-    { id: 4, label: 'Instrucciones', content: <Form4 switchToTabA={switchToTabA} /> },
-    { id: 5, label: 'Superación', content: <Form5 switchToTabA={switchToTabA} /> },
-    { id: 6, label: 'Comandante', content: <Form6 switchToTabA={switchToTabA} /> },
-    { id: 7, label: 'Externos', content: <Form7 switchToTabA={switchToTabA} /> },
-    { id: 8, label: 'Información', content: <Form8 switchToTabA={switchToTabA} /> },
-    { id: 9, label: 'Víctimas', content: <Form9 switchToTabA={switchToTabA} /> },
+    { id: 1, label: "Unidades", content: <Form1 eventId={eventId} switchToTabA={switchToTabA} /> },
+    { id: 2, label: "Evaluación", content: <Form2 switchToTabA={switchToTabA} /> },
+    { id: 3, label: "Clave", content: <Form3 switchToTabA={switchToTabA} /> },
+    { id: 4, label: "Instrucciones", content: <Form4 eventId={eventId} switchToTabA={switchToTabA} /> },
+    { id: 5, label: "Superación", content: <Form5 switchToTabA={switchToTabA} /> },
+    { id: 6, label: "Comandante", content: <Form6 switchToTabA={switchToTabA} /> },
+    { id: 7, label: "Externos", content: <Form7 switchToTabA={switchToTabA} /> },
+    { id: 8, label: "Información", content: <Form8 switchToTabA={switchToTabA} /> },
+    { id: 9, label: "Víctimas", content: <Form9 switchToTabA={switchToTabA} /> },
   ];
 
-  const fetchData = async () => {
+  const fetchData = async (): Promise<void> => {
     try {
       const response = await fetch(`/emergencia_info/${id}`);
       const data = await response.json();
@@ -39,15 +53,16 @@ const MultiSectionToggle = ({ eventId }) => {
       setDataA(data.data_a);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching emergency data:', error);
+      console.error("Error fetching emergency data:", error);
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (activeTab === 'info') {
+    if (activeTab === "info") {
       fetchData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, id]);
 
   if (loading) {
@@ -70,29 +85,29 @@ const MultiSectionToggle = ({ eventId }) => {
 
   return (
     <MainLayout
-      title={`Clave ${dataE[0]} ${dataE[1]} / ${dataE[2]}`}
-      subtitle={dataE[3]}
+      title={`Clave ${dataE?.[0] || ""} ${dataE?.[1] || ""} / ${dataE?.[2] || ""}`}
+      subtitle={dataE?.[3] || ""}
     >
       <section className="incident-card">
         <div className="incident-tabs">
           <button
             type="button"
-            className={`incident-tab ${activeTab === 'info' ? 'active' : ''}`}
-            onClick={() => setActiveTab('info')}
+            className={`incident-tab ${activeTab === "info" ? "active" : ""}`}
+            onClick={() => setActiveTab("info")}
           >
             Información
           </button>
 
           <button
             type="button"
-            className={`incident-tab ${activeTab === 'actions' ? 'active' : ''}`}
-            onClick={() => setActiveTab('actions')}
+            className={`incident-tab ${activeTab === "actions" ? "active" : ""}`}
+            onClick={() => setActiveTab("actions")}
           >
             Acciones
           </button>
         </div>
 
-        {activeTab === 'info' && (
+        {activeTab === "info" && (
           <div>
             <h2>Cronología</h2>
 
@@ -130,7 +145,7 @@ const MultiSectionToggle = ({ eventId }) => {
           </div>
         )}
 
-        {activeTab === 'actions' && (
+        {activeTab === "actions" && (
           <div>
             <h2>Acciones</h2>
 
@@ -140,7 +155,7 @@ const MultiSectionToggle = ({ eventId }) => {
                   key={section.id}
                   type="button"
                   onClick={() => setActiveSection(section.id)}
-                  className={`action-chip ${activeSection === section.id ? 'active' : ''}`}
+                  className={`action-chip ${activeSection === section.id ? "active" : ""}`}
                 >
                   {section.label}
                 </button>
@@ -163,26 +178,26 @@ const MultiSectionToggle = ({ eventId }) => {
   );
 };
 
-const Form1 = ({ eventId, switchToTabA }) => {
-  const { id } = useParams();
+const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
+  const { id } = useParams<{ id: string }>();
 
-  const [carrosActivos, setCarrosActivos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [selectedEstado, setSelectedEstado] = useState(null);
-  const [carrosDisponibles, setCarrosDisponibles] = useState([]);
-  const [selectedDespacho, setSelectedDespacho] = useState([]);
-  const [despacho, setDespacho] = useState([]);
-  const [acciones, setAcciones] = useState([]);
-  const [data2, setData2] = useState([]);
-  const [selectedOptions, setSelectedOptions] = useState({});
-  const [integerValues, setIntegerValues] = useState({});
-  const [activeSection, setActiveSection] = useState(null);
+  const [carrosActivos, setCarrosActivos] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [selectedEstado, setSelectedEstado] = useState<string | null>(null);
+  const [carrosDisponibles, setCarrosDisponibles] = useState<string[]>([]);
+  const [selectedDespacho, setSelectedDespacho] = useState<string[]>([]);
+  const [despacho, setDespacho] = useState<string[]>([]);
+  const [acciones, setAcciones] = useState<any[]>([]);
+  const [data2, setData2] = useState<SelectOption[]>([]);
+  const [selectedOptions, setSelectedOptions] = useState<Record<number, SelectOption | null>>({});
+  const [integerValues, setIntegerValues] = useState<Record<number, number>>({});
+  const [activeSection, setActiveSection] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/data.json')
+    fetch("/data.json")
       .then((response) => response.json())
-      .then((jsonData) => {
+      .then((jsonData: Array<{ id: string; nombre: string }>) => {
         const options = jsonData.map((item) => ({
           value: item.id,
           label: item.nombre,
@@ -191,13 +206,13 @@ const Form1 = ({ eventId, switchToTabA }) => {
         setData2(options);
       })
       .catch((error) => {
-        console.error('Error al cargar el JSON:', error);
+        console.error("Error al cargar el JSON:", error);
       });
   }, []);
 
   useEffect(() => {
-    const savedDespacho = localStorage.getItem('despacho');
-    const savedAcciones = localStorage.getItem('acciones');
+    const savedDespacho = localStorage.getItem("despacho");
+    const savedAcciones = localStorage.getItem("acciones");
 
     if (savedDespacho && savedAcciones) {
       setDespacho(JSON.parse(savedDespacho));
@@ -213,7 +228,7 @@ const Form1 = ({ eventId, switchToTabA }) => {
         setLoading(false);
       })
       .catch((error) => {
-        console.error('Error fetching event data:', error);
+        console.error("Error fetching event data:", error);
         setLoading(false);
       });
   }, [id, eventId]);
@@ -226,12 +241,12 @@ const Form1 = ({ eventId, switchToTabA }) => {
         setLoading(false);
       })
       .catch((error) => {
-        console.error('Error fetching event data:', error);
+        console.error("Error fetching event data:", error);
         setLoading(false);
       });
   }, [id, eventId]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
 
     const data = {
@@ -240,74 +255,77 @@ const Form1 = ({ eventId, switchToTabA }) => {
       id,
     };
 
-    fetch('/desmov', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    fetch("/desmov", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     })
       .then((response) => response.json())
       .then((result) => {
-        console.log('Response from backend:', result);
+        console.log("Response from backend:", result);
         switchToTabA();
       })
-      .catch((error) => console.error('Error:', error));
+      .catch((error) => console.error("Error:", error));
   };
 
-  const handleSubmit2 = (e) => {
+  const handleSubmit2 = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
 
     const data = {
       selectedDespacho,
-      selectedOptions: 'Despachado',
+      selectedOptions: "Despachado",
       id,
     };
 
-    fetch('/desp', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    fetch("/desp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     })
       .then((response) => response.json())
       .then((result) => {
-        console.log('Response from backend:', result);
+        console.log("Response from backend:", result);
 
-        localStorage.setItem('despacho', JSON.stringify(result.despacho));
-        localStorage.setItem('acciones', JSON.stringify(result.acciones));
+        localStorage.setItem("despacho", JSON.stringify(result.despacho));
+        localStorage.setItem("acciones", JSON.stringify(result.acciones));
 
         setDespacho(result.despacho || []);
         setAcciones(result.acciones || []);
 
         switchToTabA();
       })
-      .catch((error) => console.error('Error:', error));
+      .catch((error) => console.error("Error:", error));
   };
 
-  const handleDespachoChange = (index, selectedOption) => {
+  const handleDespachoChange = (
+    index: number,
+    selectedOption: SelectOption | null
+  ): void => {
     setSelectedOptions((prevState) => ({
       ...prevState,
       [index]: selectedOption,
     }));
   };
 
-  const handleIntegerChange = (index, value) => {
+  const handleIntegerChange = (index: number, value: number): void => {
     setIntegerValues((prevState) => ({
       ...prevState,
       [index]: value,
     }));
   };
 
-  const handleDespachoSubmit = async (index) => {
+  const handleDespachoSubmit = async (index: number): Promise<void> => {
     const selectedOption = selectedOptions[index];
     const integerValue = integerValues[index];
 
     if (!selectedOption || integerValue === undefined || Number.isNaN(integerValue)) {
-      alert('Selecciona una opción y proporciona un número entero para este despacho');
+      alert("Selecciona una opción y proporciona un número entero para este despacho");
       return;
     }
 
     const despachoData = {
       despachoIndex: index,
-      selectedId: parseFloat(selectedOption.value) + 1,
+      selectedId: Number(selectedOption.value) + 1,
       integerValue,
       despacho,
       acciones,
@@ -315,17 +333,17 @@ const Form1 = ({ eventId, switchToTabA }) => {
     };
 
     try {
-      const response = await fetch('http://localhost:5000/carros_mando2', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("http://localhost:5000/carros_mando2", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(despachoData),
       });
 
       if (!response.ok) {
-        console.error('Error sending despacho item:', response.statusText);
+        console.error("Error sending despacho item:", response.statusText);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
 
     const updatedDespacho = [...despacho];
@@ -337,11 +355,11 @@ const Form1 = ({ eventId, switchToTabA }) => {
     setDespacho(updatedDespacho);
     setAcciones(updatedAcciones);
 
-    localStorage.setItem('despacho', JSON.stringify(updatedDespacho));
-    localStorage.setItem('acciones', JSON.stringify(updatedAcciones));
+    localStorage.setItem("despacho", JSON.stringify(updatedDespacho));
+    localStorage.setItem("acciones", JSON.stringify(updatedAcciones));
   };
 
-  const toggleSelection = (item) => {
+  const toggleSelection = (item: string): void => {
     setSelectedItems((prevSelected) =>
       prevSelected.includes(item)
         ? prevSelected.filter((i) => i !== item)
@@ -349,7 +367,7 @@ const Form1 = ({ eventId, switchToTabA }) => {
     );
   };
 
-  const toggleSelection2 = (item) => {
+  const toggleSelection2 = (item: string): void => {
     setSelectedDespacho((prevSelected) =>
       prevSelected.includes(item)
         ? prevSelected.filter((i) => i !== item)
@@ -357,7 +375,7 @@ const Form1 = ({ eventId, switchToTabA }) => {
     );
   };
 
-  const selectEstado = (option) => {
+  const selectEstado = (option: string): void => {
     setSelectedEstado((prevOption) => (prevOption === option ? null : option));
   };
 
@@ -380,7 +398,7 @@ const Form1 = ({ eventId, switchToTabA }) => {
                   toggleSelection(item);
                   setActiveSection(item);
                 }}
-                className={`action-chip ${activeSection === item ? 'active' : ''}`}
+                className={`action-chip ${activeSection === item ? "active" : ""}`}
               >
                 {item}
               </button>
@@ -391,10 +409,10 @@ const Form1 = ({ eventId, switchToTabA }) => {
             <button
               type="button"
               onClick={() => {
-                selectEstado('Desmovilizado');
-                setActiveSection('Desmovilizado');
+                selectEstado("Desmovilizado");
+                setActiveSection("Desmovilizado");
               }}
-              className={`action-chip ${activeSection === 'Desmovilizado' ? 'active' : ''}`}
+              className={`action-chip ${activeSection === "Desmovilizado" ? "active" : ""}`}
             >
               Desmovilizado
             </button>
@@ -402,10 +420,10 @@ const Form1 = ({ eventId, switchToTabA }) => {
             <button
               type="button"
               onClick={() => {
-                selectEstado('En el lugar');
-                setActiveSection('En el lugar');
+                selectEstado("En el lugar");
+                setActiveSection("En el lugar");
               }}
-              className={`action-chip ${activeSection === 'En el lugar' ? 'active' : ''}`}
+              className={`action-chip ${activeSection === "En el lugar" ? "active" : ""}`}
             >
               En el lugar
             </button>
@@ -430,7 +448,7 @@ const Form1 = ({ eventId, switchToTabA }) => {
                   toggleSelection2(item);
                   setActiveSection(item);
                 }}
-                className={`action-chip ${activeSection === item ? 'active' : ''}`}
+                className={`action-chip ${activeSection === item ? "active" : ""}`}
               >
                 {item}
               </button>
@@ -449,7 +467,7 @@ const Form1 = ({ eventId, switchToTabA }) => {
         {despacho.length > 0 ? (
           despacho.map((item, index) => (
             <form
-              key={index}
+              key={`${item}-${index}`}
               onSubmit={(e) => {
                 e.preventDefault();
                 handleDespachoSubmit(index);
@@ -459,7 +477,9 @@ const Form1 = ({ eventId, switchToTabA }) => {
 
               <Select
                 value={selectedOptions[index] || null}
-                onChange={(option) => handleDespachoChange(index, option)}
+                onChange={(option) =>
+                  handleDespachoChange(index, option as SelectOption | null)
+                }
                 options={data2}
                 placeholder="Busca un nombre"
                 isClearable
@@ -468,7 +488,7 @@ const Form1 = ({ eventId, switchToTabA }) => {
               <input
                 type="number"
                 placeholder="Ingrese cantidad de bomberos"
-                value={integerValues[index] || ''}
+                value={integerValues[index] || ""}
                 onChange={(e) =>
                   handleIntegerChange(index, parseInt(e.target.value, 10))
                 }
@@ -487,32 +507,33 @@ const Form1 = ({ eventId, switchToTabA }) => {
   );
 };
 
-const Form2 = ({ switchToTabA }) => {
-  const { id } = useParams();
+const Form2: React.FC<FormProps> = ({ switchToTabA }) => {
+  const { id } = useParams<{ id: string }>();
 
-  const [evalu, setEval] = useState('');
-  const [dataA, setDataA] = useState(null);
+  const [evalu, setEval] = useState<string>("");
+  const [dataA, setDataA] = useState<any[] | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = async (): Promise<void> => {
     try {
       const response = await fetch(`/evaluaciones/${id}`);
       const data = await response.json();
       setDataA(data.evaluaciones);
     } catch (error) {
-      console.error('Error fetching evaluations:', error);
+      console.error("Error fetching evaluations:", error);
     }
   };
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
 
-    fetch('/evaluacion', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    fetch("/evaluacion", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ evaluacion: evalu, id }),
     })
       .then((response) => response.json())
@@ -520,7 +541,7 @@ const Form2 = ({ switchToTabA }) => {
         console.log(data);
         switchToTabA();
       })
-      .catch((error) => console.error('Error:', error));
+      .catch((error) => console.error("Error:", error));
   };
 
   return (
@@ -571,17 +592,17 @@ const Form2 = ({ switchToTabA }) => {
   );
 };
 
-const Form3 = ({ switchToTabA }) => {
-  const { id } = useParams();
+const Form3: React.FC<FormProps> = ({ switchToTabA }) => {
+  const { id } = useParams<{ id: string }>();
 
-  const [clave, setClave] = useState('');
+  const [clave, setClave] = useState<string>("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
 
-    fetch('/clave', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    fetch("/clave", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ clave, id }),
     })
       .then((response) => response.json())
@@ -589,7 +610,7 @@ const Form3 = ({ switchToTabA }) => {
         console.log(data);
         switchToTabA();
       })
-      .catch((error) => console.error('Error:', error));
+      .catch((error) => console.error("Error:", error));
   };
 
   return (
@@ -668,60 +689,6 @@ const Form3 = ({ switchToTabA }) => {
             <option value="13-1">13: REBROTE DE INCENDIO</option>
             <option value="15-1">15: EMERGENCIA NO CLASIFICADA</option>
           </optgroup>
-
-          <optgroup label="Clave 8: Apoyo a Otros Cuerpos">
-            <option value="8-1">Clave 1-1</option>
-            <option value="8-2">Clave 1-2</option>
-            <option value="8-3">Clave 1-3</option>
-            <option value="8-4">Clave 2-1</option>
-            <option value="8-5">Clave 2-2</option>
-            <option value="8-6">Clave 2-3</option>
-            <option value="8-7">Clave 2-4</option>
-            <option value="8-8">Clave 3-1</option>
-            <option value="8-9">Clave 3-2</option>
-            <option value="8-10">Clave 3-3</option>
-            <option value="8-11">Clave 4-1</option>
-            <option value="8-12">Clave 4-2</option>
-            <option value="8-13">Clave 4-3</option>
-            <option value="8-14">Clave 5-1</option>
-            <option value="8-15">Clave 5-2</option>
-            <option value="8-16">Clave 5-3</option>
-            <option value="8-17">Clave 5-4</option>
-            <option value="8-18">Clave 6-1</option>
-            <option value="8-19">Clave 6-2</option>
-            <option value="8-20">Clave 6-3</option>
-            <option value="8-21">Clave 6-4</option>
-            <option value="8-22">Clave 6-5</option>
-            <option value="8-23">Clave 6-6</option>
-            <option value="8-24">Clave 6-7</option>
-          </optgroup>
-
-          <optgroup label="Clave 13: Simulacro de Incidente">
-            <option value="13-1">Clave 1-1</option>
-            <option value="13-2">Clave 1-2</option>
-            <option value="13-3">Clave 1-3</option>
-            <option value="13-4">Clave 2-1</option>
-            <option value="13-5">Clave 2-2</option>
-            <option value="13-6">Clave 2-3</option>
-            <option value="13-7">Clave 2-4</option>
-            <option value="13-8">Clave 3-1</option>
-            <option value="13-9">Clave 3-2</option>
-            <option value="13-10">Clave 3-3</option>
-            <option value="13-11">Clave 4-1</option>
-            <option value="13-12">Clave 4-2</option>
-            <option value="13-13">Clave 4-3</option>
-            <option value="13-14">Clave 5-1</option>
-            <option value="13-15">Clave 5-2</option>
-            <option value="13-16">Clave 5-3</option>
-            <option value="13-17">Clave 5-4</option>
-            <option value="13-18">Clave 6-1</option>
-            <option value="13-19">Clave 6-2</option>
-            <option value="13-20">Clave 6-3</option>
-            <option value="13-21">Clave 6-4</option>
-            <option value="13-22">Clave 6-5</option>
-            <option value="13-23">Clave 6-6</option>
-            <option value="13-24">Clave 6-7</option>
-          </optgroup>
         </select>
       </label>
 
@@ -732,14 +699,14 @@ const Form3 = ({ switchToTabA }) => {
   );
 };
 
-const Form4 = ({ eventId, switchToTabA }) => {
-  const { id } = useParams();
+const Form4: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
+  const { id } = useParams<{ id: string }>();
 
-  const [activeSection, setActiveSection] = useState(null);
-  const [carrosActivos, setCarrosActivos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [inputText, setInputText] = useState('');
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [carrosActivos, setCarrosActivos] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [inputText, setInputText] = useState<string>("");
 
   useEffect(() => {
     fetch(`/carros/${id}`)
@@ -749,12 +716,12 @@ const Form4 = ({ eventId, switchToTabA }) => {
         setLoading(false);
       })
       .catch((error) => {
-        console.error('Error fetching event data:', error);
+        console.error("Error fetching event data:", error);
         setLoading(false);
       });
   }, [id, eventId]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
 
     const data = {
@@ -763,20 +730,20 @@ const Form4 = ({ eventId, switchToTabA }) => {
       id,
     };
 
-    fetch('/instrucciones', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    fetch("/instrucciones", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     })
       .then((response) => response.json())
       .then((result) => {
-        console.log('Response from backend:', result);
+        console.log("Response from backend:", result);
         switchToTabA();
       })
-      .catch((error) => console.error('Error:', error));
+      .catch((error) => console.error("Error:", error));
   };
 
-  const toggleSelection = (item) => {
+  const toggleSelection = (item: string): void => {
     setSelectedItems((prevSelected) =>
       prevSelected.includes(item)
         ? prevSelected.filter((i) => i !== item)
@@ -801,7 +768,7 @@ const Form4 = ({ eventId, switchToTabA }) => {
               toggleSelection(item);
               setActiveSection(item);
             }}
-            className={`action-chip ${activeSection === item ? 'active' : ''}`}
+            className={`action-chip ${activeSection === item ? "active" : ""}`}
           >
             {item}
           </button>
@@ -824,30 +791,30 @@ const Form4 = ({ eventId, switchToTabA }) => {
   );
 };
 
-const Form5 = ({ switchToTabA }) => {
-  const { id } = useParams();
+const Form5: React.FC<FormProps> = ({ switchToTabA }) => {
+  const { id } = useParams<{ id: string }>();
 
-  const [activeSection, setActiveSection] = useState(null);
-  const [superado, setSuperado] = useState(0);
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [superado, setSuperado] = useState<number>(0);
 
-  const handleToggle = () => {
+  const handleToggle = (): void => {
     setSuperado((prevNumber) => (prevNumber === 0 ? 1 : 0));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
 
-    fetch('/superacion', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    fetch("/superacion", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ estado: superado, id }),
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log('Response from Flask:', data);
+        console.log("Response from Flask:", data);
         switchToTabA();
       })
-      .catch((error) => console.error('Error:', error));
+      .catch((error) => console.error("Error:", error));
   };
 
   return (
@@ -858,9 +825,9 @@ const Form5 = ({ switchToTabA }) => {
         type="button"
         onClick={() => {
           handleToggle();
-          setActiveSection('Superado');
+          setActiveSection("Superado");
         }}
-        className={`action-chip ${activeSection === 'Superado' ? 'active' : ''}`}
+        className={`action-chip ${activeSection === "Superado" ? "active" : ""}`}
       >
         Superado
       </button>
@@ -872,16 +839,16 @@ const Form5 = ({ switchToTabA }) => {
   );
 };
 
-const Form6 = ({ switchToTabA }) => {
-  const { id } = useParams();
+const Form6: React.FC<FormProps> = ({ switchToTabA }) => {
+  const { id } = useParams<{ id: string }>();
 
-  const [options, setOptions] = useState([]);
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [options, setOptions] = useState<SelectOption[]>([]);
+  const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
 
   useEffect(() => {
-    fetch('/data.json')
+    fetch("/data.json")
       .then((response) => response.json())
-      .then((jsonData) => {
+      .then((jsonData: Array<{ id: string; nombre: string }>) => {
         const options = jsonData.map((item) => ({
           value: item.id,
           label: item.nombre,
@@ -890,15 +857,15 @@ const Form6 = ({ switchToTabA }) => {
         setOptions(options);
       })
       .catch((error) => {
-        console.error('Error al cargar el JSON:', error);
+        console.error("Error al cargar el JSON:", error);
       });
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
 
     if (!selectedOption) {
-      alert('Selecciona un comandante de incidentes.');
+      alert("Selecciona un comandante de incidentes.");
       return;
     }
 
@@ -908,17 +875,17 @@ const Form6 = ({ switchToTabA }) => {
       id,
     };
 
-    fetch('/mando', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    fetch("/mando", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     })
       .then((response) => response.json())
       .then((result) => {
-        console.log('Response from backend:', result);
+        console.log("Response from backend:", result);
         switchToTabA();
       })
-      .catch((error) => console.error('Error:', error));
+      .catch((error) => console.error("Error:", error));
   };
 
   return (
@@ -929,7 +896,7 @@ const Form6 = ({ switchToTabA }) => {
         Seleccione:
         <Select
           value={selectedOption || null}
-          onChange={setSelectedOption}
+          onChange={(option) => setSelectedOption(option as SelectOption | null)}
           options={options}
           placeholder="Busca un nombre"
           isClearable
@@ -943,25 +910,25 @@ const Form6 = ({ switchToTabA }) => {
   );
 };
 
-const Form7 = ({ switchToTabA }) => {
-  const { id } = useParams();
+const Form7: React.FC<FormProps> = ({ switchToTabA }) => {
+  const { id } = useParams<{ id: string }>();
 
-  const [externos, setExternos] = useState('');
+  const [externos, setExternos] = useState<string>("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
 
-    fetch('/externos', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    fetch("/externos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ externos, id }),
     })
       .then((response) => response.json())
       .then((result) => {
-        console.log('Response from backend:', result);
+        console.log("Response from backend:", result);
         switchToTabA();
       })
-      .catch((error) => console.error('Error:', error));
+      .catch((error) => console.error("Error:", error));
   };
 
   return (
@@ -994,25 +961,25 @@ const Form7 = ({ switchToTabA }) => {
   );
 };
 
-const Form8 = ({ switchToTabA }) => {
-  const { id } = useParams();
+const Form8: React.FC<FormProps> = ({ switchToTabA }) => {
+  const { id } = useParams<{ id: string }>();
 
-  const [info, setInfo] = useState('');
+  const [info, setInfo] = useState<string>("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
 
-    fetch('/informacion', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    fetch("/informacion", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ info, id }),
     })
       .then((response) => response.json())
       .then((result) => {
-        console.log('Response from backend:', result);
+        console.log("Response from backend:", result);
         switchToTabA();
       })
-      .catch((error) => console.error('Error:', error));
+      .catch((error) => console.error("Error:", error));
   };
 
   return (
@@ -1035,25 +1002,25 @@ const Form8 = ({ switchToTabA }) => {
   );
 };
 
-const Form9 = ({ switchToTabA }) => {
-  const { id } = useParams();
+const Form9: React.FC<FormProps> = ({ switchToTabA }) => {
+  const { id } = useParams<{ id: string }>();
 
-  const [info, setInfo] = useState('');
+  const [info, setInfo] = useState<string>("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
 
-    fetch('/informacion', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    fetch("/informacion", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ info, id }),
     })
       .then((response) => response.json())
       .then((result) => {
-        console.log('Response from backend:', result);
+        console.log("Response from backend:", result);
         switchToTabA();
       })
-      .catch((error) => console.error('Error:', error));
+      .catch((error) => console.error("Error:", error));
   };
 
   return (

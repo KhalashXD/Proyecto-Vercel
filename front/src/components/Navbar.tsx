@@ -1,7 +1,7 @@
 import React from "react";
-import "./Navbar.css";
+import "../styles/Navbar.css";
 
-function Navbar() {
+const Navbar: React.FC = () => {
   return (
     <nav className="navbar navbar-custom auth-navbar">
       <div className="navbar-brand">
@@ -15,6 +15,6 @@ function Navbar() {
       </div>
     </nav>
   );
-}
+};
 
 export default Navbar;
