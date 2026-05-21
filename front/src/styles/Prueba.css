@@ -1,0 +1,184 @@
+.incident-card {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01)),
+    var(--bg-surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  padding: 22px;
+}
+
+.incident-card h2 {
+  color: var(--text-main);
+  font-size: 1.45rem;
+  font-weight: 900;
+  margin: 0 0 18px;
+}
+
+.incident-card h3 {
+  color: var(--text-main);
+  font-size: 1.15rem;
+  font-weight: 900;
+  margin: 0 0 16px;
+}
+
+.incident-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.incident-tab {
+  border: none;
+  border-radius: 12px;
+  padding: 11px 18px;
+  font-weight: 900;
+  cursor: pointer;
+  color: #fff;
+  background: #1d1f27;
+  transition: 0.18s ease;
+}
+
+.incident-tab:hover {
+  background: #2b2d36;
+  transform: translateY(-1px);
+}
+
+.incident-tab.active {
+  background: var(--primary);
+}
+
+.action-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.action-chip {
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: #1d1f27;
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.18s ease;
+}
+
+.action-chip:hover {
+  background: #2b2d36;
+  transform: translateY(-1px);
+}
+
+.action-chip.active {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.action-panel {
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  padding: 18px;
+}
+
+.action-panel form {
+  margin: 0;
+}
+
+.action-panel label,
+.wrapper-carros label {
+  display: block;
+  color: var(--text-main);
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.action-panel input,
+.action-panel select,
+.wrapper-carros input,
+.wrapper-carros select {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--border-soft);
+  padding: 10px 13px;
+  background: #f1f1f1;
+  color: #222;
+  outline: none;
+  margin: 8px 0 12px;
+}
+
+.action-panel input:focus,
+.action-panel select:focus,
+.wrapper-carros input:focus,
+.wrapper-carros select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(244, 118, 51, 0.18);
+}
+
+.action-panel .app-btn,
+.wrapper-carros .app-btn {
+  margin-top: 8px;
+}
+
+.wrapper-carros {
+  display: grid;
+  grid-template-columns: 1fr 1fr 360px;
+  gap: 16px;
+}
+
+.activos-column,
+.disponibles-columna,
+.despacho {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.activos-column h2,
+.disponibles-columna h2,
+.despacho h2 {
+  font-size: 1.2rem;
+  margin: 0 0 14px;
+  color: var(--text-main);
+  font-weight: 900;
+}
+
+.despacho form {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.despacho p {
+  color: var(--text-soft);
+  margin: 0;
+}
+
+@media (max-width: 1200px) {
+  .wrapper-carros {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .incident-card {
+    padding: 16px;
+  }
+
+  .incident-tabs,
+  .action-grid {
+    gap: 8px;
+  }
+
+  .incident-tab,
+  .action-chip {
+    width: 100%;
+  }
+}

@@ -1,0 +1,165 @@
+.navbar-custom {
+  background: linear-gradient(90deg, #1d1f23 0%, #24262b 100%);
+  padding: 12px 18px;
+  min-height: 96px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 1.05rem;
+  letter-spacing: 0.3px;
+  text-decoration: none;
+}
+
+.navbar-brand:hover {
+  color: #ffffff;
+}
+
+.navbar-brand img {
+  max-width: 74px;
+  height: auto;
+}
+
+.navbar-custom .navbar-text {
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 1.05rem;
+  letter-spacing: 0.3px;
+}
+
+.navbar-custom .navbar-collapse {
+  flex-grow: 0;
+}
+
+.navbar-custom .navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.navbar-custom .nav-link {
+  color: #d7d7d7;
+  font-weight: 800;
+  border-radius: 12px;
+  padding: 9px 13px !important;
+  transition: 0.18s ease;
+}
+
+.navbar-custom .nav-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.nav-link-button {
+  background: transparent;
+  border: none;
+  color: #d7d7d7;
+  font-weight: 800;
+  border-radius: 12px;
+  padding: 9px 13px !important;
+  transition: 0.18s ease;
+  cursor: pointer;
+}
+
+.nav-link-button:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.navbar-weather {
+  color: #e7e7e7;
+  font-size: 0.92rem;
+  margin-left: auto;
+  margin-right: 18px;
+  max-width: 760px;
+}
+
+.weather-info {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.weather-icon {
+  width: 38px;
+  height: 38px;
+  background: none;
+  filter: none;
+  opacity: 1;
+  vertical-align: middle;
+}
+
+.navbar-custom .navbar-images {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-custom .navbar-images img {
+  max-width: 56px;
+  height: auto;
+}
+
+.auth-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.auth-navbar .navbar-images {
+  margin-left: auto;
+}
+
+.navbar-toggler {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.navbar-toggler:focus {
+  box-shadow: 0 0 0 3px rgba(244, 118, 51, 0.25);
+}
+
+.navbar-toggler-icon {
+  filter: invert(1);
+}
+
+@media (max-width: 1200px) {
+  .navbar-custom {
+    align-items: flex-start;
+  }
+
+  .navbar-weather {
+    width: 100%;
+    max-width: none;
+    margin: 12px 0 0;
+  }
+
+  .navbar-custom .navbar-images {
+    margin-top: 10px;
+  }
+}
+
+@media (max-width: 800px) {
+  .navbar-custom {
+    min-height: auto;
+    padding: 12px;
+  }
+
+  .navbar-brand img {
+    max-width: 58px;
+  }
+
+  .navbar-custom .navbar-images img {
+    max-width: 44px;
+  }
+
+  .weather-info {
+    font-size: 0.82rem;
+  }
+}

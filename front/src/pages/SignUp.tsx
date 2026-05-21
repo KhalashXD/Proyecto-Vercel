@@ -1,23 +1,38 @@
 import React, { useState } from "react";
-import "./LoginSignup.css";
-import Navbar from './Navbar';
-import { auth } from "./firebase";
-import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import "../styles/LoginSignup.css";
+import Navbar from "../components/Navbar";
+import { auth } from "../firebase";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
-const SignUp = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const SignUp: React.FC = () => {
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+
   const navigate = useNavigate();
 
-  const signUp = async (e) => {
+  const signUp = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
 
     try {
-      const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
+      const cleanName = name.trim();
+      const capitalizedName =
+        cleanName.length > 0
+          ? cleanName.charAt(0).toUpperCase() + cleanName.slice(1)
+          : "";
 
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
       const user = userCredential.user;
 
       await sendEmailVerification(user);
@@ -25,7 +40,10 @@ const SignUp = () => {
       localStorage.setItem("userDisplayName", capitalizedName);
       localStorage.setItem("userEmail", email);
 
-      alert("Cuenta creada. Revisa tu correo y verifica tu email antes de activar el SMS.");
+      alert(
+        "Cuenta creada. Revisa tu correo y verifica tu email antes de activar el SMS."
+      );
+
       navigate("/");
     } catch (error) {
       console.error(error);
@@ -36,10 +54,14 @@ const SignUp = () => {
   return (
     <>
       <Navbar />
+
       <div className="container-signin">
         <section className="wrapper2">
           <div className="heading">
-            <h1 className="text text-large"><strong>Registrar</strong></h1>
+            <h1 className="text text-large">
+              <strong>Registrar</strong>
+            </h1>
+
             <p className="text text-normal">
               ¿Ya tienes cuenta?{" "}
               <span>
@@ -54,34 +76,39 @@ const SignUp = () => {
             <div className="input-control">
               <input
                 type="text"
-                placeholder="Enter your name"
+                placeholder="Nombre"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="input-field"
+                autoComplete="name"
               />
             </div>
 
             <div className="input-control">
               <input
                 type="email"
-                placeholder="Enter your email"
+                placeholder="Correo electrónico"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="input-field"
+                autoComplete="email"
               />
             </div>
 
             <div className="input-control">
               <input
                 type="password"
-                placeholder="Enter your password"
+                placeholder="Contraseña"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="input-field"
+                autoComplete="new-password"
               />
             </div>
 
-            <button type="submit" className="input-submit">Submit</button>
+            <button type="submit" className="input-submit">
+              Registrar
+            </button>
           </form>
         </section>
       </div>
