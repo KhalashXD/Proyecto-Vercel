@@ -1,18 +1,56 @@
 import os
-#from flask import Flask, jsonify
-#from flask_sqlalchemy import SQLAlchemy
 
-from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
-from sqlalchemy import text
+from fastapi import (
+    FastAPI,
+    Request,
+    Depends
+)
+
+from fastapi.middleware.cors import (
+    CORSMiddleware
+)
+
+from sqlalchemy import (
+    create_engine,
+    text
+)
+
+from sqlalchemy.orm import (
+    sessionmaker,
+    Session
+)
+
+# =========================
+# Imports rutas / schemas
+# =========================
+
+from schemas.despacho_schema import ( DespachoRequest)
+
+from services.despacho_service import ( ejecutar_despacho)
+
+from utils.maps import (  obtener_coordenadas)
+
+from schemas.incident_schema import ( UpdateIncidentStatusRequest)
+
+from services.incident_service import (
+    obtener_incidentes_activos,
+    obtener_incidente_por_codigo,
+    actualizar_estado_incidente,
+    obtener_historial_incidentes
+)
+
+from services.vehicle_service import (obtener_vehiculos)
+
+# =========================
+# App
+# =========================
 
 app = FastAPI()
 
 # =========================
 # CORS
 # =========================
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -21,17 +59,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 # =========================
 # Configuración DB
 # =========================
-DATABASE_URL = os.getenv("DATABASE_URL")
+
+DATABASE_URL = os.getenv(
+    "DATABASE_URL"
+)
 
 if not DATABASE_URL:
-    raise ValueError("DATABASE_URL no está definida")
+    raise ValueError(
+        "DATABASE_URL no está definida"
+    )
 
 # Engine SQLAlchemy
-engine = create_engine(DATABASE_URL)
+engine = create_engine(
+    DATABASE_URL
+)
 
 # Sesiones DB
 SessionLocal = sessionmaker(
@@ -40,32 +84,166 @@ SessionLocal = sessionmaker(
     bind=engine
 )
 
-# Crear sesión
-db = SessionLocal()
+# =========================
+# Dependencia DB
+# =========================
+
+def get_db():
+
+    db = SessionLocal()
+
+    try:
+        yield db
+
+    finally:
+        db.close()
 
 # =========================
 # Variables globales
 # =========================
+
 id_emergencia = None
 despacho = None
 id_acciones = None
 coord = None
+
 # =========================
 # RUTAS
 # =========================
 
 @app.post("/despacho")
-async def despacho_route(request: Request):
-    pass
+#genera un despacho de carros basada en la interseccion de calles. cambia el estado de los carros y crea el incidente
+#tb los asigna calculando la ruta más corta desde las estaciones hasta el accidente
+def despacho(
+    request: DespachoRequest,
+    db: Session = Depends(get_db)
+):
 
+    resultado = (
+        ejecutar_despacho(
+            db=db,
+            data=request
+        )
+    )
+
+    return resultado
+
+
+@app.get("/emergencias/activas")
+# entrega el listado de emergencias activas
+def incidentes_activos(
+    db: Session = Depends(get_db)
+):
+
+    resultado = (
+        obtener_incidentes_activos(
+            db=db
+        )
+    )
+
+    return resultado
+
+@app.get("/emergencias/historial")
+# entrega historial de emergencias cerradas
+def historial_emergencias(
+    db: Session = Depends(get_db)
+):
+
+    resultado = (
+        obtener_historial_incidentes(
+            db=db
+        )
+    )
+
+    return resultado
+
+@app.get("/emergencias/{incident_code}")
+# entrega el detalle de una emergencia en caso de q se haga click sobre ella
+def obtener_emergencia(
+    incident_code: str,
+    db: Session = Depends(get_db)
+):
+
+    resultado = (
+        obtener_incidente_por_codigo(
+            db=db,
+            incident_code=incident_code
+        )
+    )
+
+    return resultado
+
+@app.patch( "/emergencias/{incident_code}/estado")
+#cambia el estado de una emergencia activa
+def actualizar_estado(
+    incident_code: str,
+    request:
+        UpdateIncidentStatusRequest,
+    db: Session = Depends(get_db)
+):
+    resultado = (
+        actualizar_estado_incidente(
+            db=db,
+            incident_code=
+                incident_code,
+            new_status=
+                request.status
+        )
+    )
+    return resultado
+
+@app.get("/vehiculos")
+# entrega todos los vehículos
+def vehiculos(
+    db: Session = Depends(get_db)
+):
+
+    resultado = (
+        obtener_vehiculos(
+            db=db
+        )
+    )
+
+    return resultado
+
+#DESDE ACA ENDPOINTS DE PRUEBAS:-----------------
 @app.get("/db-test")
+#prueba de BD
 def test_db():
+
     try:
+
         with engine.connect() as connection:
-            result = connection.execute(text("SELECT 1"))
-            return {"message": "Conexión exitosa a MariaDB"}
+
+            result = connection.execute(
+                text("SELECT 1")
+            )
+
+            return {
+                "message":
+                "Conexión exitosa a MariaDB"
+            }
+
     except Exception as e:
-        return {"error": str(e)}
+
+        return {
+            "error": str(e)
+        }
+
+
+@app.get("/test-maps")
+#prueba del funcionamienteo de maps
+def test_maps():
+
+    coordenadas = (
+        obtener_coordenadas(
+            "A",
+            "Bß"
+        )
+    )
+
+    return coordenadas
+
 
 """"
 @app.post("/carros_mando")

@@ -46,7 +46,7 @@ services:
 
     environment:
       DATABASE_URL: mysql+pymysql://emergencyuser:emergencypass@database:3306/emergency_management
-      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+      #GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
       SECRET_KEY: ${SECRET_KEY:-your-secret-key-change-in-production}
@@ -56,8 +56,11 @@ services:
     ports:
         - "${BACKEND_PORT:-5000}:8000"
 
+    #volumes: borrar esta seccion despues si es q no tira error
+      #- ./back/src:/app/src
+      #- ./back/logs:/app/logs
     volumes:
-      - ./back/src:/app/src
+      - ./back:/app
       - ./back/logs:/app/logs
 
     depends_on:

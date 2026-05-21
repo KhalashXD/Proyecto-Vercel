@@ -29,12 +29,14 @@ RUN pip install --upgrade pip setuptools wheel && \
     pip install -r requirements.txt
 
 # Copiar aplicación
-COPY src/ /app/src/
-COPY app.py /app/
-COPY config.py /app/
-COPY schemas/ /app/schemas/
-COPY services/ /app/services/
-COPY env.example /app/.env.example
+#COPY src/ /app/src/
+#COPY app.py /app/
+#COPY config.py /app/
+#COPY schemas/ /app/schemas/
+#COPY services/ /app/services/
+#COPY env.example /app/.env.example
+# Copiar aplicación
+COPY . /app/
 
 # Crear logs
 RUN mkdir -p /app/logs
