@@ -1,4 +1,4 @@
-import { Incidente, TipoEmergencia, Carro } from '../types/models';
+import {TipoEmergencia, Carro } from '../types/models';
 import { httpClient } from "./httpClient";
 
 
