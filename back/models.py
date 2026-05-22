@@ -280,6 +280,44 @@ class Incident(Base):
         Index("idx_incidents_status_created", "status", "created_at"),
     )
 
+# ============================================================
+# TABLA: personnel
+# ============================================================
+
+class Personnel(Base):
+    __tablename__ = "personnel"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    external_id = Column(Integer)
+
+    first_name = Column(String(100), nullable=False)
+    last_name_1 = Column(String(100))
+    last_name_2 = Column(String(100))
+
+    rank = Column(String(100))
+
+    station_id = Column(
+        Integer,
+        ForeignKey("stations.id", ondelete="SET NULL")
+    )
+
+    can_rescue = Column(Boolean, default=False)
+    can_hazmat = Column(Boolean, default=False)
+
+    level = Column(String(50))
+    radio_code = Column(String(20))
+
+    created_at = Column(
+        TIMESTAMP,
+        server_default=func.current_timestamp()
+    )
+
+    station = relationship("Station")
+
+    __table_args__ = (
+        Index("idx_station", "station_id"),
+        Index("idx_rank", "rank"),
+    )
 
 # ============================================================
 # TABLA: incident_vehicles
@@ -300,6 +338,19 @@ class IncidentVehicle(Base):
         Integer,
         ForeignKey("vehicles.id"),
         nullable=False
+    )
+
+    personnel_in_charge_id = Column(
+        Integer,
+        ForeignKey(
+            "personnel.id",
+            ondelete="SET NULL"
+        )
+    )
+
+    personnel_count = Column(
+        Integer,
+        default=0
     )
 
     assigned_at = Column(
@@ -327,6 +378,10 @@ class IncidentVehicle(Base):
         back_populates="incident_assignments"
     )
 
+    personnel_in_charge = relationship(
+        "Personnel"
+    )
+
     __table_args__ = (
         UniqueConstraint(
             "incident_id",
@@ -335,6 +390,10 @@ class IncidentVehicle(Base):
         ),
         Index("idx_incident", "incident_id"),
         Index("idx_vehicle", "vehicle_id"),
+        Index(
+            "idx_personnel_in_charge",
+            "personnel_in_charge_id"
+        ),
     )
 
 

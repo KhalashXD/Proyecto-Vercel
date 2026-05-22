@@ -287,7 +287,8 @@ const Despacho: React.FC = () => {
         alert(result.resultado);
 
         localStorage.setItem("despacho", JSON.stringify(result.despacho));
-        localStorage.setItem("emergencyId", result.id);
+        //localStorage.setItem("emergencyId", result.id);
+        localStorage.setItem("emergencyId", String(result.id));
 
         setDespacho(result.despacho);
         setEmergencyId(result.id);
@@ -331,9 +332,17 @@ const Despacho: React.FC = () => {
       return;
     }
 
+    //const despachoData = {
+    //  despachoIndex: index,
+    //  selectedId: Number(selectedOption.value) + 1,
+    //  integerValue,
+    //  despacho,
+    //};
+
     const despachoData = {
+      incidentId: emergencyId,
       despachoIndex: index,
-      selectedId: Number(selectedOption.value) + 1,
+      selectedId: Number(selectedOption.value),
       integerValue,
       despacho,
     };

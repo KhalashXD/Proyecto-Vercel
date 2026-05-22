@@ -46,11 +46,38 @@ const MultiSectionToggle: React.FC<MultiSectionToggleProps> = ({ eventId }) => {
 
   const fetchData = async (): Promise<void> => {
     try {
-      const response = await fetch(`/emergencia_info/${id}`);
+      //const response = await fetch(`/emergencia_info/${id}`);
+      const response = await fetch(`http://localhost:5000/emergenciasActivas/${id}`);
       const data = await response.json();
 
-      setDataE(data.data_e);
-      setDataA(data.data_a);
+      //setDataE(data.data_e);
+      //setDataA(data.data_a);
+      setDataE([
+        data.emergency.code,
+        data.location.street_1,
+        data.location.street_2,
+        data.status
+      ]);
+
+      setDataA([
+        ...data.assigned_vehicles.map((vehicle: any) => [
+          vehicle.assigned_at,
+          "vehicle_assigned",
+          "",
+          `Unidad ${vehicle.vehicle_code} asignada`,
+          vehicle.vehicle_code,
+          vehicle.status
+        ]),
+
+        ...data.timeline.map((event: any) => [
+          event.created_at,
+          event.event_type,
+          "",
+          event.description,
+          "",
+          event.user_name
+        ])
+      ]);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching emergency data:", error);
@@ -800,7 +827,7 @@ const Form5: React.FC<FormProps> = ({ switchToTabA }) => {
   const handleToggle = (): void => {
     setSuperado((prevNumber) => (prevNumber === 0 ? 1 : 0));
   };
-
+/*
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
 
@@ -815,7 +842,40 @@ const Form5: React.FC<FormProps> = ({ switchToTabA }) => {
         switchToTabA();
       })
       .catch((error) => console.error("Error:", error));
-  };
+  };*/
+  const handleSubmit = async (
+      e: React.FormEvent
+    ) => {
+
+      e.preventDefault();
+
+      try {
+
+        await fetch(
+          `http://localhost:5000/emergenciasActivas/${id}/estado`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              status: "closed"
+            }),
+          }
+        );
+
+        alert("Incidente cerrado correctamente");
+
+        window.location.href =
+          "/EmergenciasActivas";
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert("Error al cerrar incidente");
+      }
+    };
 
   return (
     <form onSubmit={handleSubmit}>

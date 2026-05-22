@@ -97,7 +97,7 @@ const Authentication: React.FC = () => {
                 Historial
               </Link>
 
-              <Link className="nav-link" to="/Emergencias">
+              <Link className="nav-link" to="/EmergenciasActivas">
                 Emergencias
               </Link>
 

@@ -24,18 +24,45 @@ const Historial: React.FC = () => {
     fetchData();
   }, []);
 
-  const fetchData = async (): Promise<void> => {
+  /*const fetchData = async (): Promise<void> => {
     try {
-      const response = await fetch("/historial");
+      const response = await fetch("http://localhost:5000/emergenciasHistorial");
       const result: HistorialData = await response.json();
       setData(result);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };*/
+  const fetchData = async (): Promise<void> => {
+    try {
+      const response = await fetch("http://localhost:5000/emergenciasHistorial");
+      const result = await response.json();
+
+      setData({
+        ids: result.map((item: any) => item.incident_code),
+        texts: result.map(
+          (item: any) =>
+            `${item.emergency_code} ${item.street_1} con ${item.street_2}`
+        ),
+        dates: result.map((item: any) => {
+          const date = new Date(item.closed_at || item.created_at);
+
+          return date.toLocaleString("es-CL", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+        }),
+      });
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
   const handleNavigate = (id: string): void => {
-    navigate(`/emergencia/${id}`);
+    navigate(`/emergenciasActivas/${id}`);
   };
 
   const handlePageChange = (pageNumber: number): void => {

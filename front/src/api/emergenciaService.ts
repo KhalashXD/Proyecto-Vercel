@@ -1,4 +1,17 @@
 import { Incidente, TipoEmergencia, Carro } from '../types/models';
+import { httpClient } from "./httpClient";
+
+
+export interface EmergenciasData {
+  ids: string[];
+  texts: string[];
+  dates: string[];
+}
+
+export const obtenerEmergenciasActivas = async (): Promise<EmergenciasData> => {
+  const response = await httpClient.get<EmergenciasData>("/emergenciasActivas");
+  return response.data;
+};
 
 // Automatización operativa [cite: 33]
 export const generarDespachoPreliminar = (

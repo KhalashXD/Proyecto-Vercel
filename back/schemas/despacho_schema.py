@@ -32,3 +32,12 @@ class DespachoResponse(BaseModel):
     longitude: float
 
     assigned_vehicles: List[VehiculoAsignado]
+
+class FrontDespachoRequest(
+    BaseModel
+):
+    clave: str
+    calle: str
+    interseccion: str
+    direccion: str | None = None
+    informacion: str

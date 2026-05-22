@@ -20,11 +20,12 @@ from sqlalchemy.orm import (
     Session
 )
 
+
 # =========================
 # Imports rutas / schemas
 # =========================
 
-from schemas.despacho_schema import ( DespachoRequest)
+from schemas.despacho_schema import ( DespachoRequest, FrontDespachoRequest)
 
 from services.despacho_service import ( ejecutar_despacho)
 
@@ -40,7 +41,9 @@ from services.incident_service import (
 )
 
 from services.vehicle_service import (obtener_vehiculos)
-
+from services.personnel_service import (obtener_personal)
+from schemas.carros_mando_schema import (CarroMandoRequest)
+from services.carros_mando_service import (registrar_carro_mando)
 # =========================
 # App
 # =========================
@@ -110,26 +113,68 @@ coord = None
 # =========================
 # RUTAS
 # =========================
-
-@app.post("/despacho")
-#genera un despacho de carros basada en la interseccion de calles. cambia el estado de los carros y crea el incidente
-#tb los asigna calculando la ruta más corta desde las estaciones hasta el accidente
+@app.post("/despacho")  # version conexion con front
 def despacho(
-    request: DespachoRequest,
+    request: FrontDespachoRequest,
     db: Session = Depends(get_db)
 ):
-
-    resultado = (
-        ejecutar_despacho(
-            db=db,
-            data=request
+    adapted_request = (
+        DespachoRequest(
+            emergency_code=request.clave,
+            street_1=request.calle,
+            street_2=request.interseccion,
+            location_notes=request.direccion,
+            incident_description=request.informacion,
+            caller_name="No informado",
+            caller_phone="No informado"
         )
     )
 
-    return resultado
+    resultado_backend = (
+        ejecutar_despacho(
+            db=db,
+            data=adapted_request
+        )
+    )
 
+    despacho_codigos = [
+        vehiculo["vehicle_code"]
+        for vehiculo in resultado_backend["assigned_vehicles"]
+    ]
 
-@app.get("/emergencias/activas")
+    resultado_texto = ""
+
+    for codigo in despacho_codigos:
+        resultado_texto += f"{codigo} "
+
+    resultado_texto += (
+        f"Clave {request.clave} "
+        f"{request.calle} con {request.interseccion}"
+    )
+
+    return {
+        "resultado": resultado_texto,
+        "despacho": despacho_codigos,
+        "id": resultado_backend["incident_code"]
+        #"id": resultado_backend["incident_id"]  
+        }
+
+@app.get("/personal")
+def personal(db: Session = Depends(get_db)):
+    return obtener_personal(db=db)
+
+@app.post("/carros_mando")
+def carros_mando(
+    request: CarroMandoRequest,
+    db: Session = Depends(get_db)
+):
+
+    return registrar_carro_mando(
+        db=db,
+        data=request
+    )
+
+@app.get("/emergenciasActivas")
 # entrega el listado de emergencias activas
 def incidentes_activos(
     db: Session = Depends(get_db)
@@ -143,7 +188,7 @@ def incidentes_activos(
 
     return resultado
 
-@app.get("/emergencias/historial")
+@app.get("/emergenciasHistorial")
 # entrega historial de emergencias cerradas
 def historial_emergencias(
     db: Session = Depends(get_db)
@@ -157,7 +202,7 @@ def historial_emergencias(
 
     return resultado
 
-@app.get("/emergencias/{incident_code}")
+@app.get("/emergenciasActivas/{incident_code}")
 # entrega el detalle de una emergencia en caso de q se haga click sobre ella
 def obtener_emergencia(
     incident_code: str,
@@ -173,7 +218,7 @@ def obtener_emergencia(
 
     return resultado
 
-@app.patch( "/emergencias/{incident_code}/estado")
+@app.patch( "/emergenciasActivas/{incident_code}/estado")
 #cambia el estado de una emergencia activa
 def actualizar_estado(
     incident_code: str,

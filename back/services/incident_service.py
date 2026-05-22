@@ -6,6 +6,54 @@ from models import (
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
+def obtener_incidentes_activos(
+    db: Session
+):
+
+    incidents = (
+        db.query(Incident)
+        .filter(
+            Incident.status.in_(
+                [
+                    "registered",
+                    "pending",
+                    "in_progress",
+                    "resolved"
+                ]
+            )
+        )
+        .order_by(
+            Incident.created_at.desc()
+        )
+        .all()
+    )
+
+    ids = []
+    texts = []
+    dates = []
+
+    for incident in incidents:
+
+        ids.append( str(incident.incident_code))
+
+        texts.append(
+            f"{incident.emergency_type.code} "
+            f"{incident.street_1} con "
+            f"{incident.street_2}"
+        )
+
+        dates.append(
+            incident.created_at.strftime(
+                "%d-%m-%Y %H:%M"
+            )
+        )
+
+    return {
+        "ids": ids,
+        "texts": texts,
+        "dates": dates
+    }
+"""
 #para entregar lista de accidentes activos
 def obtener_incidentes_activos(db):
 
@@ -69,6 +117,7 @@ def obtener_incidentes_activos(db):
         })
 
     return resultado
+"""
 # para entregar la info de un accidente en especifico
 # en el caso de que se haga click sobre ella
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../components/MainLayout";
+import { obtenerEmergenciasActivas } from "../api/emergenciaService";
 
 interface EmergenciasData {
   ids: string[];
@@ -23,8 +24,7 @@ const Emergencias: React.FC = () => {
 
   const fetchData = async (): Promise<void> => {
     try {
-      const response = await fetch("/emergencias");
-      const result: EmergenciasData = await response.json();
+      const result = await obtenerEmergenciasActivas();
       setData(result);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -32,7 +32,7 @@ const Emergencias: React.FC = () => {
   };
 
   const handleNavigate = (id: string): void => {
-    navigate(`/emergencia/${id}`);
+    navigate(`/emergenciasActivas/${id}`);
   };
 
   return (
