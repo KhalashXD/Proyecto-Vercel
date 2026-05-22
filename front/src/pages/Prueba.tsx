@@ -822,11 +822,11 @@ const Form5: React.FC<FormProps> = ({ switchToTabA }) => {
   const { id } = useParams<{ id: string }>();
 
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  /*const [superado, setSuperado] = useState<number>(0);
+  const [setSuperado] = useState<number>(0);
 
   const handleToggle = (): void => {
     setSuperado((prevNumber) => (prevNumber === 0 ? 1 : 0));
-  };*/
+  };
 /*
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
