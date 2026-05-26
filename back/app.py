@@ -3,12 +3,17 @@ import os
 from fastapi import (
     FastAPI,
     Request,
-    Depends
+    Depends,
+    HTTPException
 )
+
+from fastapi.responses import StreamingResponse
 
 from fastapi.middleware.cors import (
     CORSMiddleware
 )
+
+from pydantic import BaseModel
 
 from sqlalchemy import (
     create_engine,
@@ -44,6 +49,12 @@ from services.vehicle_service import (obtener_vehiculos)
 from services.personnel_service import (obtener_personal)
 from schemas.carros_mando_schema import (CarroMandoRequest)
 from services.carros_mando_service import (registrar_carro_mando)
+from services.report_service import (
+    generar_historial_excel,
+    generar_historial_pdf
+)
+from services.telegram_service import (enviar_mensaje_telegram)
+from services.weather_service import (obtener_datos_climaticos)
 # =========================
 # App
 # =========================
@@ -109,6 +120,10 @@ id_emergencia = None
 despacho = None
 id_acciones = None
 coord = None
+
+
+class TelegramMessageRequest(BaseModel):
+    mensaje: str
 
 # =========================
 # RUTAS
@@ -201,6 +216,88 @@ def historial_emergencias(
     )
 
     return resultado
+
+@app.get("/reportes/emergenciasHistorial.xlsx")
+def exportar_historial_excel(
+    db: Session = Depends(get_db)
+):
+    historial = obtener_historial_incidentes(
+        db=db
+    )
+
+    output = generar_historial_excel(
+        historial
+    )
+
+    return StreamingResponse(
+        output,
+        media_type=(
+            "application/vnd.openxmlformats-officedocument."
+            "spreadsheetml.sheet"
+        ),
+        headers={
+            "Content-Disposition":
+                "attachment; filename=historial_emergencias.xlsx"
+        }
+    )
+
+@app.get("/reportes/emergenciasHistorial.pdf")
+def exportar_historial_pdf(
+    db: Session = Depends(get_db)
+):
+    historial = obtener_historial_incidentes(
+        db=db
+    )
+
+    output = generar_historial_pdf(
+        historial
+    )
+
+    return StreamingResponse(
+        output,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition":
+                "attachment; filename=historial_emergencias.pdf"
+        }
+    )
+
+@app.post("/telegram/send")
+def enviar_telegram(
+    request: TelegramMessageRequest
+):
+    try:
+        result = enviar_mensaje_telegram(
+            request.mensaje
+        )
+
+        return {
+            "message": "Mensaje enviado a Telegram",
+            "telegram": result
+        }
+
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc)
+        )
+
+    except Exception as exc:
+        raise HTTPException(
+            status_code=502,
+            detail=f"No se pudo enviar el mensaje a Telegram: {exc}"
+        )
+
+@app.get("/api/fire-risk")
+def datos_climaticos():
+    try:
+        return obtener_datos_climaticos()
+
+    except Exception as exc:
+        raise HTTPException(
+            status_code=502,
+            detail=f"No se pudieron obtener datos climaticos: {exc}"
+        )
 
 @app.get("/emergenciasActivas/{incident_code}")
 # entrega el detalle de una emergencia en caso de q se haga click sobre ella

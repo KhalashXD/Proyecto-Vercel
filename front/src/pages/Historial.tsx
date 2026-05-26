@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../components/MainLayout";
+import {
+  descargarReporteHistorial,
+  obtenerHistorialEmergencias,
+} from "../api/emergenciaService";
 
 interface HistorialData {
   ids: string[];
@@ -16,6 +20,7 @@ const Historial: React.FC = () => {
   });
 
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [downloading, setDownloading] = useState<"xlsx" | "pdf" | null>(null);
   const itemsPerPage = 12;
 
   const navigate = useNavigate();
@@ -35,8 +40,7 @@ const Historial: React.FC = () => {
   };*/
   const fetchData = async (): Promise<void> => {
     try {
-      const response = await fetch("http://localhost:5000/emergenciasHistorial");
-      const result = await response.json();
+      const result = await obtenerHistorialEmergencias();
 
       setData({
         ids: result.map((item: any) => item.incident_code),
@@ -69,6 +73,17 @@ const Historial: React.FC = () => {
     setCurrentPage(pageNumber);
   };
 
+  const handleDownload = async (formato: "xlsx" | "pdf"): Promise<void> => {
+    try {
+      setDownloading(formato);
+      await descargarReporteHistorial(formato);
+    } catch (error) {
+      console.error("Error descargando reporte:", error);
+    } finally {
+      setDownloading(null);
+    }
+  };
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = data.ids.slice(indexOfFirstItem, indexOfLastItem);
@@ -80,6 +95,26 @@ const Historial: React.FC = () => {
       subtitle="Consulta y revisión de emergencias registradas"
     >
       <section className="content-card">
+        <div className="table-actions">
+          <button
+            type="button"
+            className="app-btn app-btn-primary"
+            onClick={() => handleDownload("xlsx")}
+            disabled={downloading !== null}
+          >
+            {downloading === "xlsx" ? "Generando Excel..." : "Exportar Excel"}
+          </button>
+
+          <button
+            type="button"
+            className="app-btn app-btn-blue"
+            onClick={() => handleDownload("pdf")}
+            disabled={downloading !== null}
+          >
+            {downloading === "pdf" ? "Generando PDF..." : "Exportar PDF"}
+          </button>
+        </div>
+
         {currentItems.length > 0 ? (
           <>
             <div className="data-table-wrap">

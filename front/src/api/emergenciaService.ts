@@ -1,6 +1,5 @@
-import {TipoEmergencia, Carro } from '../types/models';
+import { TipoEmergencia, Carro } from "../types/models";
 import { httpClient } from "./httpClient";
-
 
 export interface EmergenciasData {
   ids: string[];
@@ -8,30 +7,78 @@ export interface EmergenciasData {
   dates: string[];
 }
 
+export interface WeatherData {
+  icon?: string;
+  temperature: number;
+  humidity: number;
+  wind_speed: number;
+  wind_dir: string;
+  precipitation: number;
+  FWI: number | string;
+  FWI_score: string;
+  source?: string;
+  updated_at?: string;
+}
+
 export const obtenerEmergenciasActivas = async (): Promise<EmergenciasData> => {
   const response = await httpClient.get<EmergenciasData>("/emergenciasActivas");
   return response.data;
 };
 
-// Automatización operativa [cite: 33]
+export const obtenerHistorialEmergencias = async (): Promise<any[]> => {
+  const response = await httpClient.get<any[]>("/emergenciasHistorial");
+  return response.data;
+};
+
+export const obtenerDatosClimaticos = async (): Promise<WeatherData> => {
+  const response = await httpClient.get<WeatherData>("/api/fire-risk");
+  return response.data;
+};
+
+export const descargarReporteHistorial = async (
+  formato: "xlsx" | "pdf"
+): Promise<void> => {
+  const response = await httpClient.get<Blob>(
+    `/reportes/emergenciasHistorial.${formato}`,
+    {
+      responseType: "blob",
+    }
+  );
+
+  const fileName = `historial_emergencias.${formato}`;
+  const url = window.URL.createObjectURL(response.data);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+};
+
+// Automatizacion operativa [cite: 33]
 export const generarDespachoPreliminar = (
-  tipo: TipoEmergencia, 
+  tipo: TipoEmergencia,
   carrosDisponibles: Carro[]
 ) => {
-  // Cálculo automático de carros requeridos [cite: 34]
   const sugerencia = carrosDisponibles
-    .filter(c => c.estado === 'DISPONIBLE_CUARTEL') // Restricción de despacho [cite: 18]
+    .filter((c) => c.estado === "DISPONIBLE_CUARTEL")
     .slice(0, tipo.carrosRequeridos);
 
   return {
     unidades: sugerencia,
-    morse: tipo.codigoMorse,        // Generación según reglas [cite: 37]
-    notificacion: `Emergencia tipo: ${tipo.nombre}. Unidades: ${sugerencia.map(u => u.nombre).join(', ')}`
+    morse: tipo.codigoMorse,
+    notificacion: `Emergencia tipo: ${tipo.nombre}. Unidades: ${sugerencia
+      .map((u) => u.nombre)
+      .join(", ")}`,
   };
 };
 
-// Envío a Telegram mediante API 
 export const enviarNotificacionTelegram = async (mensaje: string) => {
-  console.log("Enviando a Telegram:", mensaje);
-  // Aquí iría la lógica del API de Telegram 
+  const response = await httpClient.post("/telegram/send", {
+    mensaje,
+  });
+
+  return response.data;
 };

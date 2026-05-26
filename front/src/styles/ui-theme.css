@@ -137,6 +137,14 @@ textarea {
   border-radius: var(--radius-md);
 }
 
+.table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-bottom: var(--space-md);
+}
+
 .data-table {
   width: 100%;
   border-collapse: collapse;

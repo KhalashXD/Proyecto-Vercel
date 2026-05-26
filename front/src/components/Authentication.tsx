@@ -2,18 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { auth } from "../firebase";
+import {
+  obtenerDatosClimaticos,
+  WeatherData,
+} from "../api/emergenciaService";
 import "../styles/Navbar.css";
-
-interface WeatherData {
-  icon?: string;
-  temperature: number;
-  humidity: number;
-  wind_speed: number;
-  wind_dir: string;
-  precipitation: number;
-  FWI: number | string;
-  FWI_score: string;
-}
 
 const Authentication: React.FC = () => {
   const [authenticatedUser, setAuthenticatedUser] = useState<User | null>(null);
@@ -32,8 +25,7 @@ const Authentication: React.FC = () => {
   useEffect(() => {
     const fetchWeatherData = async (): Promise<void> => {
       try {
-        const response = await fetch("/api/fire-risk");
-        const data: WeatherData = await response.json();
+        const data = await obtenerDatosClimaticos();
         setWeatherData(data);
       } catch (error) {
         console.error("Error fetching fire risk data:", error);
