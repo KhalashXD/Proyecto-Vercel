@@ -303,6 +303,7 @@ class Personnel(Base):
 
     can_rescue = Column(Boolean, default=False)
     can_hazmat = Column(Boolean, default=False)
+    disponible = Column(Integer)
 
     level = Column(String(50))
     radio_code = Column(String(20))

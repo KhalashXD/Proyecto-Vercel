@@ -63,14 +63,10 @@ def ejecutar_despacho(
         .filter(
             EmergencyType.code
             == data.emergency_code
-        )
-        .first()
-    )
+        ).first())
 
     if not emergency_type:
-        raise Exception(
-            "Emergency type not found"
-        )
+        raise Exception("Emergency type not found")
 
     # ==================================
     # Obtener coordenadas
@@ -89,19 +85,10 @@ def ejecutar_despacho(
     # ==================================
     # Buscar reglas de despacho
     # ==================================
-
     dispatch_rules = (
-        db.query(DispatchRule)
-        .filter(
-            DispatchRule
-            .emergency_type_id
-            == emergency_type.id
+        db.query(EmergencyType)
+        .filter(EmergencyType.code== emergency_type.code).order_by(EmergencyType.priority).all()
         )
-        .order_by(
-            DispatchRule.priority_order
-        )
-        .all()
-    )
 
     assigned_vehicles = []
     missing_units = []
@@ -109,83 +96,60 @@ def ejecutar_despacho(
     # ==================================
     # Buscar vehículos cercanos
     # ==================================
+    available_vehicles = (
+        db.query(Vehicle)
+        .join(Station)
+        .filter(
+            Vehicle.status == "green"
+        )
+        .all()
+    )
 
-    for rule in dispatch_rules:
+    scored_vehicles = []
 
-        available_vehicles = (
-            db.query(Vehicle)
-            .join(Station)
-            .filter(
-                Vehicle.status
-                == "green",
+    for vehicle in available_vehicles:
 
-                Vehicle.vehicle_type
-                == rule.vehicle_type
-            )
-            .all()
+        distance = calcular_distancia(
+            float(vehicle.station.latitude),
+            float(vehicle.station.longitude),
+            latitude,
+            longitude
         )
 
-        scored_vehicles = []
-
-        for vehicle in (
-            available_vehicles
-        ):
-
-            distance = (
-                calcular_distancia(
-                    float(
-                        vehicle
-                        .station
-                        .latitude
-                    ),
-                    float(
-                        vehicle
-                        .station
-                        .longitude
-                    ),
-                    latitude,
-                    longitude
-                )
-            )
-
-            scored_vehicles.append(
-                (
-                    distance,
-                    vehicle
-                )
-            )
-
-        scored_vehicles.sort(
-            key=lambda x: x[0]
-        )
-
-        selected = (
-            scored_vehicles[
-                :rule.required_count
-            ]
-        )
-
-        missing_count = ( #cuenta cuantos carros faltaron para agregar
-            rule.required_count
-            - len(selected)
-        )
-
-        if missing_count > 0:
-
-            missing_units.append(
-                {
-                    "vehicle_type":
-                        rule.vehicle_type,
-
-                    "missing_count":
-                        missing_count
-                }
-            )
-
-        for _, vehicle in selected:
-            assigned_vehicles.append(
+        scored_vehicles.append(
+            (
+                distance,
                 vehicle
             )
+        )
+
+    scored_vehicles.sort(
+        key=lambda x: x[0]
+    )
+
+    selected = scored_vehicles[
+        :emergency_type.required_units
+    ]
+
+    missing_count = (
+        emergency_type.required_units
+        - len(selected)
+    )
+
+    if missing_count > 0:
+
+        missing_units.append(
+            {
+                "vehicle_type":
+                    "Carro Bombero",
+
+                "missing_count":
+                    missing_count
+            }
+        )
+
+    for _, vehicle in selected:
+        assigned_vehicles.append(vehicle)
 
     # ==================================
     # Crear incidente

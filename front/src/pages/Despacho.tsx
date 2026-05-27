@@ -524,8 +524,8 @@ const Despacho: React.FC = () => {
                 </optgroup>
 
                 <optgroup label="Otros Incidentes">
-                  <option value="7-1">9: ACUARTELAMIENTO GENERAL</option>
-                  <option value="9-1">9: EMERGENCIA INDUSTRIAL</option>
+                  <option value="7-1">7-1: ACUARTELAMIENTO GENERAL</option>
+                  <option value="9-1">9-1: EMERGENCIA INDUSTRIAL</option>
                   <option value="10-1">
                     10-1: TRASLADO DE BOMBERO ACCIDENTADO
                   </option>
@@ -541,66 +541,12 @@ const Despacho: React.FC = () => {
                     10-9: INVESTIGACIÓN DE INCENDIOS
                   </option>
                   <option value="11-1">
-                    11: PREVENCIÓN DE EMERGENCIAS ESTRUCTURALES
+                    11-1: PREVENCIÓN DE EMERGENCIAS ESTRUCTURALES
                   </option>
                   <option value="13-1">13: REBROTE DE INCENDIO</option>
                   <option value="15-1">
-                    15: EMERGENCIA NO CLASIFICADA
+                    15-1: EMERGENCIA NO CLASIFICADA
                   </option>
-                </optgroup>
-
-                <optgroup label="Clave 8: Apoyo a Otros Cuerpos">
-                  <option value="8-1">Clave 1-1</option>
-                  <option value="8-2">Clave 1-2</option>
-                  <option value="8-3">Clave 1-3</option>
-                  <option value="8-4">Clave 2-1</option>
-                  <option value="8-5">Clave 2-2</option>
-                  <option value="8-6">Clave 2-3</option>
-                  <option value="8-7">Clave 2-4</option>
-                  <option value="8-8">Clave 3-1</option>
-                  <option value="8-9">Clave 3-2</option>
-                  <option value="8-10">Clave 3-3</option>
-                  <option value="8-11">Clave 4-1</option>
-                  <option value="8-12">Clave 4-2</option>
-                  <option value="8-13">Clave 4-3</option>
-                  <option value="8-14">Clave 5-1</option>
-                  <option value="8-15">Clave 5-2</option>
-                  <option value="8-16">Clave 5-3</option>
-                  <option value="8-17">Clave 5-4</option>
-                  <option value="8-18">Clave 6-1</option>
-                  <option value="8-19">Clave 6-2</option>
-                  <option value="8-20">Clave 6-3</option>
-                  <option value="8-21">Clave 6-4</option>
-                  <option value="8-22">Clave 6-5</option>
-                  <option value="8-23">Clave 6-6</option>
-                  <option value="8-24">Clave 6-7</option>
-                </optgroup>
-
-                <optgroup label="Clave 13: Simulacro de Incidente">
-                  <option value="13-1">Clave 1-1</option>
-                  <option value="13-2">Clave 1-2</option>
-                  <option value="13-3">Clave 1-3</option>
-                  <option value="13-4">Clave 2-1</option>
-                  <option value="13-5">Clave 2-2</option>
-                  <option value="13-6">Clave 2-3</option>
-                  <option value="13-7">Clave 2-4</option>
-                  <option value="13-8">Clave 3-1</option>
-                  <option value="13-9">Clave 3-2</option>
-                  <option value="13-10">Clave 3-3</option>
-                  <option value="13-11">Clave 4-1</option>
-                  <option value="13-12">Clave 4-2</option>
-                  <option value="13-13">Clave 4-3</option>
-                  <option value="13-14">Clave 5-1</option>
-                  <option value="13-15">Clave 5-2</option>
-                  <option value="13-16">Clave 5-3</option>
-                  <option value="13-17">Clave 5-4</option>
-                  <option value="13-18">Clave 6-1</option>
-                  <option value="13-19">Clave 6-2</option>
-                  <option value="13-20">Clave 6-3</option>
-                  <option value="13-21">Clave 6-4</option>
-                  <option value="13-22">Clave 6-5</option>
-                  <option value="13-23">Clave 6-6</option>
-                  <option value="13-24">Clave 6-7</option>
                 </optgroup>
               </select>
             </div>
