@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import { useParams } from "react-router-dom";
 import MainLayout from "../components/MainLayout";
+import { abrirReporte } from "../api/reportService";
 import "../styles/Prueba.css";
 
 interface MultiSectionToggleProps {
@@ -116,6 +117,24 @@ const MultiSectionToggle: React.FC<MultiSectionToggleProps> = ({ eventId }) => {
       subtitle={dataE?.[3] || ""}
     >
       <section className="incident-card">
+        <div className="report-actions">
+          <button
+            type="button"
+            className="app-btn app-btn-primary"
+            onClick={() => abrirReporte(`/reportes/emergencias/${id}.pdf`)}
+          >
+            Descargar PDF
+          </button>
+
+          <button
+            type="button"
+            className="app-btn app-btn-dark"
+            onClick={() => abrirReporte(`/reportes/emergencias/${id}.xlsx`)}
+          >
+            Descargar Excel
+          </button>
+        </div>
+
         <div className="incident-tabs">
           <button
             type="button"
@@ -821,7 +840,6 @@ const Form4: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
 const Form5: React.FC<FormProps> = ({ switchToTabA }) => {
   const { id } = useParams<{ id: string }>();
 
-  const [activeSection, setActiveSection] = useState<string | null>(null);
   const [superado, setSuperado] = useState<number>(0);
 
   const handleToggle = (): void => {
@@ -885,9 +903,8 @@ const Form5: React.FC<FormProps> = ({ switchToTabA }) => {
         type="button"
         onClick={() => {
           handleToggle();
-          setActiveSection("Superado");
         }}
-        className={`action-chip ${activeSection === "Superado" ? "active" : ""}`}
+        className={`action-chip ${superado === 1 ? "active" : ""}`}
       >
         Superado
       </button>

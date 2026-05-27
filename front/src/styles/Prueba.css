@@ -8,6 +8,14 @@
   padding: 22px;
 }
 
+.report-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-bottom: 14px;
+}
+
 .incident-card h2 {
   color: var(--text-main);
   font-size: 1.45rem;

@@ -5,7 +5,7 @@ import { auth } from "../firebase";
 import "../styles/Navbar.css";
 
 interface WeatherData {
-  icon?: string;
+  condition?: string;
   temperature: number;
   humidity: number;
   wind_speed: number;
@@ -32,7 +32,8 @@ const Authentication: React.FC = () => {
   useEffect(() => {
     const fetchWeatherData = async (): Promise<void> => {
       try {
-        const response = await fetch("/api/fire-risk");
+        const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:5000";
+        const response = await fetch(`${apiUrl}/api/fire-risk`);
         const data: WeatherData = await response.json();
         setWeatherData(data);
       } catch (error) {
@@ -117,14 +118,7 @@ const Authentication: React.FC = () => {
         {weatherData ? (
           <div className="weather-info">
             <span>
-              Condición:{" "}
-              {weatherData.icon && (
-                <img
-                  src={`https://openweathermap.org/img/wn/${weatherData.icon}@2x.png`}
-                  alt="Ícono clima"
-                  className="weather-icon"
-                />
-              )}
+              Condición: {weatherData.condition || "Sin datos"}
             </span>
 
             <span>Temperatura: {weatherData.temperature}°C</span>

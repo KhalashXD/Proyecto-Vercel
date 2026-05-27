@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 from fastapi import (
     FastAPI,
@@ -6,9 +7,13 @@ from fastapi import (
     Depends
 )
 
+from fastapi.responses import StreamingResponse
+
 from fastapi.middleware.cors import (
     CORSMiddleware
 )
+
+from pydantic import BaseModel
 
 from sqlalchemy import (
     create_engine,
@@ -44,11 +49,27 @@ from services.vehicle_service import (obtener_vehiculos)
 from services.personnel_service import (obtener_personal)
 from schemas.carros_mando_schema import (CarroMandoRequest)
 from services.carros_mando_service import (registrar_carro_mando)
+from services.report_service import (
+    crear_excel,
+    crear_pdf,
+    obtener_filas_historial,
+    obtener_filas_incidente
+)
+from services.telegram_service import (
+    enviar_mensaje_telegram,
+    telegram_configurado
+)
+from services.weather_service import (obtener_clima_actual)
 # =========================
 # App
 # =========================
 
 app = FastAPI()
+
+
+class TelegramMessageRequest(BaseModel):
+    message: str
+    chat_id: Optional[str] = None
 
 # =========================
 # CORS
@@ -152,10 +173,15 @@ def despacho(
         f"{request.calle} con {request.interseccion}"
     )
 
+    telegram_result = None
+    if telegram_configurado():
+        telegram_result = enviar_mensaje_telegram(resultado_texto)
+
     return {
         "resultado": resultado_texto,
         "despacho": despacho_codigos,
-        "id": resultado_backend["incident_code"]
+        "id": resultado_backend["incident_code"],
+        "telegram": telegram_result
         #"id": resultado_backend["incident_id"]  
         }
 
@@ -250,6 +276,115 @@ def vehiculos(
     )
 
     return resultado
+
+
+@app.get("/api/fire-risk")
+def fire_risk():
+    return obtener_clima_actual()
+
+
+@app.get("/clima")
+def clima():
+    return obtener_clima_actual()
+
+
+@app.get("/telegram/status")
+def telegram_status():
+    return {
+        "configured": telegram_configurado()
+    }
+
+
+@app.post("/telegram/send")
+def telegram_send(request: TelegramMessageRequest):
+    return enviar_mensaje_telegram(
+        mensaje=request.message,
+        chat_id=request.chat_id
+    )
+
+
+@app.get("/reportes/emergencias.xlsx")
+def reporte_emergencias_excel(
+    db: Session = Depends(get_db)
+):
+    content = crear_excel(
+        rows=obtener_filas_historial(db),
+        sheet_name="Emergencias"
+    )
+
+    return StreamingResponse(
+        iter([content]),
+        media_type=(
+            "application/vnd.openxmlformats-officedocument."
+            "spreadsheetml.sheet"
+        ),
+        headers={
+            "Content-Disposition":
+                "attachment; filename=reporte_emergencias.xlsx"
+        }
+    )
+
+
+@app.get("/reportes/emergencias.pdf")
+def reporte_emergencias_pdf(
+    db: Session = Depends(get_db)
+):
+    content = crear_pdf(
+        rows=obtener_filas_historial(db),
+        title="Reporte de emergencias"
+    )
+
+    return StreamingResponse(
+        iter([content]),
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition":
+                "attachment; filename=reporte_emergencias.pdf"
+        }
+    )
+
+
+@app.get("/reportes/emergencias/{incident_code}.xlsx")
+def reporte_incidente_excel(
+    incident_code: str,
+    db: Session = Depends(get_db)
+):
+    content = crear_excel(
+        rows=obtener_filas_incidente(db, incident_code),
+        sheet_name=f"Incidente {incident_code}"
+    )
+
+    return StreamingResponse(
+        iter([content]),
+        media_type=(
+            "application/vnd.openxmlformats-officedocument."
+            "spreadsheetml.sheet"
+        ),
+        headers={
+            "Content-Disposition":
+                f"attachment; filename=reporte_{incident_code}.xlsx"
+        }
+    )
+
+
+@app.get("/reportes/emergencias/{incident_code}.pdf")
+def reporte_incidente_pdf(
+    incident_code: str,
+    db: Session = Depends(get_db)
+):
+    content = crear_pdf(
+        rows=obtener_filas_incidente(db, incident_code),
+        title=f"Reporte de emergencia {incident_code}"
+    )
+
+    return StreamingResponse(
+        iter([content]),
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition":
+                f"attachment; filename=reporte_{incident_code}.pdf"
+        }
+    )
 
 #DESDE ACA ENDPOINTS DE PRUEBAS:-----------------
 @app.get("/db-test")

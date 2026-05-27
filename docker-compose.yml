@@ -82,11 +82,11 @@ services:
       context: ./front
       dockerfile: frontend.Dockerfile
       args:
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:5000}
+        REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost:5000}
         VITE_GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
     container_name: emergency_frontend
     environment:
-      VITE_API_URL: ${VITE_API_URL:-http://localhost:5000}
+      REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost:5000}
       VITE_GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
       NODE_ENV: ${NODE_ENV:-development}
     ports:

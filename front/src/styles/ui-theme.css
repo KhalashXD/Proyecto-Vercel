@@ -132,6 +132,14 @@ textarea {
   padding: var(--space-lg);
 }
 
+.report-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-bottom: 14px;
+}
+
 .data-table-wrap {
   overflow-x: auto;
   border-radius: var(--radius-md);

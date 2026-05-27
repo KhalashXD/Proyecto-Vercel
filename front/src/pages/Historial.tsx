@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../components/MainLayout";
+import { abrirReporte } from "../api/reportService";
 
 interface HistorialData {
   ids: string[];
@@ -80,6 +81,24 @@ const Historial: React.FC = () => {
       subtitle="Consulta y revisión de emergencias registradas"
     >
       <section className="content-card">
+        <div className="report-actions">
+          <button
+            type="button"
+            className="app-btn app-btn-primary"
+            onClick={() => abrirReporte("/reportes/emergencias.pdf")}
+          >
+            Descargar PDF
+          </button>
+
+          <button
+            type="button"
+            className="app-btn app-btn-dark"
+            onClick={() => abrirReporte("/reportes/emergencias.xlsx")}
+          >
+            Descargar Excel
+          </button>
+        </div>
+
         {currentItems.length > 0 ? (
           <>
             <div className="data-table-wrap">
