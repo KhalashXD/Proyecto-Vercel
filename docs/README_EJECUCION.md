@@ -9,6 +9,15 @@ Este documento explica como levantar el sistema, configurar las APIs necesarias,
 - Python 3.11 instalado si quieres correr el backend fuera de Docker.
 - Git Bash, PowerShell o una terminal similar.
 
+## Stack del proyecto
+
+- Frontend: React con TypeScript.
+- Backend: Python con FastAPI.
+- Base de datos: MariaDB.
+- Contenedores: Docker y Docker Compose.
+- Reportes: PDF y Excel desde el backend.
+- Integraciones: Telegram Bot API y Open-Meteo para clima.
+
 ## Estructura principal
 
 ```text
