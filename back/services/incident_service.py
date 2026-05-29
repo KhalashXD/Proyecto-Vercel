@@ -176,10 +176,26 @@ def obtener_incidente_por_codigo(
     # Timeline de eventos
     # =========================
 
+    event_type_labels = {
+    "created": "Emergencia Activa Registrada",
+    "vehicle_assigned": "Unidad asignada",
+    "vehicle_arrived": "Unidad en el lugar",
+    "vehicle_departed": "Unidad dada de baja",
+    "status_changed": "Cambio de estado",
+    "additional_units_requested": "Solicitud de más unidades",
+    "ambulance_requested": "Solicitud de ambulancia",
+    "form_submitted": "Formulario registrado",
+    "incident_closed": "Emergencia cerrado",
+    "victims_reported": "Registro de víctimas",
+    "personel_asigned": "Personal Asignado",
+    "other": "Otro Suceso",}
+
     timeline = [
         {
             "event_type":
                 event.event_type,
+            
+            "tipo": event_type_labels.get(event.event_type, event.event_type),
 
             "description":
                 event.description,
@@ -351,8 +367,7 @@ def actualizar_estado_incidente(
                 incident_id=incident.id,
                 event_type="incident_closed",
                 description=(
-                    "Incident closed "
-                    "and vehicles released"
+                    "Emergencia cerrada y Carros liberados "
                 ),
                 user_name="system"
             )
@@ -366,9 +381,9 @@ def actualizar_estado_incidente(
             incident_id=incident.id,
             event_type="status_changed",
             description=(
-                f"Status changed "
-                f"from {previous_status} "
-                f"to {new_status}"
+                f"Estado cambiado "
+                f"desde {previous_status} "
+                f"a {new_status}"
             ),
             user_name="system"
         )

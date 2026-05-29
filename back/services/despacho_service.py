@@ -1,4 +1,3 @@
-
 from uuid import uuid4
 from math import radians, sin, cos, sqrt, atan2
 
@@ -157,7 +156,7 @@ def ejecutar_despacho(
 
     incident = Incident(
 
-        incident_code=(
+        incident_code=( #cambiar a q en vez de INC sea el tipo de llamada
             f"INC-"
             f"{uuid4().hex[:8]}"
         ),
@@ -238,9 +237,9 @@ def ejecutar_despacho(
                     "vehicle_assigned",
 
                 description=(
-                    f"Vehicle "
+                    f"Carro "
                     f"{vehicle.vehicle_code} "
-                    f"assigned"
+                    f"asignado"
                 ),
 
                 user_name=
@@ -261,7 +260,7 @@ def ejecutar_despacho(
                 "created",
 
             description=
-                "Incident created",
+                "Llamada creada",
 
             user_name=
                 "system"

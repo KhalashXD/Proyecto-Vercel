@@ -33,6 +33,29 @@ const MultiSectionToggle: React.FC<MultiSectionToggleProps> = ({ eventId }) => {
     setActiveSection(null);
   };
 
+  const formatFecha = (value: string): string => {
+  if (!value) return "";
+
+  const date = new Date(value);
+
+  return date.toLocaleDateString("es-CL", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+};
+
+const formatHora = (value: string): string => {
+  if (!value) return "";
+
+  const date = new Date(value);
+
+  return date.toLocaleTimeString("es-CL", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
   const sections = [
     { id: 1, label: "Unidades", content: <Form1 eventId={eventId} switchToTabA={switchToTabA} /> },
     { id: 2, label: "Evaluación", content: <Form2 switchToTabA={switchToTabA} /> },
@@ -47,12 +70,9 @@ const MultiSectionToggle: React.FC<MultiSectionToggleProps> = ({ eventId }) => {
 
   const fetchData = async (): Promise<void> => {
     try {
-      //const response = await fetch(`/emergencia_info/${id}`);
       const response = await fetch(`http://localhost:5000/emergenciasActivas/${id}`);
       const data = await response.json();
 
-      //setDataE(data.data_e);
-      //setDataA(data.data_a);
       setDataE([
         data.emergency.code,
         data.location.street_1,
@@ -61,24 +81,15 @@ const MultiSectionToggle: React.FC<MultiSectionToggleProps> = ({ eventId }) => {
       ]);
 
       setDataA([
-        ...data.assigned_vehicles.map((vehicle: any) => [
-          vehicle.assigned_at,
-          "vehicle_assigned",
-          "",
-          `Unidad ${vehicle.vehicle_code} asignada`,
-          vehicle.vehicle_code,
-          vehicle.status
-        ]),
-
         ...data.timeline.map((event: any) => [
-          event.created_at,
-          event.event_type,
-          "",
-          event.description,
-          "",
-          event.user_name
+          formatFecha(event.created_at),
+          formatHora(event.created_at),
+          event.tipo,
+          event.description
+          
         ])
       ]);
+
       setLoading(false);
     } catch (error) {
       console.error("Error fetching emergency data:", error);
@@ -90,7 +101,6 @@ const MultiSectionToggle: React.FC<MultiSectionToggleProps> = ({ eventId }) => {
     if (activeTab === "info") {
       fetchData();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, id]);
 
   if (loading) {
@@ -163,21 +173,21 @@ const MultiSectionToggle: React.FC<MultiSectionToggleProps> = ({ eventId }) => {
                   <thead>
                     <tr>
                       <th>Fecha</th>
+                      <th>Hora</th>
                       <th>Tipo</th>
                       <th>Descripción</th>
-                      <th>Carro</th>
-                      <th>Orden</th>
+                      
                     </tr>
                   </thead>
 
                   <tbody>
                     {dataA.map((accion, index) => (
                       <tr key={index}>
-                        <td>{accion[1]}</td>
                         <td>{accion[0]}</td>
+                        <td>{accion[1]}</td>
+                        <td>{accion[2]}</td>
                         <td>{accion[3]}</td>
-                        <td>{accion[4]}</td>
-                        <td>{accion[5]}</td>
+                        
                       </tr>
                     ))}
                   </tbody>
@@ -845,22 +855,7 @@ const Form5: React.FC<FormProps> = ({ switchToTabA }) => {
   const handleToggle = (): void => {
     setSuperado((prevNumber) => (prevNumber === 0 ? 1 : 0));
   };
-/*
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
-    e.preventDefault();
 
-    fetch("/superacion", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ estado: superado, id }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Response from Flask:", data);
-        switchToTabA();
-      })
-      .catch((error) => console.error("Error:", error));
-  };*/
   const handleSubmit = async (
       e: React.FormEvent
     ) => {

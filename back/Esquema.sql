@@ -199,6 +199,9 @@ CREATE TABLE IF NOT EXISTS incident_events (
         'additional_units_requested',
         'ambulance_requested',
         'form_submitted',
+        'victims_reported',
+        'personel_asigned',
+        'other',
         'incident_closed'
     ) NOT NULL,
     description TEXT,
