@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import "../styles/Sidebar.css";
 
-type EstadoCarro = 0 | 1 | 2 | 3 | 4;
+type VehicleStatus = "green" | "yellow" | "red";
 
 interface Carro {
-  carro: number;
-  estado: EstadoCarro;
-  x: number;
-  y: number;
-  calle: string;
-  interseccion: string;
+  id: number;
+  vehicle_code: string;
+  status: VehicleStatus;
+  station: {
+    latitude: number;
+    longitude: number;
+  };
 }
 
 const Sidebar: React.FC = React.memo(() => {
@@ -19,7 +20,7 @@ const Sidebar: React.FC = React.memo(() => {
   useEffect(() => {
     const fetchDataCarro = async (): Promise<void> => {
       try {
-        const response = await fetch("/carros.json");
+        const response = await fetch("http://localhost:5000/vehiculos");
         const result: Carro[] = await response.json();
         setDataCarro(result);
       } catch (error) {
@@ -34,18 +35,17 @@ const Sidebar: React.FC = React.memo(() => {
     return () => window.clearInterval(interval);
   }, []);
 
-  const getColorByStatus = (estado: EstadoCarro): string => {
-    switch (estado) {
-      case 0:
+  const getColorByStatus = (status: VehicleStatus): string => {
+    switch (status) {
+      case "green":
         return "#078b16";
-      case 1:
+
+      case "yellow":
         return "#f4a300";
-      case 2:
-        return "#2f80ed";
-      case 3:
-        return "#6f6f6f";
-      case 4:
+
+      case "red":
         return "#d84b4b";
+
       default:
         return "#ffffff";
     }
@@ -78,13 +78,13 @@ const Sidebar: React.FC = React.memo(() => {
     <div>
       <div className="sidebar-grid">
         {dataCarro.map((item, index) => (
-          <div key={item.carro}>
+          <div key={item.vehicle_code}>
             <div
               onClick={() => toggleOpenItem(index)}
               className="sidebar-unit"
-              style={{ backgroundColor: getColorByStatus(item.estado) }}
+              style={{ backgroundColor: getColorByStatus(item.status) }}
             >
-              {item.carro}
+              {item.vehicle_code}
             </div>
 
             {openItemIndex === index && (
@@ -92,7 +92,7 @@ const Sidebar: React.FC = React.memo(() => {
                 <button
                   type="button"
                   className="btn-disponible"
-                  onClick={() => handleButtonClick(item.carro, "0")}
+                  onClick={() => handleButtonClick(item.id, "0")}
                 >
                   Disponible
                 </button>
@@ -100,7 +100,7 @@ const Sidebar: React.FC = React.memo(() => {
                 <button
                   type="button"
                   className="btn-cuartel"
-                  onClick={() => handleButtonClick(item.carro, "2")}
+                  onClick={() => handleButtonClick(item.id, "2")}
                 >
                   Cuartel
                 </button>
@@ -108,7 +108,7 @@ const Sidebar: React.FC = React.memo(() => {
                 <button
                   type="button"
                   className="btn-fuera"
-                  onClick={() => handleButtonClick(item.carro, "4")}
+                  onClick={() => handleButtonClick(item.id, "4")}
                 >
                   Fuera
                 </button>
