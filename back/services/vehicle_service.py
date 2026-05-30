@@ -88,5 +88,23 @@ def obtener_vehiculos(
                     active_incident
             }
         )
-
     return resultado
+
+#Para vista Emergencia Activa ID: Accion: Unidades
+def obtener_vehiculos_disponibles(db: Session):
+    vehicles = (
+        db.query(Vehicle)
+        .filter(Vehicle.status == "green")
+        .all()
+    )
+
+    return [
+        {
+            "id": vehicle.id,
+            "vehicle_code": vehicle.vehicle_code,
+            "vehicle_type": vehicle.vehicle_type,
+            "station_name": vehicle.station.name,
+            "status": vehicle.status
+        }
+        for vehicle in vehicles
+    ]

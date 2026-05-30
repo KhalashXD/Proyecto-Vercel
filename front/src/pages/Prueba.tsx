@@ -19,6 +19,14 @@ interface SelectOption {
   label: string;
 }
 
+interface Vehicle {
+  id: number;
+  vehicle_code: string;
+  vehicle_type: string;
+  station_name: string;
+  status: string;
+}
+
 const MultiSectionToggle: React.FC<MultiSectionToggleProps> = ({ eventId }) => {
   const { id } = useParams<{ id: string }>();
 
@@ -241,14 +249,31 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [selectedEstado, setSelectedEstado] = useState<string | null>(null);
-  const [carrosDisponibles, setCarrosDisponibles] = useState<string[]>([]);
-  const [selectedDespacho, setSelectedDespacho] = useState<string[]>([]);
+  const [carrosDisponibles, setCarrosDisponibles] = useState<Vehicle[]>([]);
+  const [selectedDespacho, setSelectedDespacho] = useState<number[]>([]);
   const [despacho, setDespacho] = useState<string[]>([]);
   const [acciones, setAcciones] = useState<any[]>([]);
   const [data2, setData2] = useState<SelectOption[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<Record<number, SelectOption | null>>({});
   const [integerValues, setIntegerValues] = useState<Record<number, number>>({});
   const [activeSection, setActiveSection] = useState<string | null>(null);
+
+  const cargarDisponibles = async (): Promise<void> => {
+    try {
+      const response = await fetch(
+        "http://localhost:5000/vehiculos/disponibles"
+      );
+
+      if (!response.ok) {
+        throw new Error("No se pudieron cargar las unidades disponibles");
+      }
+
+      const data = await response.json();
+      setCarrosDisponibles(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     fetch("/data.json")
@@ -289,18 +314,11 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
       });
   }, [id, eventId]);
 
+
   useEffect(() => {
-    fetch(`/disponibles/${id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setCarrosDisponibles(data.carros || []);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching event data:", error);
-        setLoading(false);
-      });
-  }, [id, eventId]);
+    cargarDisponibles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
@@ -324,34 +342,46 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
       .catch((error) => console.error("Error:", error));
   };
 
-  const handleSubmit2 = (e: React.FormEvent<HTMLFormElement>): void => {
-    e.preventDefault();
 
-    const data = {
-      selectedDespacho,
-      selectedOptions: "Despachado",
-      id,
-    };
+  const handleSubmit2 = async (
+        e: React.FormEvent<HTMLFormElement>
+      ): Promise<void> => {
+        e.preventDefault();
 
-    fetch("/desp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        console.log("Response from backend:", result);
+        try {
+          for (const vehicleId of selectedDespacho) {
+            const response = await fetch(
+              `http://localhost:5000/emergenciasActivas/${id}/vehiculos`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  vehicle_id: vehicleId,
+                }),
+              }
+            );
 
-        localStorage.setItem("despacho", JSON.stringify(result.despacho));
-        localStorage.setItem("acciones", JSON.stringify(result.acciones));
+            if (!response.ok) {
+              throw new Error("No se pudo despachar una de las unidades");
+            }
+          }
 
-        setDespacho(result.despacho || []);
-        setAcciones(result.acciones || []);
-
-        switchToTabA();
-      })
-      .catch((error) => console.error("Error:", error));
+          setSelectedDespacho([]);
+          await cargarDisponibles();
+          switchToTabA();
+        } catch (error) {
+          console.error(error);
+          alert("No se pudieron despachar todas las unidades seleccionadas");
+          await cargarDisponibles();
+        }
   };
+
+
+
+
+
 
   const handleDespachoChange = (
     index: number,
@@ -423,11 +453,12 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
     );
   };
 
-  const toggleSelection2 = (item: string): void => {
+
+    const toggleSelection2 = (vehicleId: number): void => {
     setSelectedDespacho((prevSelected) =>
-      prevSelected.includes(item)
-        ? prevSelected.filter((i) => i !== item)
-        : [...prevSelected, item]
+      prevSelected.includes(vehicleId)
+        ? prevSelected.filter((id) => id !== vehicleId)
+        : [...prevSelected, vehicleId]
     );
   };
 
@@ -496,19 +527,23 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
 
         <form onSubmit={handleSubmit2}>
           <div className="action-grid">
-            {carrosDisponibles.map((item, index) => (
+
+            {carrosDisponibles.map((vehicle) => (
               <button
-                key={index}
+                key={vehicle.id}
                 type="button"
                 onClick={() => {
-                  toggleSelection2(item);
-                  setActiveSection(item);
+                  toggleSelection2(vehicle.id);
+                  setActiveSection(vehicle.vehicle_code);
                 }}
-                className={`action-chip ${activeSection === item ? "active" : ""}`}
+                className={`action-chip available-vehicle ${
+                  selectedDespacho.includes(vehicle.id) ? "active" : ""
+                }`}
               >
-                {item}
+                {vehicle.vehicle_code}
               </button>
             ))}
+
           </div>
 
           <button type="submit" className="app-btn app-btn-primary">

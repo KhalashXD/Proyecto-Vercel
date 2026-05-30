@@ -190,3 +190,18 @@
     width: 100%;
   }
 }
+
+.available-vehicle {
+  background: #238636;
+  border-color: #2ea043;
+  color: #fff;
+}
+
+.available-vehicle:hover {
+  background: #2ea043;
+}
+
+.available-vehicle.active {
+  background: #196c2e;
+  border-color: #58c76b;
+}

@@ -1,7 +1,8 @@
 from models import (
     Incident,
     IncidentEvent,
-    Vehicle
+    Vehicle,
+    IncidentVehicle
 )
 from sqlalchemy.orm import Session
 from sqlalchemy import func
@@ -53,71 +54,7 @@ def obtener_incidentes_activos(
         "texts": texts,
         "dates": dates
     }
-"""
-#para entregar lista de accidentes activos
-def obtener_incidentes_activos(db):
 
-    incidents = (
-        db.query(Incident)
-        .filter(
-            Incident.status != "closed"
-        )
-        .order_by(
-            Incident.priority.asc(),
-            Incident.created_at.desc()
-        )
-        .all()
-    )
-
-    resultado = []
-
-    for incident in incidents:
-
-        assigned_vehicles = [
-            relation.vehicle.vehicle_code
-            for relation in incident.vehicles
-        ]
-
-        resultado.append({
-            "id":
-                incident.id,
-
-            "incident_code":
-                incident.incident_code,
-
-            "emergency_code":
-                incident.emergency_type.code,
-
-            "emergency_name":
-                incident.emergency_type.name,
-
-            "street_1":
-                incident.street_1,
-
-            "street_2":
-                incident.street_2,
-
-            "latitude":
-                float(incident.latitude),
-
-            "longitude":
-                float(incident.longitude),
-
-            "status":
-                incident.status,
-
-            "priority":
-                incident.priority,
-
-            "created_at":
-                incident.created_at,
-
-            "assigned_vehicles":
-                assigned_vehicles
-        })
-
-    return resultado
-"""
 # para entregar la info de un accidente en especifico
 # en el caso de que se haga click sobre ella
 
@@ -476,3 +413,54 @@ def obtener_historial_incidentes(
         )
 
     return resultado
+
+#Para la vista desde acciones, asignar carros adicionales
+def asignar_vehiculo_adicional(
+    db: Session,
+    incident_code: str,
+    vehicle_id: int
+):
+    incident = (
+        db.query(Incident)
+        .filter(Incident.incident_code == incident_code)
+        .first()
+    )
+
+    if not incident:
+        raise Exception("Incident not found")
+
+    vehicle = (
+        db.query(Vehicle)
+        .filter(Vehicle.id == vehicle_id)
+        .first()
+    )
+
+    if not vehicle:
+        raise Exception("Vehicle not found")
+
+    if vehicle.status != "green":
+        raise Exception("Vehicle is not available")
+
+    relation = IncidentVehicle(
+        incident_id=incident.id,
+        vehicle_id=vehicle.id
+    )
+
+    vehicle.status = "yellow"
+
+    event = IncidentEvent(
+        incident_id=incident.id,
+        vehicle_id=vehicle.id,
+        event_type="vehicle_assigned",
+        description=f"Unidad {vehicle.vehicle_code} asignada",
+        user_name="system"
+    )
+
+    db.add(relation)
+    db.add(event)
+    db.commit()
+
+    return {
+        "message": "Unidad asignada correctamente",
+        "vehicle_code": vehicle.vehicle_code
+    }

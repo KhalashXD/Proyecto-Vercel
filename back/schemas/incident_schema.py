@@ -26,3 +26,6 @@ class UpdateIncidentStatusRequest(
     BaseModel
 ):
     status: str
+
+class AssignVehicleRequest(BaseModel):
+    vehicle_id: int

@@ -36,16 +36,11 @@ from services.despacho_service import ( ejecutar_despacho)
 
 from utils.maps import (  obtener_coordenadas)
 
-from schemas.incident_schema import ( UpdateIncidentStatusRequest)
+from schemas.incident_schema import ( UpdateIncidentStatusRequest, AssignVehicleRequest)
 
-from services.incident_service import (
-    obtener_incidentes_activos,
-    obtener_incidente_por_codigo,
-    actualizar_estado_incidente,
-    obtener_historial_incidentes
-)
+from services.incident_service import (obtener_incidentes_activos,obtener_incidente_por_codigo,actualizar_estado_incidente, obtener_historial_incidentes, asignar_vehiculo_adicional)
 
-from services.vehicle_service import (obtener_vehiculos)
+from services.vehicle_service import (obtener_vehiculos, obtener_vehiculos_disponibles)
 from services.personnel_service import (obtener_personal)
 from schemas.carros_mando_schema import (CarroMandoRequest)
 from services.carros_mando_service import (registrar_carro_mando)
@@ -276,6 +271,23 @@ def vehiculos(
     )
 
     return resultado
+
+@app.get("/vehiculos/disponibles")
+#Entrega los vehiculos disponibles (estado:green)
+def vehiculos_disponibles(db: Session = Depends(get_db)):
+    return obtener_vehiculos_disponibles(db=db)
+
+@app.post("/emergenciasActivas/{incident_code}/vehiculos")
+def asignar_vehiculo(
+    incident_code: str,
+    request: AssignVehicleRequest,
+    db: Session = Depends(get_db)
+):
+    return asignar_vehiculo_adicional(
+        db=db,
+        incident_code=incident_code,
+        vehicle_id=request.vehicle_id
+    )
 
 
 @app.get("/api/fire-risk")
