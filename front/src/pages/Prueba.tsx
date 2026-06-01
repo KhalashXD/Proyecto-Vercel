@@ -1219,6 +1219,11 @@ const Form9: React.FC<FormProps> = () => {
   const [injuryType, setInjuryType] = useState<string>("");
   const [details, setDetails] = useState<string>("");
   const [victims, setVictims] = useState<IncidentVictim[]>([]);
+  const [victimSearch, setVictimSearch] = useState<string>("");
+
+  const filteredVictims = victims.filter((victim) =>
+    victim.name.toLowerCase().includes(victimSearch.trim().toLowerCase())
+  );
 
   const cargarVictimas = async (): Promise<void> => {
     try {
@@ -1363,28 +1368,47 @@ const Form9: React.FC<FormProps> = () => {
       <div className="victims-list">
         <h3>Víctimas</h3>
 
-        {victims.length > 0 ? (
-          <div className="victim-cards">
-            {victims.map((victim) => (
-              <article key={victim.id} className="victim-card">
-                <h4>{victim.name}</h4>
-                <dl>
-                  <dt>Sexo</dt>
-                  <dd>{formatVictimSex(victim.sex)}</dd>
-                  <dt>Edad</dt>
-                  <dd>{victim.age ?? "Sin información"}</dd>
-                  <dt>Motivo</dt>
-                  <dd>{victim.reason_at_scene}</dd>
-                  <dt>Lesión</dt>
-                  <dd>{formatVictimInjury(victim.injury_type)}</dd>
-                  <dt>Detalles</dt>
-                  <dd>{victim.details || "Sin información"}</dd>
-                </dl>
-              </article>
-            ))}
+        <label className="victim-search">
+          Buscar por nombre
+          <input
+            type="search"
+            value={victimSearch}
+            onChange={(e) => setVictimSearch(e.target.value)}
+            placeholder="Ingrese un nombre"
+          />
+        </label>
+
+        {victims.length === 0 ? (
+          <p>No hay víctimas registradas.</p>
+        ) : filteredVictims.length > 0 ? (
+          <div className="victims-table-wrapper">
+            <table className="victims-table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Sexo</th>
+                  <th>Edad</th>
+                  <th>Motivo</th>
+                  <th>Tipo de lesión</th>
+                  <th>Otros detalles</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredVictims.map((victim) => (
+                  <tr key={victim.id}>
+                    <td>{victim.name}</td>
+                    <td>{formatVictimSex(victim.sex)}</td>
+                    <td>{victim.age ?? "Sin información"}</td>
+                    <td>{victim.reason_at_scene}</td>
+                    <td>{formatVictimInjury(victim.injury_type)}</td>
+                    <td>{victim.details || "Sin información"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         ) : (
-          <p>No hay víctimas registradas.</p>
+          <p>No se encontraron víctimas con ese nombre.</p>
         )}
       </div>
     </div>
