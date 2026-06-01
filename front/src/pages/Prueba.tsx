@@ -500,33 +500,65 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
     return <p>Cargando información...</p>;
   }
 
+  const unidadesEnEmergencia = carrosActivos.filter(
+    (vehicle) => vehicle.status === "red"
+  );
+
+  const unidadesDespachadas = carrosActivos.filter(
+    (vehicle) => vehicle.status === "yellow"
+  );
+
   return (
     <div className="wrapper-carros">
+      <div className="emergencia-column">
+        <h2>Unidades en la Emergencia</h2>
+
+        <div className="action-grid">
+          {unidadesEnEmergencia.length > 0 ? (
+            unidadesEnEmergencia.map((vehicle) => (
+              <span
+                key={vehicle.id}
+                className="action-chip emergency-vehicle"
+              >
+                {vehicle.vehicle_code}
+              </span>
+            ))
+          ) : (
+            <p>No hay unidades confirmadas</p>
+          )}
+        </div>
+      </div>
+
       <div className="activos-column">
         <h2>Unidades despachadas</h2>
 
         <form onSubmit={handleSubmit}>
           <div className="action-grid">
-            {carrosActivos.map((vehicle) => (
-              <button
-                key={vehicle.id}
-                type="button"
-                disabled={vehicle.status !== "yellow"}
-                onClick={() => {
-                  toggleSelection(vehicle.id);
-                }}
-                className={`action-chip dispatched-vehicle status-${vehicle.status} ${
-                  selectedItems.includes(vehicle.id) ? "active" : ""
-                }`}
-              >
-                {vehicle.vehicle_code}
-              </button>
-            ))}
+            {unidadesDespachadas.length > 0 ? (
+              unidadesDespachadas.map((vehicle) => (
+                <button
+                  key={vehicle.id}
+                  type="button"
+                  onClick={() => {
+                    toggleSelection(vehicle.id);
+                  }}
+                  className={`action-chip dispatched-vehicle status-${vehicle.status} ${
+                    selectedItems.includes(vehicle.id) ? "active" : ""
+                  }`}
+                >
+                  {vehicle.vehicle_code}
+                </button>
+              ))
+            ) : (
+              <p>No hay unidades pendientes de confirmación</p>
+            )}
           </div>
 
-          <button type="submit" className="app-btn app-btn-primary">
-            Confirmar llegada
-          </button>
+          {unidadesDespachadas.length > 0 && (
+            <button type="submit" className="app-btn app-btn-primary">
+              Confirmar llegada
+            </button>
+          )}
         </form>
       </div>
 

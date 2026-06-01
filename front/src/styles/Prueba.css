@@ -140,7 +140,7 @@
 
 .wrapper-carros {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
 }
 
@@ -148,6 +148,7 @@
   grid-column: 1 / -1;
 }
 
+.emergencia-column,
 .activos-column,
 .disponibles-columna,
 .despacho {
@@ -158,6 +159,7 @@
   min-width: 0;
 }
 
+.emergencia-column h2,
 .activos-column h2,
 .disponibles-columna h2,
 .despacho h2 {
@@ -176,6 +178,12 @@
 }
 
 .despacho p {
+  color: var(--text-soft);
+  margin: 0;
+}
+
+.emergencia-column p,
+.activos-column p {
   color: var(--text-soft);
   margin: 0;
 }
@@ -232,6 +240,7 @@
   }
 
   .activos-column,
+  .emergencia-column,
   .disponibles-columna,
   .despacho,
   .despacho form {
@@ -260,6 +269,13 @@
 .available-vehicle.active {
   background: #196c2e;
   border-color: #58c76b;
+}
+
+.emergency-vehicle {
+  display: inline-flex;
+  align-items: center;
+  background: #b83e3e;
+  border-color: #d84b4b;
 }
 
 .dispatched-vehicle.status-yellow {
