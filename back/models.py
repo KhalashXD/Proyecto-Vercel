@@ -149,6 +149,11 @@ class Vehicle(Base):
         back_populates="vehicle"
     )
 
+    instructions = relationship(
+        "IncidentVehicleInstruction",
+        back_populates="vehicle"
+    )
+
     __table_args__ = (
         Index("idx_station", "station_id"),
         Index("idx_status", "status"),
@@ -280,6 +285,12 @@ class Incident(Base):
 
     victims = relationship(
         "IncidentVictim",
+        back_populates="incident",
+        cascade="all, delete"
+    )
+
+    vehicle_instructions = relationship(
+        "IncidentVehicleInstruction",
         back_populates="incident",
         cascade="all, delete"
     )
@@ -522,6 +533,51 @@ class IncidentVictim(Base):
     __table_args__ = (
         Index("idx_incident", "incident_id"),
         Index("idx_injury_type", "injury_type"),
+    )
+
+
+# ============================================================
+# TABLA: incident_vehicle_instructions
+# ============================================================
+
+class IncidentVehicleInstruction(Base):
+    __tablename__ = "incident_vehicle_instructions"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+
+    incident_id = Column(
+        Integer,
+        ForeignKey("incidents.id", ondelete="CASCADE"),
+        nullable=False
+    )
+
+    vehicle_id = Column(
+        Integer,
+        ForeignKey("vehicles.id", ondelete="CASCADE"),
+        nullable=False
+    )
+
+    instruction = Column(Text, nullable=False)
+
+    created_at = Column(
+        TIMESTAMP,
+        server_default=func.current_timestamp()
+    )
+
+    incident = relationship(
+        "Incident",
+        back_populates="vehicle_instructions"
+    )
+
+    vehicle = relationship(
+        "Vehicle",
+        back_populates="instructions"
+    )
+
+    __table_args__ = (
+        Index("idx_incident", "incident_id"),
+        Index("idx_vehicle", "vehicle_id"),
+        Index("idx_created", "created_at"),
     )
 
 

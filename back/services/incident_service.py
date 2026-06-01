@@ -4,7 +4,8 @@ from models import (
     Vehicle,
     IncidentVehicle,
     EmergencyType,
-    IncidentVictim
+    IncidentVictim,
+    IncidentVehicleInstruction
 )
 from sqlalchemy.orm import Session
 from sqlalchemy import func
@@ -532,6 +533,59 @@ def actualizar_estado_vehiculo_incidente(
         "status": vehicle.status
     }
 
+def liberar_vehiculo_incidente(
+    db: Session,
+    incident_code: str,
+    vehicle_id: int
+):
+    incident = (
+        db.query(Incident)
+        .filter(Incident.incident_code == incident_code)
+        .first()
+    )
+
+    if not incident:
+        raise Exception("Incident not found")
+
+    relation = (
+        db.query(IncidentVehicle)
+        .filter(
+            IncidentVehicle.incident_id == incident.id,
+            IncidentVehicle.vehicle_id == vehicle_id
+        )
+        .first()
+    )
+
+    if not relation:
+        raise Exception("Vehicle is not assigned to this incident")
+
+    vehicle = relation.vehicle
+
+    if vehicle.status != "red":
+        raise Exception("Only vehicles confirmed at the emergency can be released")
+
+    vehicle.status = "blue"
+
+    event = IncidentEvent(
+        incident_id=incident.id,
+        vehicle_id=vehicle.id,
+        event_type="vehicle_departed",
+        description=f"Unidad {vehicle.vehicle_code} liberada. Regreso pendiente al cuartel",
+        user_name="system"
+    )
+
+    db.add(event)
+    db.delete(relation)
+    db.commit()
+    db.refresh(vehicle)
+
+    return {
+        "message": "Unidad liberada correctamente",
+        "vehicle_id": vehicle.id,
+        "vehicle_code": vehicle.vehicle_code,
+        "status": vehicle.status
+    }
+
 INCIDENT_ACTION_TYPES = {
     "A_evaluacion_incidente",
     "A_nueva_clave",
@@ -594,6 +648,91 @@ def registrar_accion_incidente(
         "event_type": event.event_type,
         "description": event.description,
         "created_at": event.created_at
+    }
+
+def obtener_instrucciones_unidades(
+    db: Session,
+    incident_code: str
+):
+    incident = (
+        db.query(Incident)
+        .filter(Incident.incident_code == incident_code)
+        .first()
+    )
+
+    if not incident:
+        raise Exception("Incident not found")
+
+    return [
+        {
+            "id": instruction.id,
+            "vehicle_id": instruction.vehicle.id,
+            "vehicle_code": instruction.vehicle.vehicle_code,
+            "instruction": instruction.instruction,
+            "created_at": instruction.created_at
+        }
+        for instruction in sorted(
+            incident.vehicle_instructions,
+            key=lambda item: item.created_at,
+            reverse=True
+        )
+    ]
+
+def registrar_instrucciones_unidades(
+    db: Session,
+    incident_code: str,
+    vehicle_codes: list[str],
+    instruction: str
+):
+    clean_instruction = instruction.strip()
+    unique_vehicle_codes = list(dict.fromkeys(vehicle_codes))
+
+    if not unique_vehicle_codes or not clean_instruction:
+        raise Exception("Vehicles and instruction are required")
+
+    incident = (
+        db.query(Incident)
+        .filter(Incident.incident_code == incident_code)
+        .first()
+    )
+
+    if not incident:
+        raise Exception("Incident not found")
+
+    assigned_vehicles = {
+        relation.vehicle.vehicle_code: relation.vehicle
+        for relation in incident.vehicles
+    }
+
+    if any(code not in assigned_vehicles for code in unique_vehicle_codes):
+        raise Exception("Vehicle is not assigned to this incident")
+
+    for vehicle_code in unique_vehicle_codes:
+        db.add(
+            IncidentVehicleInstruction(
+                incident_id=incident.id,
+                vehicle_id=assigned_vehicles[vehicle_code].id,
+                instruction=clean_instruction
+            )
+        )
+
+    db.add(
+        IncidentEvent(
+            incident_id=incident.id,
+            event_type="A_instrucciones",
+            description=(
+                f"Unidades {', '.join(unique_vehicle_codes)}: "
+                f"{clean_instruction}"
+            ),
+            user_name="system"
+        )
+    )
+
+    db.commit()
+
+    return {
+        "message": "Instrucción registrada correctamente",
+        "vehicle_codes": unique_vehicle_codes
     }
 
 VICTIM_SEXES = {

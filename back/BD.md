@@ -224,7 +224,27 @@ Almacena una ficha individual por cada víctima registrada durante una emergenci
 
 ---
 
-### 9. `incident_events` – Registro de eventos / auditoría operacional
+### 9. `incident_vehicle_instructions` – Instrucciones por unidad
+
+Almacena las instrucciones operativas asociadas a cada carro dentro de una emergencia.
+
+| Campo        | Tipo               | Descripción                  |
+|--------------|--------------------|------------------------------|
+| id           | INT AUTO_INCREMENT | Clave primaria               |
+| incident_id  | INT NOT NULL       | Incidente asociado           |
+| vehicle_id   | INT NOT NULL       | Vehículo destinatario        |
+| instruction  | TEXT NOT NULL      | Instrucción registrada       |
+| created_at   | TIMESTAMP          | Momento del registro         |
+
+**Claves foráneas:**
+- `FOREIGN KEY (incident_id) REFERENCES incidents(id) ON DELETE CASCADE`
+- `FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE`
+
+**Índices:** `idx_incident(incident_id)`, `idx_vehicle(vehicle_id)`, `idx_created(created_at)`
+
+---
+
+### 10. `incident_events` – Registro de eventos / auditoría operacional
 
 Bitácora cronológica de eventos relevantes para cada incidente.
 
@@ -246,7 +266,7 @@ Bitácora cronológica de eventos relevantes para cada incidente.
 
 ---
 
-### 10. `incident_history` – Histórico de incidentes cerrados
+### 11. `incident_history` – Histórico de incidentes cerrados
 
 Tabla de respaldo / archive para incidentes cerrados (optimización de consultas).
 
@@ -267,7 +287,7 @@ Tabla de respaldo / archive para incidentes cerrados (optimización de consultas
 
 ---
 
-### 11. `audit_log` – Registro de cambios críticos en tablas maestras
+### 12. `audit_log` – Registro de cambios críticos en tablas maestras
 
 Para trazabilidad de modificaciones en estaciones, tipos de emergencia, vehículos, reglas, etc.
 

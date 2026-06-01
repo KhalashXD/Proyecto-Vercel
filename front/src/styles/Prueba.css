@@ -285,6 +285,12 @@
   border-color: #d84b4b;
 }
 
+.emergency-vehicle:hover,
+.emergency-vehicle.active {
+  background: #d84b4b;
+  border-color: #ff7373;
+}
+
 .dispatched-vehicle.status-yellow {
   background: #b88700;
   border-color: #d6a900;
@@ -369,6 +375,49 @@
 
 .victims-table tr:last-child td {
   border-bottom: 0;
+}
+
+.unit-instructions-list {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.unit-instructions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.unit-instruction-card {
+  min-width: 0;
+  padding: 14px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+}
+
+.unit-instruction-card h4 {
+  margin: 0 0 10px;
+  color: var(--text-main);
+  font-size: 1rem;
+}
+
+.unit-instruction-card ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.unit-instruction-card li,
+.unit-instruction-card p,
+.unit-instructions-list > p {
+  margin: 0;
+  color: var(--text-soft);
+  overflow-wrap: anywhere;
+}
+
+.unit-instruction-card li + li {
+  margin-top: 8px;
 }
 
 @media (max-width: 700px) {

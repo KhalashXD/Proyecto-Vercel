@@ -46,3 +46,7 @@ class CreateIncidentVictimRequest(BaseModel):
     reason_at_scene: str
     injury_type: str
     details: str | None = None
+
+class CreateVehicleInstructionRequest(BaseModel):
+    vehicle_codes: list[str]
+    instruction: str

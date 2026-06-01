@@ -37,6 +37,14 @@ interface IncidentVictim {
   details: string | null;
 }
 
+interface VehicleInstruction {
+  id: number;
+  vehicle_id: number;
+  vehicle_code: string;
+  instruction: string;
+  created_at: string;
+}
+
 type IncidentActionType =
   | "A_evaluacion_incidente"
   | "A_nueva_clave"
@@ -323,6 +331,7 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [carrosDisponibles, setCarrosDisponibles] = useState<Vehicle[]>([]);
   const [selectedDespacho, setSelectedDespacho] = useState<number[]>([]);
+  const [selectedLiberar, setSelectedLiberar] = useState<number[]>([]);
   const [despacho, setDespacho] = useState<string[]>([]);
   const [acciones, setAcciones] = useState<any[]>([]);
   const [data2, setData2] = useState<SelectOption[]>([]);
@@ -484,6 +493,40 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
         }
   };
 
+  const handleLiberar = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
+    e.preventDefault();
+
+    if (selectedLiberar.length === 0) {
+      alert("Selecciona al menos una unidad en la emergencia");
+      return;
+    }
+
+    try {
+      for (const vehicleId of selectedLiberar) {
+        const response = await fetch(
+          `http://localhost:5000/emergenciasActivas/${id}/vehiculos/${vehicleId}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("No se pudo liberar una de las unidades");
+        }
+      }
+
+      setSelectedLiberar([]);
+      await cargarActivos();
+      switchToTabA();
+    } catch (error) {
+      console.error(error);
+      alert("No se pudieron liberar todas las unidades seleccionadas");
+      await cargarActivos();
+    }
+  };
+
 
 
 
@@ -560,8 +603,16 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
   };
 
 
-    const toggleSelection2 = (vehicleId: number): void => {
+  const toggleSelection2 = (vehicleId: number): void => {
     setSelectedDespacho((prevSelected) =>
+      prevSelected.includes(vehicleId)
+        ? prevSelected.filter((id) => id !== vehicleId)
+        : [...prevSelected, vehicleId]
+    );
+  };
+
+  const toggleLiberar = (vehicleId: number): void => {
+    setSelectedLiberar((prevSelected) =>
       prevSelected.includes(vehicleId)
         ? prevSelected.filter((id) => id !== vehicleId)
         : [...prevSelected, vehicleId]
@@ -585,20 +636,32 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
       <div className="emergencia-column">
         <h2>Unidades en la Emergencia</h2>
 
-        <div className="action-grid">
-          {unidadesEnEmergencia.length > 0 ? (
-            unidadesEnEmergencia.map((vehicle) => (
-              <span
-                key={vehicle.id}
-                className="action-chip emergency-vehicle"
-              >
-                {vehicle.vehicle_code}
-              </span>
-            ))
-          ) : (
-            <p>No hay unidades confirmadas</p>
+        <form onSubmit={handleLiberar}>
+          <div className="action-grid">
+            {unidadesEnEmergencia.length > 0 ? (
+              unidadesEnEmergencia.map((vehicle) => (
+                <button
+                  key={vehicle.id}
+                  type="button"
+                  onClick={() => toggleLiberar(vehicle.id)}
+                  className={`action-chip emergency-vehicle ${
+                    selectedLiberar.includes(vehicle.id) ? "active" : ""
+                  }`}
+                >
+                  {vehicle.vehicle_code}
+                </button>
+              ))
+            ) : (
+              <p>No hay unidades confirmadas</p>
+            )}
+          </div>
+
+          {unidadesEnEmergencia.length > 0 && (
+            <button type="submit" className="app-btn app-btn-primary">
+              Liberar unidades
+            </button>
           )}
-        </div>
+        </form>
       </div>
 
       <div className="activos-column">
@@ -875,30 +938,52 @@ const Form3: React.FC<FormProps> = ({ switchToTabA }) => {
   );
 };
 
-const Form4: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
+const Form4: React.FC<FormProps> = ({ eventId }) => {
   const { id } = useParams<{ id: string }>();
 
-  const [activeSection, setActiveSection] = useState<string | null>(null);
   const [carrosActivos, setCarrosActivos] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [inputText, setInputText] = useState<string>("");
+  const [instructions, setInstructions] = useState<VehicleInstruction[]>([]);
+
+  const cargarInstrucciones = async (): Promise<void> => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/emergenciasActivas/${id}/instrucciones`
+      );
+
+      if (!response.ok) {
+        throw new Error("No se pudieron cargar las instrucciones");
+      }
+
+      setInstructions(await response.json());
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    fetch(`http://localhost:5000/emergenciasActivas/${id}`)
-      .then((response) => response.json())
-      .then((data) => {
+    Promise.all([
+      fetch(`http://localhost:5000/emergenciasActivas/${id}`).then((response) =>
+        response.json()
+      ),
+      cargarInstrucciones(),
+    ])
+      .then(([data]) => {
         setCarrosActivos(
           (data.assigned_vehicles || []).map(
             (vehicle: Vehicle) => vehicle.vehicle_code
           )
         );
-        setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching event data:", error);
+      })
+      .finally(() => {
         setLoading(false);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, eventId]);
 
   const handleSubmit = async (
@@ -912,12 +997,27 @@ const Form4: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
     }
 
     try {
-      await registrarAccionEmergencia(
-        id,
-        "A_instrucciones",
-        `Unidades ${selectedItems.join(", ")}: ${inputText.trim()}`
+      const response = await fetch(
+        `http://localhost:5000/emergenciasActivas/${id}/instrucciones`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            vehicle_codes: selectedItems,
+            instruction: inputText.trim(),
+          }),
+        }
       );
-      switchToTabA();
+
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      setSelectedItems([]);
+      setInputText("");
+      await cargarInstrucciones();
     } catch (error) {
       console.error(error);
       alert("No se pudo registrar la instrucción");
@@ -937,38 +1037,68 @@ const Form4: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h3>Instrucciones a unidades</h3>
+    <div className="instructions-section">
+      <form onSubmit={handleSubmit}>
+        <h3>Instrucciones a unidades</h3>
 
-      <div className="action-grid">
-        {carrosActivos.map((item, index) => (
-          <button
-            key={index}
-            type="button"
-            onClick={() => {
-              toggleSelection(item);
-              setActiveSection(item);
-            }}
-            className={`action-chip ${activeSection === item ? "active" : ""}`}
-          >
-            {item}
-          </button>
-        ))}
+        <div className="action-grid">
+          {carrosActivos.map((item) => (
+            <button
+              key={item}
+              type="button"
+              onClick={() => toggleSelection(item)}
+              className={`action-chip ${selectedItems.includes(item) ? "active" : ""}`}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+
+        <label>
+          Instrucción:
+          <input
+            type="text"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+          />
+        </label>
+
+        <button type="submit" className="app-btn app-btn-primary">
+          Registrar
+        </button>
+      </form>
+
+      <div className="unit-instructions-list">
+        <h3>Instrucciones registradas por unidad</h3>
+
+        {carrosActivos.length > 0 ? (
+          <div className="unit-instructions-grid">
+            {carrosActivos.map((vehicleCode) => {
+              const vehicleInstructions = instructions.filter(
+                (instruction) => instruction.vehicle_code === vehicleCode
+              );
+
+              return (
+                <article key={vehicleCode} className="unit-instruction-card">
+                  <h4>{vehicleCode}</h4>
+                  {vehicleInstructions.length > 0 ? (
+                    <ul>
+                      {vehicleInstructions.map((instruction) => (
+                        <li key={instruction.id}>{instruction.instruction}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>Sin instrucciones registradas.</p>
+                  )}
+                </article>
+              );
+            })}
+          </div>
+        ) : (
+          <p>No hay unidades asignadas a esta emergencia.</p>
+        )}
       </div>
-
-      <label>
-        Instrucción:
-        <input
-          type="text"
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-        />
-      </label>
-
-      <button type="submit" className="app-btn app-btn-primary">
-        Registrar
-      </button>
-    </form>
+    </div>
   );
 };
 

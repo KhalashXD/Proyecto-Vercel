@@ -36,9 +36,9 @@ from services.despacho_service import ( ejecutar_despacho)
 
 from utils.maps import (  obtener_coordenadas)
 
-from schemas.incident_schema import ( UpdateIncidentStatusRequest, AssignVehicleRequest, UpdateVehicleStatusRequest, CreateIncidentActionRequest, CreateIncidentVictimRequest)
+from schemas.incident_schema import ( UpdateIncidentStatusRequest, AssignVehicleRequest, UpdateVehicleStatusRequest, CreateIncidentActionRequest, CreateIncidentVictimRequest, CreateVehicleInstructionRequest)
 
-from services.incident_service import (obtener_incidentes_activos,obtener_incidente_por_codigo,actualizar_estado_incidente, obtener_historial_incidentes, asignar_vehiculo_adicional, actualizar_estado_vehiculo_incidente, registrar_accion_incidente, obtener_victimas_incidente, registrar_victima_incidente)
+from services.incident_service import (obtener_incidentes_activos,obtener_incidente_por_codigo,actualizar_estado_incidente, obtener_historial_incidentes, asignar_vehiculo_adicional, actualizar_estado_vehiculo_incidente, liberar_vehiculo_incidente, registrar_accion_incidente, obtener_victimas_incidente, registrar_victima_incidente, obtener_instrucciones_unidades, registrar_instrucciones_unidades)
 
 from services.vehicle_service import (obtener_vehiculos, obtener_vehiculos_disponibles, actualizar_estado_vehiculo)
 from services.personnel_service import (obtener_personal)
@@ -303,6 +303,18 @@ def actualizar_estado_carro_en_emergencia(
         new_status=request.status
     )
 
+@app.delete("/emergenciasActivas/{incident_code}/vehiculos/{vehicle_id}")
+def liberar_carro_de_emergencia(
+    incident_code: str,
+    vehicle_id: int,
+    db: Session = Depends(get_db)
+):
+    return liberar_vehiculo_incidente(
+        db=db,
+        incident_code=incident_code,
+        vehicle_id=vehicle_id
+    )
+
 @app.patch("/vehiculos/{vehicle_id}/estado")
 def actualizar_estado_carro(
     vehicle_id: int,
@@ -328,6 +340,29 @@ def registrar_accion(
         description=request.description,
         user_name=request.user_name,
         emergency_code=request.emergency_code
+    )
+
+@app.get("/emergenciasActivas/{incident_code}/instrucciones")
+def obtener_instrucciones(
+    incident_code: str,
+    db: Session = Depends(get_db)
+):
+    return obtener_instrucciones_unidades(
+        db=db,
+        incident_code=incident_code
+    )
+
+@app.post("/emergenciasActivas/{incident_code}/instrucciones")
+def registrar_instrucciones(
+    incident_code: str,
+    request: CreateVehicleInstructionRequest,
+    db: Session = Depends(get_db)
+):
+    return registrar_instrucciones_unidades(
+        db=db,
+        incident_code=incident_code,
+        vehicle_codes=request.vehicle_codes,
+        instruction=request.instruction
     )
 
 @app.get("/emergenciasActivas/{incident_code}/victimas")

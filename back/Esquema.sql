@@ -202,6 +202,22 @@ CREATE TABLE IF NOT EXISTS incident_victims (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
+-- TABLA: incident_vehicle_instructions (Instrucciones por unidad)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS incident_vehicle_instructions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    incident_id INT NOT NULL,
+    vehicle_id INT NOT NULL,
+    instruction TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (incident_id) REFERENCES incidents(id) ON DELETE CASCADE,
+    FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE,
+    INDEX idx_incident (incident_id),
+    INDEX idx_vehicle (vehicle_id),
+    INDEX idx_created (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
 -- TABLA: incident_events (Registro de eventos/auditoría)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS incident_events (
