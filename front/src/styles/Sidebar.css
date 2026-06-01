@@ -62,12 +62,14 @@
   background: #1fa34a;
 }
 
-.btn-cuartel {
-  background: #2f80ed;
+.btn-no-disponible {
+  background: #6f6f6f;
 }
 
-.btn-fuera {
-  background: #d84b4b;
+.sidebar-action-note {
+  color: #c9c9c9;
+  font-size: 0.78rem;
+  line-height: 1.35;
 }
 
 .sidebar-legend {

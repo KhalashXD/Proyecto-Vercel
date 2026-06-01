@@ -287,7 +287,7 @@ def actualizar_estado_incidente(
             func.current_timestamp()
         )
 
-        # liberar vehículos
+        # Los carros deben confirmar posteriormente su regreso al cuartel.
         for relation in incident.vehicles:
 
             vehicle = (
@@ -295,7 +295,11 @@ def actualizar_estado_incidente(
             )
 
             vehicle.status = (
-                "green"
+                "blue"
+            )
+
+            relation.departure_time = (
+                func.current_timestamp()
             )
 
         # evento de cierre
@@ -304,7 +308,7 @@ def actualizar_estado_incidente(
                 incident_id=incident.id,
                 event_type="incident_closed",
                 description=(
-                    "Emergencia cerrada y Carros liberados "
+                    "Emergencia cerrada. Carros en retorno al cuartel"
                 ),
                 user_name="system"
             )
@@ -463,4 +467,58 @@ def asignar_vehiculo_adicional(
     return {
         "message": "Unidad asignada correctamente",
         "vehicle_code": vehicle.vehicle_code
+    }
+
+def actualizar_estado_vehiculo_incidente(
+    db: Session,
+    incident_code: str,
+    vehicle_id: int,
+    new_status: str
+):
+    incident = (
+        db.query(Incident)
+        .filter(Incident.incident_code == incident_code)
+        .first()
+    )
+
+    if not incident:
+        raise Exception("Incident not found")
+
+    relation = (
+        db.query(IncidentVehicle)
+        .filter(
+            IncidentVehicle.incident_id == incident.id,
+            IncidentVehicle.vehicle_id == vehicle_id
+        )
+        .first()
+    )
+
+    if not relation:
+        raise Exception("Vehicle is not assigned to this incident")
+
+    vehicle = relation.vehicle
+
+    if vehicle.status != "yellow" or new_status != "red":
+        raise Exception("Vehicle status transition is not allowed")
+
+    vehicle.status = "red"
+    relation.arrived_at = func.current_timestamp()
+
+    event = IncidentEvent(
+        incident_id=incident.id,
+        vehicle_id=vehicle.id,
+        event_type="vehicle_arrived",
+        description=f"Unidad {vehicle.vehicle_code} confirmada en emergencia",
+        user_name="system"
+    )
+
+    db.add(event)
+    db.commit()
+    db.refresh(vehicle)
+
+    return {
+        "message": "Unidad confirmada en emergencia",
+        "vehicle_id": vehicle.id,
+        "vehicle_code": vehicle.vehicle_code,
+        "status": vehicle.status
     }

@@ -1,8 +1,10 @@
 // Estados operativos de los carros según los requerimientos [cite: 13]
 export enum EstadoCarro {
   VERDE = 'DISPONIBLE_CUARTEL',     // Disponible en cuartel [cite: 14]
-  AMARILLO = 'TRANSICION',          // No disponible o en transición [cite: 15]
-  ROJO = 'ASIGNADO_EMERGENCIA'      // Asignado a una emergencia [cite: 16]
+  AMARILLO = 'DESPACHADO_EMERGENCIA',
+  ROJO = 'EN_EMERGENCIA',
+  AZUL = 'RETORNO_CUARTEL',
+  GRIS = 'NO_DISPONIBLE'
 }
 
 // Estados del ciclo de vida de un incidente [cite: 10]

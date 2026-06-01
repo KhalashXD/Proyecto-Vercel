@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS vehicles (
     vehicle_code VARCHAR(50) NOT NULL UNIQUE,
     vehicle_type VARCHAR(100) NOT NULL,
     station_id INT NOT NULL,
-    status ENUM('green', 'yellow', 'red') DEFAULT 'green' COMMENT 'green=disponible, yellow=en transito, red=asignado',
+    status ENUM('green', 'yellow', 'red', 'blue', 'gray') DEFAULT 'green' COMMENT 'green=disponible en cuartel, yellow=despachado, red=en emergencia, blue=retorno pendiente, gray=no disponible',
     driver_name VARCHAR(255),
     capacity INT,
     last_location_lat DECIMAL(10, 8),
@@ -738,8 +738,10 @@ SELECT
     s.name AS station_name,
     COUNT(*) AS total_vehicles,
     SUM(CASE WHEN v.status = 'green' THEN 1 ELSE 0 END) AS available,
-    SUM(CASE WHEN v.status = 'yellow' THEN 1 ELSE 0 END) AS transitioning,
-    SUM(CASE WHEN v.status = 'red' THEN 1 ELSE 0 END) AS assigned
+    SUM(CASE WHEN v.status = 'yellow' THEN 1 ELSE 0 END) AS dispatched,
+    SUM(CASE WHEN v.status = 'red' THEN 1 ELSE 0 END) AS at_incident,
+    SUM(CASE WHEN v.status = 'blue' THEN 1 ELSE 0 END) AS returning,
+    SUM(CASE WHEN v.status = 'gray' THEN 1 ELSE 0 END) AS unavailable
 FROM stations s
 LEFT JOIN vehicles v ON s.id = v.station_id
 GROUP BY s.id, s.code, s.name

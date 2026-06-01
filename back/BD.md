@@ -78,7 +78,7 @@ Registro de cada vehículo, su estado y estación asignada.
 | vehicle_code           | VARCHAR(50)                  | Código único del vehículo (ej. 'BR-01')                              |
 | vehicle_type           | VARCHAR(100)                 | Tipo: Camión Bombero, Ambulancia, Escalera, Tanquero, etc.           |
 | station_id             | INT NOT NULL                 | Estación a la que pertenece (FK a `stations.id`)                     |
-| status                 | ENUM('green','yellow','red') | Estado operativo: green=disponible, yellow=transito, red=asignado    |
+| status                 | ENUM('green','yellow','red','blue','gray') | Estado operativo: green=disponible en cuartel, yellow=despachado, red=en emergencia, blue=retorno pendiente, gray=no disponible |
 | driver_name            | VARCHAR(255)                 | Nombre del conductor asignado actualmente (opcional)                 |
 | capacity               | INT                          | Capacidad de tripulación                                             |
 | last_location_lat      | DECIMAL(10,8)                | Última latitud reportada (para seguimiento)                          |
@@ -210,7 +210,7 @@ Bitácora cronológica de eventos relevantes para cada incidente.
 | id            | INT AUTO_INCREMENT                                                         | Clave primaria                            |
 | incident_id   | INT NOT NULL                                                               | Incidente asociado                        |
 | vehicle_id    | INT NULL                                                                   | Vehículo involucrado (opcional)           |
-| event_type    | ENUM('created','vehicle_assigned','vehicle_arrived','vehicle_departed','status_changed','additional_units_requested','ambulance_requested','form_submitted','incident_closed') | Tipo de evento |
+| event_type    | ENUM('created','vehicle_assigned','vehicle_arrived','vehicle_departed','status_changed','additional_units_requested','ambulance_requested','form_submitted','victims_reported','personel_asigned','other','incident_closed') | Tipo de evento |
 | description   | TEXT                                                                       | Detalles del evento                       |
 | user_name     | VARCHAR(255)                                                               | Usuario que realizó la acción             |
 | created_at    | TIMESTAMP                                                                  | Momento del evento                        |
@@ -269,7 +269,7 @@ Para trazabilidad de modificaciones en estaciones, tipos de emergencia, vehícul
 Muestra incidentes activos (registered, pending, in_progress) con información agregada: cantidad de vehículos asignados y sus códigos.
 
 ### `vehicle_availability_view`
-Resumen de disponibilidad de vehículos por estación: totales, disponibles (green), en tránsito (yellow) y asignados (red).
+Resumen de disponibilidad de vehículos por estación: totales, disponibles (green), despachados (yellow), en emergencia (red), en retorno (blue) y no disponibles (gray).
 
 ### `incident_statistics_view`
 Estadísticas por tipo de emergencia: total incidentes, cerrados, activos y tiempo promedio de respuesta en minutos.

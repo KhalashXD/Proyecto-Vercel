@@ -4,6 +4,14 @@ from models import (
     Vehicle
 )
 
+VEHICLE_STATUSES = {
+    "green",
+    "yellow",
+    "red",
+    "blue",
+    "gray"
+}
+
 def obtener_vehiculos(
     db: Session
 ):
@@ -108,3 +116,42 @@ def obtener_vehiculos_disponibles(db: Session):
         }
         for vehicle in vehicles
     ]
+
+def actualizar_estado_vehiculo(
+    db: Session,
+    vehicle_id: int,
+    new_status: str
+):
+    if new_status not in VEHICLE_STATUSES:
+        raise Exception("Vehicle status is not valid")
+
+    vehicle = (
+        db.query(Vehicle)
+        .filter(Vehicle.id == vehicle_id)
+        .first()
+    )
+
+    if not vehicle:
+        raise Exception("Vehicle not found")
+
+    allowed_transitions = {
+        "green": {"gray"},
+        "blue": {"green", "gray"},
+        "gray": {"green"},
+    }
+
+    if new_status not in allowed_transitions.get(vehicle.status, set()):
+        raise Exception("Vehicle status transition is not allowed")
+
+    previous_status = vehicle.status
+    vehicle.status = new_status
+    db.commit()
+    db.refresh(vehicle)
+
+    return {
+        "message": "Vehicle status updated",
+        "vehicle_id": vehicle.id,
+        "vehicle_code": vehicle.vehicle_code,
+        "old_status": previous_status,
+        "new_status": vehicle.status
+    }

@@ -5,7 +5,7 @@ export interface Carro {
   id: string;
   nombre: string;                   // Ej: "B-1"
   cuartelId: string;                // Visualización por cuartel [cite: 12]
-  estado: EstadoCarro;              // Verde, Amarillo o Rojo [cite: 13]
+  estado: EstadoCarro;              // Estado operativo representado por color [cite: 13]
 }
 
 // Catálogo predefinido de tipos de emergencia [cite: 8]

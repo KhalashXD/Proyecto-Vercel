@@ -109,6 +109,7 @@ const formatHora = (value: string): string => {
     if (activeTab === "info") {
       fetchData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, id]);
 
   if (loading) {
@@ -245,10 +246,9 @@ const formatHora = (value: string): string => {
 const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
   const { id } = useParams<{ id: string }>();
 
-  const [carrosActivos, setCarrosActivos] = useState<string[]>([]);
+  const [carrosActivos, setCarrosActivos] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [selectedEstado, setSelectedEstado] = useState<string | null>(null);
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [carrosDisponibles, setCarrosDisponibles] = useState<Vehicle[]>([]);
   const [selectedDespacho, setSelectedDespacho] = useState<number[]>([]);
   const [despacho, setDespacho] = useState<string[]>([]);
@@ -256,7 +256,6 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
   const [data2, setData2] = useState<SelectOption[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<Record<number, SelectOption | null>>({});
   const [integerValues, setIntegerValues] = useState<Record<number, number>>({});
-  const [activeSection, setActiveSection] = useState<string | null>(null);
 
   const cargarDisponibles = async (): Promise<void> => {
     try {
@@ -272,6 +271,25 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
       setCarrosDisponibles(data);
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const cargarActivos = async (): Promise<void> => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/emergenciasActivas/${id}`
+      );
+
+      if (!response.ok) {
+        throw new Error("No se pudieron cargar las unidades despachadas");
+      }
+
+      const data = await response.json();
+      setCarrosActivos(data.assigned_vehicles || []);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -302,16 +320,8 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
   }, []);
 
   useEffect(() => {
-    fetch(`/carros/${id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setCarrosActivos(data.carros || []);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching event data:", error);
-        setLoading(false);
-      });
+    cargarActivos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, eventId]);
 
 
@@ -320,26 +330,44 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
 
-    const data = {
-      carro: selectedItems,
-      estado: selectedEstado ? [selectedEstado] : [],
-      id,
-    };
+    if (selectedItems.length === 0) {
+      alert("Selecciona al menos una unidad despachada");
+      return;
+    }
 
-    fetch("/desmov", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        console.log("Response from backend:", result);
-        switchToTabA();
-      })
-      .catch((error) => console.error("Error:", error));
+    try {
+      for (const vehicleId of selectedItems) {
+        const response = await fetch(
+          `http://localhost:5000/emergenciasActivas/${id}/vehiculos/${vehicleId}/estado`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              status: "red",
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("No se pudo confirmar una de las unidades");
+        }
+      }
+
+      setSelectedItems([]);
+      await cargarActivos();
+      switchToTabA();
+    } catch (error) {
+      console.error(error);
+      alert("No se pudieron confirmar todas las unidades seleccionadas");
+      await cargarActivos();
+    }
   };
 
 
@@ -347,6 +375,11 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
         e: React.FormEvent<HTMLFormElement>
       ): Promise<void> => {
         e.preventDefault();
+
+        if (selectedDespacho.length === 0) {
+          alert("Selecciona al menos una unidad antes de despachar");
+          return;
+        }
 
         try {
           for (const vehicleId of selectedDespacho) {
@@ -370,6 +403,7 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
 
           setSelectedDespacho([]);
           await cargarDisponibles();
+          await cargarActivos();
           switchToTabA();
         } catch (error) {
           console.error(error);
@@ -445,11 +479,11 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
     localStorage.setItem("acciones", JSON.stringify(updatedAcciones));
   };
 
-  const toggleSelection = (item: string): void => {
+  const toggleSelection = (vehicleId: number): void => {
     setSelectedItems((prevSelected) =>
-      prevSelected.includes(item)
-        ? prevSelected.filter((i) => i !== item)
-        : [...prevSelected, item]
+      prevSelected.includes(vehicleId)
+        ? prevSelected.filter((id) => id !== vehicleId)
+        : [...prevSelected, vehicleId]
     );
   };
 
@@ -460,10 +494,6 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
         ? prevSelected.filter((id) => id !== vehicleId)
         : [...prevSelected, vehicleId]
     );
-  };
-
-  const selectEstado = (option: string): void => {
-    setSelectedEstado((prevOption) => (prevOption === option ? null : option));
   };
 
   if (loading) {
@@ -477,47 +507,25 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
 
         <form onSubmit={handleSubmit}>
           <div className="action-grid">
-            {carrosActivos.map((item, index) => (
+            {carrosActivos.map((vehicle) => (
               <button
-                key={index}
+                key={vehicle.id}
                 type="button"
+                disabled={vehicle.status !== "yellow"}
                 onClick={() => {
-                  toggleSelection(item);
-                  setActiveSection(item);
+                  toggleSelection(vehicle.id);
                 }}
-                className={`action-chip ${activeSection === item ? "active" : ""}`}
+                className={`action-chip dispatched-vehicle status-${vehicle.status} ${
+                  selectedItems.includes(vehicle.id) ? "active" : ""
+                }`}
               >
-                {item}
+                {vehicle.vehicle_code}
               </button>
             ))}
           </div>
 
-          <div className="action-grid">
-            <button
-              type="button"
-              onClick={() => {
-                selectEstado("Desmovilizado");
-                setActiveSection("Desmovilizado");
-              }}
-              className={`action-chip ${activeSection === "Desmovilizado" ? "active" : ""}`}
-            >
-              Desmovilizado
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                selectEstado("En el lugar");
-                setActiveSection("En el lugar");
-              }}
-              className={`action-chip ${activeSection === "En el lugar" ? "active" : ""}`}
-            >
-              En el lugar
-            </button>
-          </div>
-
           <button type="submit" className="app-btn app-btn-primary">
-            Confirmar
+            Confirmar llegada
           </button>
         </form>
       </div>
@@ -534,7 +542,6 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
                 type="button"
                 onClick={() => {
                   toggleSelection2(vehicle.id);
-                  setActiveSection(vehicle.vehicle_code);
                 }}
                 className={`action-chip available-vehicle ${
                   selectedDespacho.includes(vehicle.id) ? "active" : ""

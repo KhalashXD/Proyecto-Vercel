@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../styles/Sidebar.css";
 
-type VehicleStatus = "green" | "yellow" | "red";
+type VehicleStatus = "green" | "yellow" | "red" | "blue" | "gray";
 
 interface Carro {
   id: number;
@@ -17,17 +17,17 @@ const Sidebar: React.FC = React.memo(() => {
   const [dataCarro, setDataCarro] = useState<Carro[]>([]);
   const [openItemIndex, setOpenItemIndex] = useState<number | null>(null);
 
-  useEffect(() => {
-    const fetchDataCarro = async (): Promise<void> => {
-      try {
-        const response = await fetch("http://localhost:5000/vehiculos");
-        const result: Carro[] = await response.json();
-        setDataCarro(result);
-      } catch (error) {
-        console.error("Error fetching carros:", error);
-      }
-    };
+  const fetchDataCarro = async (): Promise<void> => {
+    try {
+      const response = await fetch("http://localhost:5000/vehiculos");
+      const result: Carro[] = await response.json();
+      setDataCarro(result);
+    } catch (error) {
+      console.error("Error fetching carros:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchDataCarro();
 
     const interval = window.setInterval(fetchDataCarro, 10000);
@@ -46,6 +46,12 @@ const Sidebar: React.FC = React.memo(() => {
       case "red":
         return "#d84b4b";
 
+      case "blue":
+        return "#2f80ed";
+
+      case "gray":
+        return "#6f6f6f";
+
       default:
         return "#ffffff";
     }
@@ -57,17 +63,22 @@ const Sidebar: React.FC = React.memo(() => {
 
   const handleButtonClick = async (
     carro: number,
-    button: string
+    status: VehicleStatus
   ): Promise<void> => {
     try {
-      await fetch("/estado-carro", {
-        method: "POST",
+      const response = await fetch(`http://localhost:5000/vehiculos/${carro}/estado`, {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ carro, button }),
+        body: JSON.stringify({ status }),
       });
 
+      if (!response.ok) {
+        throw new Error("No se pudo actualizar el estado del carro");
+      }
+
+      await fetchDataCarro();
       setOpenItemIndex(null);
     } catch (error) {
       console.error("Error updating status:", error);
@@ -89,29 +100,31 @@ const Sidebar: React.FC = React.memo(() => {
 
             {openItemIndex === index && (
               <div className="sidebar-actions">
-                <button
-                  type="button"
-                  className="btn-disponible"
-                  onClick={() => handleButtonClick(item.id, "0")}
-                >
-                  Disponible
-                </button>
+                {(item.status === "blue" || item.status === "gray") && (
+                  <button
+                    type="button"
+                    className="btn-disponible"
+                    onClick={() => handleButtonClick(item.id, "green")}
+                  >
+                    Confirmar en cuartel
+                  </button>
+                )}
 
-                <button
-                  type="button"
-                  className="btn-cuartel"
-                  onClick={() => handleButtonClick(item.id, "2")}
-                >
-                  Cuartel
-                </button>
+                {(item.status === "green" || item.status === "blue") && (
+                  <button
+                    type="button"
+                    className="btn-no-disponible"
+                    onClick={() => handleButtonClick(item.id, "gray")}
+                  >
+                    No disponible
+                  </button>
+                )}
 
-                <button
-                  type="button"
-                  className="btn-fuera"
-                  onClick={() => handleButtonClick(item.id, "4")}
-                >
-                  Fuera
-                </button>
+                {(item.status === "yellow" || item.status === "red") && (
+                  <span className="sidebar-action-note">
+                    Estado gestionado desde la emergencia
+                  </span>
+                )}
               </div>
             )}
           </div>
@@ -131,7 +144,17 @@ const Sidebar: React.FC = React.memo(() => {
 
         <div className="sidebar-legend-item">
           <span className="sidebar-dot" style={{ background: "#d84b4b" }} />
-          Fuera
+          En emergencia
+        </div>
+
+        <div className="sidebar-legend-item">
+          <span className="sidebar-dot" style={{ background: "#2f80ed" }} />
+          Regreso pendiente
+        </div>
+
+        <div className="sidebar-legend-item">
+          <span className="sidebar-dot" style={{ background: "#6f6f6f" }} />
+          No disponible
         </div>
       </div>
     </div>

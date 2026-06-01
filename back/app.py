@@ -36,11 +36,11 @@ from services.despacho_service import ( ejecutar_despacho)
 
 from utils.maps import (  obtener_coordenadas)
 
-from schemas.incident_schema import ( UpdateIncidentStatusRequest, AssignVehicleRequest)
+from schemas.incident_schema import ( UpdateIncidentStatusRequest, AssignVehicleRequest, UpdateVehicleStatusRequest)
 
-from services.incident_service import (obtener_incidentes_activos,obtener_incidente_por_codigo,actualizar_estado_incidente, obtener_historial_incidentes, asignar_vehiculo_adicional)
+from services.incident_service import (obtener_incidentes_activos,obtener_incidente_por_codigo,actualizar_estado_incidente, obtener_historial_incidentes, asignar_vehiculo_adicional, actualizar_estado_vehiculo_incidente)
 
-from services.vehicle_service import (obtener_vehiculos, obtener_vehiculos_disponibles)
+from services.vehicle_service import (obtener_vehiculos, obtener_vehiculos_disponibles, actualizar_estado_vehiculo)
 from services.personnel_service import (obtener_personal)
 from schemas.carros_mando_schema import (CarroMandoRequest)
 from services.carros_mando_service import (registrar_carro_mando)
@@ -287,6 +287,32 @@ def asignar_vehiculo(
         db=db,
         incident_code=incident_code,
         vehicle_id=request.vehicle_id
+    )
+
+@app.patch("/emergenciasActivas/{incident_code}/vehiculos/{vehicle_id}/estado")
+def actualizar_estado_carro_en_emergencia(
+    incident_code: str,
+    vehicle_id: int,
+    request: UpdateVehicleStatusRequest,
+    db: Session = Depends(get_db)
+):
+    return actualizar_estado_vehiculo_incidente(
+        db=db,
+        incident_code=incident_code,
+        vehicle_id=vehicle_id,
+        new_status=request.status
+    )
+
+@app.patch("/vehiculos/{vehicle_id}/estado")
+def actualizar_estado_carro(
+    vehicle_id: int,
+    request: UpdateVehicleStatusRequest,
+    db: Session = Depends(get_db)
+):
+    return actualizar_estado_vehiculo(
+        db=db,
+        vehicle_id=vehicle_id,
+        new_status=request.status
     )
 
 

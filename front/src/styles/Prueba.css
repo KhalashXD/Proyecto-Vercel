@@ -261,3 +261,33 @@
   background: #196c2e;
   border-color: #58c76b;
 }
+
+.dispatched-vehicle.status-yellow {
+  background: #b88700;
+  border-color: #d6a900;
+}
+
+.dispatched-vehicle.status-yellow:hover,
+.dispatched-vehicle.status-yellow.active {
+  background: #d6a900;
+}
+
+.dispatched-vehicle.status-red {
+  background: #b83e3e;
+  border-color: #d84b4b;
+}
+
+.dispatched-vehicle.status-blue {
+  background: #2468b4;
+  border-color: #2f80ed;
+}
+
+.dispatched-vehicle.status-gray {
+  background: #5f5f5f;
+  border-color: #7b7b7b;
+}
+
+.dispatched-vehicle:disabled {
+  cursor: default;
+  opacity: 0.9;
+}
