@@ -261,7 +261,11 @@ INSERT INTO stations (code, name, address, latitude, longitude, phone, email) VA
 -- DATOS INICIALES - TIPOS DE EMERGENCIA
 -- ============================================================
 INSERT INTO emergency_types (code, name, description, required_units, required_personnel, morse_code, priority) VALUES
-            -- CLAVE 1: INCENDIO ESTRUCTURAL
+        -- CLAVE X: INCENDIO DECLARADO
+        ('X-1', 'INCENDIO DECLARADO',
+        'Incendio declarado', 3, 12, '.../.-', 1),
+        
+        -- CLAVE 1: INCENDIO ESTRUCTURAL
         ('1-1', 'INCENDIO ESTRUCTURAL BÁSICO',
         'Incendio estructural básico', 3, 12, '.../.-', 1),
 

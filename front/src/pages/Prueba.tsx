@@ -805,8 +805,8 @@ const Form3: React.FC<FormProps> = ({ switchToTabA }) => {
           </optgroup>
 
           <optgroup label="Otros Incidentes">
-            <option value="7-1">9: ACUARTELAMIENTO GENERAL</option>
-            <option value="9-1">9: EMERGENCIA INDUSTRIAL</option>
+            <option value="7-1">7-1: ACUARTELAMIENTO GENERAL</option>
+            <option value="9-1">9-1: EMERGENCIA INDUSTRIAL</option>
             <option value="10-1">10-1: TRASLADO DE BOMBERO ACCIDENTADO</option>
             <option value="10-2">10-2: ABASTECIMIENTO DE AGUA</option>
             <option value="10-3">10-3: ABRIR PUERTAS</option>

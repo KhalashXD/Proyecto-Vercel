@@ -462,6 +462,10 @@ const Despacho: React.FC = () => {
                   SELECCIONE UNA CLAVE
                 </option>
 
+                <optgroup label="Incendio Declarado">
+                    <option value="X-1">X-1: INCENDIO DECLARADO</option>
+                </optgroup>
+
                 <optgroup label="Clave 1: Incendio Estructural">
                   <option value="1-1">
                     1-1: INCENDIO ESTRUCTURAL BÁSICO
