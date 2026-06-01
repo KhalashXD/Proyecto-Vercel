@@ -210,7 +210,7 @@ Bitácora cronológica de eventos relevantes para cada incidente.
 | id            | INT AUTO_INCREMENT                                                         | Clave primaria                            |
 | incident_id   | INT NOT NULL                                                               | Incidente asociado                        |
 | vehicle_id    | INT NULL                                                                   | Vehículo involucrado (opcional)           |
-| event_type    | ENUM('created','vehicle_assigned','vehicle_arrived','vehicle_departed','status_changed','additional_units_requested','ambulance_requested','form_submitted','victims_reported','personel_asigned','other','incident_closed') | Tipo de evento |
+| event_type    | ENUM('created','vehicle_assigned','vehicle_arrived','vehicle_departed','status_changed','additional_units_requested','ambulance_requested','form_submitted','victims_reported','personel_asigned','other','incident_closed','A_evaluacion_incidente','A_nueva_clave','A_instrucciones','A_comandante','A_externos','A_informacion','A_victimas') | Tipo de evento |
 | description   | TEXT                                                                       | Detalles del evento                       |
 | user_name     | VARCHAR(255)                                                               | Usuario que realizó la acción             |
 | created_at    | TIMESTAMP                                                                  | Momento del evento                        |

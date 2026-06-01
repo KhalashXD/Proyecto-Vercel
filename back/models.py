@@ -494,6 +494,17 @@ class IncidentEvent(Base):
             "personel_asigned",
             "other",
             "incident_closed",
+
+            #NUEVOOOO
+            "A_evaluacion_incidente",
+            "A_nueva_clave",
+            "A_instrucciones",
+            "A_comandante",
+            "A_externos",
+            "A_informacion",
+            "A_victimas",
+
+
             name="incident_event_type_enum"
         ),
         nullable=False

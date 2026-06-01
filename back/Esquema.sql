@@ -202,7 +202,14 @@ CREATE TABLE IF NOT EXISTS incident_events (
         'victims_reported',
         'personel_asigned',
         'other',
-        'incident_closed'
+        'incident_closed',
+        'A_evaluacion_incidente',
+        'A_nueva_clave',
+        'A_instrucciones',
+        'A_comandante',
+        'A_externos',
+        'A_informacion',
+        'A_victimas'
     ) NOT NULL,
     description TEXT,
     user_name VARCHAR(255),

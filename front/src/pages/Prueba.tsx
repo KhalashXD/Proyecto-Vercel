@@ -27,6 +27,46 @@ interface Vehicle {
   status: string;
 }
 
+type IncidentActionType =
+  | "A_evaluacion_incidente"
+  | "A_nueva_clave"
+  | "A_instrucciones"
+  | "A_comandante"
+  | "A_externos"
+  | "A_informacion"
+  | "A_victimas";
+
+const registrarAccionEmergencia = async (
+  incidentCode: string | undefined,
+  eventType: IncidentActionType,
+  description: string,
+  emergencyCode?: string
+): Promise<void> => {
+  if (!incidentCode) {
+    throw new Error("No se encontró el código de la emergencia");
+  }
+
+  const response = await fetch(
+    `http://localhost:5000/emergenciasActivas/${incidentCode}/acciones`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        event_type: eventType,
+        description,
+        user_name: "system",
+        emergency_code: emergencyCode,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+};
+
 const MultiSectionToggle: React.FC<MultiSectionToggleProps> = ({ eventId }) => {
   const { id } = useParams<{ id: string }>();
 
@@ -641,37 +681,28 @@ const Form2: React.FC<FormProps> = ({ switchToTabA }) => {
   const { id } = useParams<{ id: string }>();
 
   const [evalu, setEval] = useState<string>("");
-  const [dataA, setDataA] = useState<any[] | null>(null);
 
-  const fetchData = async (): Promise<void> => {
-    try {
-      const response = await fetch(`/evaluaciones/${id}`);
-      const data = await response.json();
-      setDataA(data.evaluaciones);
-    } catch (error) {
-      console.error("Error fetching evaluations:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
 
-    fetch("/evaluacion", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ evaluacion: evalu, id }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        switchToTabA();
-      })
-      .catch((error) => console.error("Error:", error));
+    if (!evalu.trim()) {
+      alert("Ingresa una evaluación");
+      return;
+    }
+
+    try {
+      await registrarAccionEmergencia(
+        id,
+        "A_evaluacion_incidente",
+        evalu.trim()
+      );
+      switchToTabA();
+    } catch (error) {
+      console.error(error);
+      alert("No se pudo registrar la evaluación");
+    }
   };
 
   return (
@@ -693,31 +724,6 @@ const Form2: React.FC<FormProps> = ({ switchToTabA }) => {
         </button>
       </form>
 
-      {dataA && dataA.length > 0 ? (
-        <div className="data-table-wrap">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>Descripción</th>
-                <th>Orden</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {dataA.map((accion, index) => (
-                <tr key={index}>
-                  <td>{accion[0]}</td>
-                  <td>{accion[1]}</td>
-                  <td>{accion[2]}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <p>No hay evaluaciones disponibles.</p>
-      )}
     </div>
   );
 };
@@ -727,20 +733,28 @@ const Form3: React.FC<FormProps> = ({ switchToTabA }) => {
 
   const [clave, setClave] = useState<string>("");
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
 
-    fetch("/clave", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ clave, id }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        switchToTabA();
-      })
-      .catch((error) => console.error("Error:", error));
+    if (!clave) {
+      alert("Selecciona una nueva clave");
+      return;
+    }
+
+    try {
+      await registrarAccionEmergencia(
+        id,
+        "A_nueva_clave",
+        `Clave de emergencia actualizada a ${clave}`,
+        clave
+      );
+      switchToTabA();
+    } catch (error) {
+      console.error(error);
+      alert("No se pudo actualizar la clave");
+    }
   };
 
   return (
@@ -839,10 +853,14 @@ const Form4: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
   const [inputText, setInputText] = useState<string>("");
 
   useEffect(() => {
-    fetch(`/carros/${id}`)
+    fetch(`http://localhost:5000/emergenciasActivas/${id}`)
       .then((response) => response.json())
       .then((data) => {
-        setCarrosActivos(data.carros || []);
+        setCarrosActivos(
+          (data.assigned_vehicles || []).map(
+            (vehicle: Vehicle) => vehicle.vehicle_code
+          )
+        );
         setLoading(false);
       })
       .catch((error) => {
@@ -851,26 +869,27 @@ const Form4: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
       });
   }, [id, eventId]);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
 
-    const data = {
-      selectedItems,
-      text: inputText,
-      id,
-    };
+    if (selectedItems.length === 0 || !inputText.trim()) {
+      alert("Selecciona unidades e ingresa una instrucción");
+      return;
+    }
 
-    fetch("/instrucciones", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        console.log("Response from backend:", result);
-        switchToTabA();
-      })
-      .catch((error) => console.error("Error:", error));
+    try {
+      await registrarAccionEmergencia(
+        id,
+        "A_instrucciones",
+        `Unidades ${selectedItems.join(", ")}: ${inputText.trim()}`
+      );
+      switchToTabA();
+    } catch (error) {
+      console.error(error);
+      alert("No se pudo registrar la instrucción");
+    }
   };
 
   const toggleSelection = (item: string): void => {
@@ -1007,7 +1026,9 @@ const Form6: React.FC<FormProps> = ({ switchToTabA }) => {
       });
   }, []);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
 
     if (!selectedOption) {
@@ -1015,23 +1036,17 @@ const Form6: React.FC<FormProps> = ({ switchToTabA }) => {
       return;
     }
 
-    const data = {
-      id_bombero: selectedOption.value,
-      nombre: selectedOption.label,
-      id,
-    };
-
-    fetch("/mando", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        console.log("Response from backend:", result);
-        switchToTabA();
-      })
-      .catch((error) => console.error("Error:", error));
+    try {
+      await registrarAccionEmergencia(
+        id,
+        "A_comandante",
+        `Comandante de incidentes asignado: ${selectedOption.label}`
+      );
+      switchToTabA();
+    } catch (error) {
+      console.error(error);
+      alert("No se pudo registrar el comandante");
+    }
   };
 
   return (
@@ -1061,20 +1076,27 @@ const Form7: React.FC<FormProps> = ({ switchToTabA }) => {
 
   const [externos, setExternos] = useState<string>("");
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
 
-    fetch("/externos", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ externos, id }),
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        console.log("Response from backend:", result);
-        switchToTabA();
-      })
-      .catch((error) => console.error("Error:", error));
+    if (!externos) {
+      alert("Selecciona un recurso externo");
+      return;
+    }
+
+    try {
+      await registrarAccionEmergencia(
+        id,
+        "A_externos",
+        `Recurso externo solicitado: ${externos}`
+      );
+      switchToTabA();
+    } catch (error) {
+      console.error(error);
+      alert("No se pudo registrar el recurso externo");
+    }
   };
 
   return (
@@ -1112,20 +1134,27 @@ const Form8: React.FC<FormProps> = ({ switchToTabA }) => {
 
   const [info, setInfo] = useState<string>("");
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
 
-    fetch("/informacion", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ info, id }),
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        console.log("Response from backend:", result);
-        switchToTabA();
-      })
-      .catch((error) => console.error("Error:", error));
+    if (!info.trim()) {
+      alert("Ingresa información");
+      return;
+    }
+
+    try {
+      await registrarAccionEmergencia(
+        id,
+        "A_informacion",
+        info.trim()
+      );
+      switchToTabA();
+    } catch (error) {
+      console.error(error);
+      alert("No se pudo registrar la información");
+    }
   };
 
   return (
@@ -1153,20 +1182,27 @@ const Form9: React.FC<FormProps> = ({ switchToTabA }) => {
 
   const [info, setInfo] = useState<string>("");
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
 
-    fetch("/informacion", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ info, id }),
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        console.log("Response from backend:", result);
-        switchToTabA();
-      })
-      .catch((error) => console.error("Error:", error));
+    if (!info.trim()) {
+      alert("Ingresa información de víctimas");
+      return;
+    }
+
+    try {
+      await registrarAccionEmergencia(
+        id,
+        "A_victimas",
+        info.trim()
+      );
+      switchToTabA();
+    } catch (error) {
+      console.error(error);
+      alert("No se pudo registrar la información de víctimas");
+    }
   };
 
   return (

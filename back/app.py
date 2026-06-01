@@ -36,9 +36,9 @@ from services.despacho_service import ( ejecutar_despacho)
 
 from utils.maps import (  obtener_coordenadas)
 
-from schemas.incident_schema import ( UpdateIncidentStatusRequest, AssignVehicleRequest, UpdateVehicleStatusRequest)
+from schemas.incident_schema import ( UpdateIncidentStatusRequest, AssignVehicleRequest, UpdateVehicleStatusRequest, CreateIncidentActionRequest)
 
-from services.incident_service import (obtener_incidentes_activos,obtener_incidente_por_codigo,actualizar_estado_incidente, obtener_historial_incidentes, asignar_vehiculo_adicional, actualizar_estado_vehiculo_incidente)
+from services.incident_service import (obtener_incidentes_activos,obtener_incidente_por_codigo,actualizar_estado_incidente, obtener_historial_incidentes, asignar_vehiculo_adicional, actualizar_estado_vehiculo_incidente, registrar_accion_incidente)
 
 from services.vehicle_service import (obtener_vehiculos, obtener_vehiculos_disponibles, actualizar_estado_vehiculo)
 from services.personnel_service import (obtener_personal)
@@ -313,6 +313,21 @@ def actualizar_estado_carro(
         db=db,
         vehicle_id=vehicle_id,
         new_status=request.status
+    )
+
+@app.post("/emergenciasActivas/{incident_code}/acciones")
+def registrar_accion(
+    incident_code: str,
+    request: CreateIncidentActionRequest,
+    db: Session = Depends(get_db)
+):
+    return registrar_accion_incidente(
+        db=db,
+        incident_code=incident_code,
+        event_type=request.event_type,
+        description=request.description,
+        user_name=request.user_name,
+        emergency_code=request.emergency_code
     )
 
 

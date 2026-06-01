@@ -2,7 +2,8 @@ from models import (
     Incident,
     IncidentEvent,
     Vehicle,
-    IncidentVehicle
+    IncidentVehicle,
+    EmergencyType
 )
 from sqlalchemy.orm import Session
 from sqlalchemy import func
@@ -125,7 +126,14 @@ def obtener_incidente_por_codigo(
     "incident_closed": "Emergencia cerrado",
     "victims_reported": "Registro de víctimas",
     "personel_asigned": "Personal Asignado",
-    "other": "Otro Suceso",}
+    "other": "Otro Suceso",
+    "A_evaluacion_incidente": "Evaluación del incidente",
+    "A_nueva_clave": "Nueva clave",
+    "A_instrucciones": "Instrucciones",
+    "A_comandante": "Comandante",
+    "A_externos": "Recursos externos",
+    "A_informacion": "Información",
+    "A_victimas": "Víctimas",}
 
     timeline = [
         {
@@ -521,4 +529,68 @@ def actualizar_estado_vehiculo_incidente(
         "vehicle_id": vehicle.id,
         "vehicle_code": vehicle.vehicle_code,
         "status": vehicle.status
+    }
+
+INCIDENT_ACTION_TYPES = {
+    "A_evaluacion_incidente",
+    "A_nueva_clave",
+    "A_instrucciones",
+    "A_comandante",
+    "A_externos",
+    "A_informacion",
+    "A_victimas"
+}
+
+def registrar_accion_incidente(
+    db: Session,
+    incident_code: str,
+    event_type: str,
+    description: str,
+    user_name: str,
+    emergency_code: str | None = None
+):
+    if event_type not in INCIDENT_ACTION_TYPES:
+        raise Exception("Incident action type is not valid")
+
+    incident = (
+        db.query(Incident)
+        .filter(Incident.incident_code == incident_code)
+        .first()
+    )
+
+    if not incident:
+        raise Exception("Incident not found")
+
+    if event_type == "A_nueva_clave":
+        if not emergency_code:
+            raise Exception("Emergency code is required")
+
+        emergency_type = (
+            db.query(EmergencyType)
+            .filter(EmergencyType.code == emergency_code)
+            .first()
+        )
+
+        if not emergency_type:
+            raise Exception("Emergency type not found")
+
+        incident.emergency_type_id = emergency_type.id
+        incident.priority = emergency_type.priority
+
+    event = IncidentEvent(
+        incident_id=incident.id,
+        event_type=event_type,
+        description=description,
+        user_name=user_name
+    )
+
+    db.add(event)
+    db.commit()
+    db.refresh(event)
+
+    return {
+        "message": "Acción registrada correctamente",
+        "event_type": event.event_type,
+        "description": event.description,
+        "created_at": event.created_at
     }

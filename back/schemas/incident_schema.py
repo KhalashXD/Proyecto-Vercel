@@ -32,3 +32,9 @@ class AssignVehicleRequest(BaseModel):
 
 class UpdateVehicleStatusRequest(BaseModel):
     status: str
+
+class CreateIncidentActionRequest(BaseModel):
+    event_type: str
+    description: str
+    user_name: str = "system"
+    emergency_code: str | None = None
