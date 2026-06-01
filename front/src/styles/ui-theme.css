@@ -43,6 +43,7 @@ body,
 #root {
   margin: 0;
   min-height: 100%;
+  width: 100%;
   background: var(--bg-app);
   color: var(--text-main);
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -70,6 +71,13 @@ textarea {
   font-family: inherit;
 }
 
+img,
+svg,
+canvas,
+video {
+  max-width: 100%;
+}
+
 .app-shell {
   min-height: 100vh;
   background: transparent;
@@ -77,27 +85,33 @@ textarea {
 
 .page-layout {
   display: grid;
-  grid-template-columns: 170px minmax(0, 1fr);
+  grid-template-columns: 1fr;
   min-height: calc(100vh - 96px);
 }
 
 .page-sidebar {
   background: var(--bg-sidebar);
-  border-right: 1px solid var(--border-soft);
-  padding: var(--space-md);
-  overflow-y: auto;
+  border-right: none;
+  border-bottom: 1px solid var(--border-soft);
+  padding: 10px 16px;
+  overflow: visible;
+  min-width: 0;
 }
 
 .page-sidebar h3 {
-  font-size: 1.25rem;
+  font-size: 1rem;
   line-height: 1.25;
-  margin: 0 0 var(--space-md);
+  margin: 0 0 10px;
   font-weight: 800;
+}
+
+.page-sidebar h3 br {
+  display: none;
 }
 
 .page-content {
   min-width: 0;
-  padding: var(--space-lg);
+  padding: clamp(14px, 2.1vw, var(--space-lg));
 }
 
 .page-header {
@@ -111,9 +125,10 @@ textarea {
 .page-title {
   margin: 0;
   color: var(--text-main);
-  font-size: 2rem;
+  font-size: clamp(1.45rem, 2.3vw, 2rem);
   font-weight: 800;
-  letter-spacing: 0.2px;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
 }
 
 .page-subtitle {
@@ -130,6 +145,7 @@ textarea {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-soft);
   padding: var(--space-lg);
+  min-width: 0;
 }
 
 .report-actions {
@@ -142,11 +158,13 @@ textarea {
 
 .data-table-wrap {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-radius: var(--radius-md);
 }
 
 .data-table {
   width: 100%;
+  min-width: 620px;
   border-collapse: collapse;
   color: var(--text-main);
 }
@@ -271,11 +289,13 @@ textarea {
 @media (max-width: 1000px) {
   .page-layout {
     grid-template-columns: 1fr;
+    min-height: auto;
   }
 
   .page-sidebar {
     border-right: none;
     border-bottom: 1px solid var(--border-soft);
+    overflow: visible;
   }
 
   .page-content {
@@ -286,7 +306,90 @@ textarea {
     grid-template-columns: 1fr;
   }
 
+  .page-header {
+    margin-bottom: var(--space-md);
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --space-lg: 18px;
+    --space-xl: 24px;
+  }
+
+  .page-content {
+    padding: 12px;
+  }
+
+  .page-header {
+    margin-bottom: 14px;
+  }
+
   .page-title {
-    font-size: 1.65rem;
+    font-size: 1.45rem;
+    line-height: 1.15;
+  }
+
+  .page-subtitle {
+    font-size: 0.92rem;
+  }
+
+  .page-sidebar {
+    padding: 12px;
+  }
+
+  .page-sidebar h3 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+
+  .content-card {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .empty-state {
+    padding: 14px;
+  }
+
+  .report-actions {
+    justify-content: stretch;
+  }
+
+  .report-actions .app-btn {
+    flex: 1 1 100%;
+  }
+
+  .pagination-row .app-btn {
+    flex: 1 1 44px;
+  }
+
+  .app-btn {
+    min-height: 44px;
+    padding: 10px 13px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 12px;
+    font-size: 0.92rem;
+  }
+
+  .pagination-row {
+    justify-content: stretch;
+  }
+}
+
+@media (max-width: 420px) {
+  .page-title {
+    font-size: 1.3rem;
+  }
+
+  .content-card {
+    padding: 12px;
+  }
+
+  .empty-state {
+    padding: 18px 12px;
   }
 }

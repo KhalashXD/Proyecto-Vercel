@@ -1,6 +1,6 @@
 .dispatch-layout {
   display: grid;
-  grid-template-columns: minmax(580px, 1fr) 360px;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
   gap: 18px;
   align-items: start;
 }
@@ -14,6 +14,7 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-soft);
   overflow: hidden;
+  min-width: 0;
 }
 
 .dispatch-map {
@@ -65,13 +66,13 @@
 
 .dispatch-button {
   width: 100%;
-  min-height: 84px;
+  min-height: 68px;
   margin: 6px 0 0;
   border: none;
-  border-radius: 16px;
+  border-radius: 13px;
   background: linear-gradient(180deg, var(--primary-hover), var(--primary));
   color: #fff;
-  font-size: 1.35rem;
+  font-size: 1.15rem;
   font-weight: 900;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -152,14 +153,58 @@
   .dispatch-layout {
     grid-template-columns: 1fr;
   }
+
+  .dispatch-side-card {
+    order: 2;
+  }
 }
 
 @media (max-width: 780px) {
+  .dispatch-form,
+  .dispatch-side-card {
+    padding: 14px;
+  }
+
   .dispatch-row {
     grid-template-columns: 1fr;
+    gap: 0;
   }
 
   .dispatch-map {
-    height: 360px !important;
+    height: 340px !important;
+  }
+
+  .dispatch-button {
+    min-height: 56px;
+    font-size: 1rem;
+  }
+
+  .dispatch-unit-card {
+    padding: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dispatch-layout {
+    gap: 12px;
+  }
+
+  .dispatch-map {
+    height: 300px !important;
+  }
+
+  .dispatch-form select,
+  .dispatch-form input,
+  .dispatch-unit-card input {
+    min-height: 42px;
+    font-size: 0.95rem;
+  }
+
+  .dispatch-side-title {
+    font-size: 1rem;
+  }
+
+  .last-dispatch-button {
+    min-height: 44px;
   }
 }

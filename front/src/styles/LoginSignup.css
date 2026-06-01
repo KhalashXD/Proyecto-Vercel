@@ -2,16 +2,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100vw; /* Cambiar min-width a 100vw para asegurar que ocupe todo el ancho */
-    height: 100vh; /* Asegura que ocupe toda la altura de la pantalla */
-    padding: 0; /* Elimina padding que podría estar generando espacios */
-    margin: 0; /* Elimina márgenes que puedan generar las líneas */
-    background-color: #393939; /* Fondo negro */
+    width: 100%;
+    min-height: calc(100vh - 96px);
+    padding: 24px 16px;
+    margin: 0;
+    background-color: #393939;
 }
 
 .wrapper2 {
     max-width: 28rem;
     width: 100%;
+    min-width: 0;
     margin: 0 auto;
     padding: 2rem 2.5rem;
     border: none;
@@ -36,6 +37,7 @@
     line-height: inherit;
     width: 100%;
     height: auto;
+    min-height: 44px;
     padding: 0.75rem 1.25rem;
     border: none;
     outline: none;
@@ -53,6 +55,7 @@
     cursor: pointer;
     width: 100%;
     height: auto;
+    min-height: 44px;
     padding: 0.65rem 1.25rem;
     border: none;
     outline: none;
@@ -73,6 +76,7 @@
 .error-message {
     color: red;
     margin-top: 5px;
+    overflow-wrap: anywhere;
 }
 
 .wrapper2 h1 {
@@ -91,14 +95,35 @@
   margin-bottom: 8px;
 }
 
-@media (max-width: 520px) {
+@media (max-width: 800px) {
+  .container-signin {
+    min-height: calc(100vh - 82px);
+    align-items: flex-start;
+    padding: 24px 14px;
+  }
+
   .wrapper2 {
-    padding: 30px 24px;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .container-signin {
+    padding: 18px 12px;
+  }
+
+  .wrapper2 {
+    padding: 24px 18px;
   }
 
   .heading h1,
   .text-large,
   .wrapper2 h1 {
-    font-size: 2.3rem;
+    font-size: 2rem;
+  }
+
+  .input-field,
+  .input-submit {
+    border-radius: 16px;
   }
 }

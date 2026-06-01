@@ -12,6 +12,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import "../styles/Despacho.css";
 import MainLayout from "../components/MainLayout";
+import { playDispatchAlert } from "../utils/playDispatchAlert";
 
 const MapContainer = LeafletMapContainer as any;
 const TileLayer = LeafletTileLayer as any;
@@ -292,6 +293,8 @@ const Despacho: React.FC = () => {
 
         setDespacho(result.despacho);
         setEmergencyId(result.id);
+
+        await playDispatchAlert(result.despacho);
       } else {
         console.error("Error sending data:", response.statusText);
       }

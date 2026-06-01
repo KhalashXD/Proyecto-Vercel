@@ -130,16 +130,6 @@ const Sidebar: React.FC = React.memo(() => {
         </div>
 
         <div className="sidebar-legend-item">
-          <span className="sidebar-dot" style={{ background: "#2f80ed" }} />
-          En cuartel
-        </div>
-
-        <div className="sidebar-legend-item">
-          <span className="sidebar-dot" style={{ background: "#6f6f6f" }} />
-          Sin estado
-        </div>
-
-        <div className="sidebar-legend-item">
           <span className="sidebar-dot" style={{ background: "#d84b4b" }} />
           Fuera
         </div>
