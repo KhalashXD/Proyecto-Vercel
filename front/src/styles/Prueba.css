@@ -112,6 +112,7 @@
 
 .action-panel input,
 .action-panel select,
+.action-panel textarea,
 .wrapper-carros input,
 .wrapper-carros select {
   width: 100%;
@@ -125,8 +126,14 @@
   margin: 8px 0 12px;
 }
 
+.action-panel textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
 .action-panel input:focus,
 .action-panel select:focus,
+.action-panel textarea:focus,
 .wrapper-carros input:focus,
 .wrapper-carros select:focus {
   border-color: var(--primary);
@@ -306,4 +313,60 @@
 .dispatched-vehicle:disabled {
   cursor: default;
   opacity: 0.9;
+}
+
+.victims-list {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.victim-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 16px;
+}
+
+.victim-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.victim-card {
+  background: rgba(255,255,255,0.035);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+}
+
+.victim-card h4 {
+  margin: 0 0 12px;
+  color: var(--text-main);
+  font-size: 1rem;
+}
+
+.victim-card dl {
+  display: grid;
+  grid-template-columns: minmax(72px, auto) 1fr;
+  gap: 7px 10px;
+  margin: 0;
+}
+
+.victim-card dt {
+  color: var(--text-muted);
+  font-weight: 800;
+}
+
+.victim-card dd,
+.victims-list p {
+  margin: 0;
+  color: var(--text-soft);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 700px) {
+  .victim-form-grid {
+    grid-template-columns: 1fr;
+  }
 }

@@ -38,3 +38,11 @@ class CreateIncidentActionRequest(BaseModel):
     description: str
     user_name: str = "system"
     emergency_code: str | None = None
+
+class CreateIncidentVictimRequest(BaseModel):
+    name: str
+    sex: str
+    age: int | None = None
+    reason_at_scene: str
+    injury_type: str
+    details: str | None = None

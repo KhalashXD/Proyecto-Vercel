@@ -27,6 +27,16 @@ interface Vehicle {
   status: string;
 }
 
+interface IncidentVictim {
+  id: number;
+  name: string;
+  sex: string;
+  age: number | null;
+  reason_at_scene: string;
+  injury_type: string;
+  details: string | null;
+}
+
 type IncidentActionType =
   | "A_evaluacion_incidente"
   | "A_nueva_clave"
@@ -65,6 +75,28 @@ const registrarAccionEmergencia = async (
   if (!response.ok) {
     throw new Error(await response.text());
   }
+};
+
+const formatVictimSex = (sex: string): string => {
+  const labels: Record<string, string> = {
+    female: "Femenino",
+    male: "Masculino",
+    other: "Otro",
+    not_informed: "Sin información",
+  };
+
+  return labels[sex] || sex;
+};
+
+const formatVictimInjury = (injuryType: string): string => {
+  const labels: Record<string, string> = {
+    minor: "Leve",
+    serious: "Grave",
+    fatal: "Mortal",
+    not_informed: "Sin información",
+  };
+
+  return labels[injuryType] || injuryType;
 };
 
 const MultiSectionToggle: React.FC<MultiSectionToggleProps> = ({ eventId }) => {
@@ -1177,51 +1209,185 @@ const Form8: React.FC<FormProps> = ({ switchToTabA }) => {
   );
 };
 
-const Form9: React.FC<FormProps> = ({ switchToTabA }) => {
+const Form9: React.FC<FormProps> = () => {
   const { id } = useParams<{ id: string }>();
 
-  const [info, setInfo] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [sex, setSex] = useState<string>("");
+  const [age, setAge] = useState<string>("");
+  const [reasonAtScene, setReasonAtScene] = useState<string>("");
+  const [injuryType, setInjuryType] = useState<string>("");
+  const [details, setDetails] = useState<string>("");
+  const [victims, setVictims] = useState<IncidentVictim[]>([]);
+
+  const cargarVictimas = async (): Promise<void> => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/emergenciasActivas/${id}/victimas`
+      );
+
+      if (!response.ok) {
+        throw new Error("No se pudieron cargar las víctimas");
+      }
+
+      setVictims(await response.json());
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    cargarVictimas();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ): Promise<void> => {
     e.preventDefault();
 
-    if (!info.trim()) {
-      alert("Ingresa información de víctimas");
+    if (!name.trim() || !sex || !reasonAtScene.trim() || !injuryType) {
+      alert("Completa los campos obligatorios de la víctima");
       return;
     }
 
     try {
-      await registrarAccionEmergencia(
-        id,
-        "A_victimas",
-        info.trim()
+      const response = await fetch(
+        `http://localhost:5000/emergenciasActivas/${id}/victimas`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: name.trim(),
+            sex,
+            age: age ? Number(age) : null,
+            reason_at_scene: reasonAtScene.trim(),
+            injury_type: injuryType,
+            details: details.trim() || null,
+          }),
+        }
       );
-      switchToTabA();
+
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      setName("");
+      setSex("");
+      setAge("");
+      setReasonAtScene("");
+      setInjuryType("");
+      setDetails("");
+      await cargarVictimas();
     } catch (error) {
       console.error(error);
-      alert("No se pudo registrar la información de víctimas");
+      alert("No se pudo registrar la víctima");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h3>Registro de víctimas</h3>
+    <div className="victims-section">
+      <form onSubmit={handleSubmit}>
+        <h3>Registro de nueva víctima</h3>
 
-      <label>
-        Registrar:
-        <input
-          type="text"
-          value={info}
-          onChange={(e) => setInfo(e.target.value)}
-        />
-      </label>
+        <div className="victim-form-grid">
+          <label>
+            Nombre
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </label>
 
-      <button type="submit" className="app-btn app-btn-primary">
-        Enviar
-      </button>
-    </form>
+          <label>
+            Sexo
+            <select value={sex} onChange={(e) => setSex(e.target.value)}>
+              <option value="" disabled>Seleccione</option>
+              <option value="female">Femenino</option>
+              <option value="male">Masculino</option>
+              <option value="other">Otro</option>
+              <option value="not_informed">Sin información</option>
+            </select>
+          </label>
+
+          <label>
+            Edad
+            <input
+              type="number"
+              min="0"
+              value={age}
+              onChange={(e) => setAge(e.target.value)}
+            />
+          </label>
+
+          <label>
+            Tipo de lesión
+            <select
+              value={injuryType}
+              onChange={(e) => setInjuryType(e.target.value)}
+            >
+              <option value="" disabled>Seleccione</option>
+              <option value="minor">Leve</option>
+              <option value="serious">Grave</option>
+              <option value="fatal">Mortal</option>
+              <option value="not_informed">Sin información</option>
+            </select>
+          </label>
+        </div>
+
+        <label>
+          Motivo de estar en el lugar
+          <input
+            type="text"
+            value={reasonAtScene}
+            onChange={(e) => setReasonAtScene(e.target.value)}
+          />
+        </label>
+
+        <label>
+          Otros detalles
+          <textarea
+            value={details}
+            onChange={(e) => setDetails(e.target.value)}
+          />
+        </label>
+
+        <button type="submit" className="app-btn app-btn-primary">
+          Registrar víctima
+        </button>
+      </form>
+
+      <div className="victims-list">
+        <h3>Víctimas</h3>
+
+        {victims.length > 0 ? (
+          <div className="victim-cards">
+            {victims.map((victim) => (
+              <article key={victim.id} className="victim-card">
+                <h4>{victim.name}</h4>
+                <dl>
+                  <dt>Sexo</dt>
+                  <dd>{formatVictimSex(victim.sex)}</dd>
+                  <dt>Edad</dt>
+                  <dd>{victim.age ?? "Sin información"}</dd>
+                  <dt>Motivo</dt>
+                  <dd>{victim.reason_at_scene}</dd>
+                  <dt>Lesión</dt>
+                  <dd>{formatVictimInjury(victim.injury_type)}</dd>
+                  <dt>Detalles</dt>
+                  <dd>{victim.details || "Sin información"}</dd>
+                </dl>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p>No hay víctimas registradas.</p>
+        )}
+      </div>
+    </div>
   );
 };
 

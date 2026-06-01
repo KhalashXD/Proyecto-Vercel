@@ -3,7 +3,8 @@ from models import (
     IncidentEvent,
     Vehicle,
     IncidentVehicle,
-    EmergencyType
+    EmergencyType,
+    IncidentVictim
 )
 from sqlalchemy.orm import Session
 from sqlalchemy import func
@@ -593,4 +594,100 @@ def registrar_accion_incidente(
         "event_type": event.event_type,
         "description": event.description,
         "created_at": event.created_at
+    }
+
+VICTIM_SEXES = {
+    "female",
+    "male",
+    "other",
+    "not_informed"
+}
+
+VICTIM_INJURY_TYPES = {
+    "minor",
+    "serious",
+    "fatal",
+    "not_informed"
+}
+
+def obtener_victimas_incidente(
+    db: Session,
+    incident_code: str
+):
+    incident = (
+        db.query(Incident)
+        .filter(Incident.incident_code == incident_code)
+        .first()
+    )
+
+    if not incident:
+        raise Exception("Incident not found")
+
+    return [
+        {
+            "id": victim.id,
+            "name": victim.name,
+            "sex": victim.sex,
+            "age": victim.age,
+            "reason_at_scene": victim.reason_at_scene,
+            "injury_type": victim.injury_type,
+            "details": victim.details,
+            "created_at": victim.created_at
+        }
+        for victim in incident.victims
+    ]
+
+def registrar_victima_incidente(
+    db: Session,
+    incident_code: str,
+    name: str,
+    sex: str,
+    age: int | None,
+    reason_at_scene: str,
+    injury_type: str,
+    details: str | None
+):
+    if sex not in VICTIM_SEXES:
+        raise Exception("Victim sex is not valid")
+
+    if injury_type not in VICTIM_INJURY_TYPES:
+        raise Exception("Victim injury type is not valid")
+
+    if age is not None and age < 0:
+        raise Exception("Victim age is not valid")
+
+    incident = (
+        db.query(Incident)
+        .filter(Incident.incident_code == incident_code)
+        .first()
+    )
+
+    if not incident:
+        raise Exception("Incident not found")
+
+    victim = IncidentVictim(
+        incident_id=incident.id,
+        name=name,
+        sex=sex,
+        age=age,
+        reason_at_scene=reason_at_scene,
+        injury_type=injury_type,
+        details=details
+    )
+
+    event = IncidentEvent(
+        incident_id=incident.id,
+        event_type="A_victimas",
+        description=f"Víctima registrada: {name}",
+        user_name="system"
+    )
+
+    db.add(victim)
+    db.add(event)
+    db.commit()
+    db.refresh(victim)
+
+    return {
+        "message": "Víctima registrada correctamente",
+        "victim_id": victim.id
     }

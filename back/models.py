@@ -278,6 +278,12 @@ class Incident(Base):
         cascade="all, delete"
     )
 
+    victims = relationship(
+        "IncidentVictim",
+        back_populates="incident",
+        cascade="all, delete"
+    )
+
     __table_args__ = (
         Index("idx_status", "status"),
         Index("idx_type", "emergency_type_id"),
@@ -457,6 +463,65 @@ class OperationalForm(Base):
 
     __table_args__ = (
         Index("idx_incident", "incident_id"),
+    )
+
+# ============================================================
+# TABLA: incident_victims
+# ============================================================
+
+class IncidentVictim(Base):
+    __tablename__ = "incident_victims"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+
+    incident_id = Column(
+        Integer,
+        ForeignKey("incidents.id", ondelete="CASCADE"),
+        nullable=False
+    )
+
+    name = Column(String(255), nullable=False)
+
+    sex = Column(
+        Enum(
+            "female",
+            "male",
+            "other",
+            "not_informed",
+            name="victim_sex_enum"
+        ),
+        nullable=False
+    )
+
+    age = Column(Integer)
+    reason_at_scene = Column(Text, nullable=False)
+
+    injury_type = Column(
+        Enum(
+            "minor",
+            "serious",
+            "fatal",
+            "not_informed",
+            name="victim_injury_type_enum"
+        ),
+        nullable=False
+    )
+
+    details = Column(Text)
+
+    created_at = Column(
+        TIMESTAMP,
+        server_default=func.current_timestamp()
+    )
+
+    incident = relationship(
+        "Incident",
+        back_populates="victims"
+    )
+
+    __table_args__ = (
+        Index("idx_incident", "incident_id"),
+        Index("idx_injury_type", "injury_type"),
     )
 
 

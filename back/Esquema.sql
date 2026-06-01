@@ -184,6 +184,24 @@ CREATE TABLE IF NOT EXISTS operational_forms (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
+-- TABLA: incident_victims (Víctimas asociadas a un incidente)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS incident_victims (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    incident_id INT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    sex ENUM('female', 'male', 'other', 'not_informed') NOT NULL,
+    age INT,
+    reason_at_scene TEXT NOT NULL,
+    injury_type ENUM('minor', 'serious', 'fatal', 'not_informed') NOT NULL,
+    details TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (incident_id) REFERENCES incidents(id) ON DELETE CASCADE,
+    INDEX idx_incident (incident_id),
+    INDEX idx_injury_type (injury_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
 -- TABLA: incident_events (Registro de eventos/auditoría)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS incident_events (

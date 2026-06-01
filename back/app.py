@@ -36,9 +36,9 @@ from services.despacho_service import ( ejecutar_despacho)
 
 from utils.maps import (  obtener_coordenadas)
 
-from schemas.incident_schema import ( UpdateIncidentStatusRequest, AssignVehicleRequest, UpdateVehicleStatusRequest, CreateIncidentActionRequest)
+from schemas.incident_schema import ( UpdateIncidentStatusRequest, AssignVehicleRequest, UpdateVehicleStatusRequest, CreateIncidentActionRequest, CreateIncidentVictimRequest)
 
-from services.incident_service import (obtener_incidentes_activos,obtener_incidente_por_codigo,actualizar_estado_incidente, obtener_historial_incidentes, asignar_vehiculo_adicional, actualizar_estado_vehiculo_incidente, registrar_accion_incidente)
+from services.incident_service import (obtener_incidentes_activos,obtener_incidente_por_codigo,actualizar_estado_incidente, obtener_historial_incidentes, asignar_vehiculo_adicional, actualizar_estado_vehiculo_incidente, registrar_accion_incidente, obtener_victimas_incidente, registrar_victima_incidente)
 
 from services.vehicle_service import (obtener_vehiculos, obtener_vehiculos_disponibles, actualizar_estado_vehiculo)
 from services.personnel_service import (obtener_personal)
@@ -328,6 +328,33 @@ def registrar_accion(
         description=request.description,
         user_name=request.user_name,
         emergency_code=request.emergency_code
+    )
+
+@app.get("/emergenciasActivas/{incident_code}/victimas")
+def obtener_victimas(
+    incident_code: str,
+    db: Session = Depends(get_db)
+):
+    return obtener_victimas_incidente(
+        db=db,
+        incident_code=incident_code
+    )
+
+@app.post("/emergenciasActivas/{incident_code}/victimas")
+def registrar_victima(
+    incident_code: str,
+    request: CreateIncidentVictimRequest,
+    db: Session = Depends(get_db)
+):
+    return registrar_victima_incidente(
+        db=db,
+        incident_code=incident_code,
+        name=request.name,
+        sex=request.sex,
+        age=request.age,
+        reason_at_scene=request.reason_at_scene,
+        injury_type=request.injury_type,
+        details=request.details
     )
 
 
