@@ -6,6 +6,7 @@ export interface EmergenciasData {
   ids: string[];
   texts: string[];
   dates: string[];
+  times: string[];
 }
 
 export const obtenerEmergenciasActivas = async (): Promise<EmergenciasData> => {

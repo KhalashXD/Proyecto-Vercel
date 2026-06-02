@@ -117,8 +117,7 @@ const MultiSectionToggle: React.FC<MultiSectionToggleProps> = ({ eventId }) => {
   const [activeTab, setActiveTab] = useState<"info" | "actions">("info");
 
   const switchToTabA = (): void => {
-    setActiveTab("info");
-    setActiveSection(null);
+    void fetchData();
   };
 
   const formatFecha = (value: string): string => {

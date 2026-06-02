@@ -7,6 +7,7 @@ interface EmergenciasData {
   ids: string[];
   texts: string[];
   dates: string[];
+  times: string[];
 }
 
 const Emergencias: React.FC = () => {
@@ -14,6 +15,7 @@ const Emergencias: React.FC = () => {
     ids: [],
     texts: [],
     dates: [],
+    times: [],
   });
 
   const navigate = useNavigate();
@@ -47,6 +49,8 @@ const Emergencias: React.FC = () => {
               <thead>
                 <tr>
                   <th>Fecha</th>
+                  <th>Hora</th>
+                  <th>Código</th>
                   <th>Llamado</th>
                   <th>Modificar</th>
                 </tr>
@@ -56,6 +60,8 @@ const Emergencias: React.FC = () => {
                 {data.ids.map((id, index) => (
                   <tr key={id}>
                     <td>{data.dates[index]}</td>
+                    <td>{data.times[index]}</td>
+                    <td>{id}</td>
                     <td>{data.texts[index]}</td>
                     <td>
                       <button

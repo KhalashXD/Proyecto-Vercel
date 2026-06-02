@@ -7,6 +7,7 @@ interface HistorialData {
   ids: string[];
   texts: string[];
   dates: string[];
+  times: string[];
 }
 
 const Historial: React.FC = () => {
@@ -14,6 +15,7 @@ const Historial: React.FC = () => {
     ids: [],
     texts: [],
     dates: [],
+    times: [],
   });
 
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -43,15 +45,21 @@ const Historial: React.FC = () => {
         ids: result.map((item: any) => item.incident_code),
         texts: result.map(
           (item: any) =>
-            `${item.emergency_code} ${item.street_1} con ${item.street_2}`
+            `${item.street_1} con ${item.street_2}`
         ),
         dates: result.map((item: any) => {
           const date = new Date(item.closed_at || item.created_at);
 
-          return date.toLocaleString("es-CL", {
+          return date.toLocaleDateString("es-CL", {
             day: "2-digit",
             month: "2-digit",
             year: "numeric",
+          });
+        }),
+        times: result.map((item: any) => {
+          const date = new Date(item.closed_at || item.created_at);
+
+          return date.toLocaleTimeString("es-CL", {
             hour: "2-digit",
             minute: "2-digit",
           });
@@ -106,6 +114,8 @@ const Historial: React.FC = () => {
                 <thead>
                   <tr>
                     <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Código</th>
                     <th>Llamado</th>
                     <th>Acción</th>
                   </tr>
@@ -115,6 +125,8 @@ const Historial: React.FC = () => {
                   {currentItems.map((id, index) => (
                     <tr key={id}>
                       <td>{data.dates[indexOfFirstItem + index]}</td>
+                      <td>{data.times[indexOfFirstItem + index]}</td>
+                      <td>{id}</td>
                       <td>{data.texts[indexOfFirstItem + index]}</td>
                       <td>
                         <button

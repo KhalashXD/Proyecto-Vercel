@@ -35,27 +35,34 @@ def obtener_incidentes_activos(
     ids = []
     texts = []
     dates = []
+    times = []
 
     for incident in incidents:
 
         ids.append( str(incident.incident_code))
 
         texts.append(
-            f"{incident.emergency_type.code} "
             f"{incident.street_1} con "
             f"{incident.street_2}"
         )
 
         dates.append(
             incident.created_at.strftime(
-                "%d-%m-%Y %H:%M"
+                "%d-%m-%Y"
+            )
+        )
+
+        times.append(
+            incident.created_at.strftime(
+                "%H:%M"
             )
         )
 
     return {
         "ids": ids,
         "texts": texts,
-        "dates": dates
+        "dates": dates,
+        "times": times
     }
 
 # para entregar la info de un accidente en especifico
