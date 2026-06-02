@@ -115,7 +115,30 @@ def obtener_incidente_por_codigo(
                     vehicle.status,
 
                 "assigned_at":
-                    relation.assigned_at
+                    relation.assigned_at,
+
+                "personnel_in_charge":
+                    (
+                        {
+                            "id":
+                                relation.personnel_in_charge.id,
+
+                            "name":
+                                (
+                                    f"{relation.personnel_in_charge.first_name} "
+                                    f"{relation.personnel_in_charge.last_name_1 or ''} "
+                                    f"{relation.personnel_in_charge.last_name_2 or ''}"
+                                ).strip(),
+
+                            "rank":
+                                relation.personnel_in_charge.rank
+                        }
+                        if relation.personnel_in_charge
+                        else None
+                    ),
+
+                "personnel_count":
+                    relation.personnel_count
             }
         )
 
@@ -193,7 +216,12 @@ def obtener_incidente_por_codigo(
             "description":
                 incident
                 .emergency_type
-                .description
+                .description,
+
+            "required_personnel":
+                incident
+                .emergency_type
+                .required_personnel
         },
 
         "location": {

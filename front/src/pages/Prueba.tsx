@@ -25,6 +25,12 @@ interface Vehicle {
   vehicle_type: string;
   station_name: string;
   status: string;
+  personnel_in_charge?: {
+    id: number;
+    name: string;
+    rank: string | null;
+  } | null;
+  personnel_count?: number;
 }
 
 interface IncidentVictim {
@@ -153,6 +159,7 @@ const formatHora = (value: string): string => {
     { id: 7, label: "Externos", content: <Form7 switchToTabA={switchToTabA} /> },
     { id: 8, label: "Información", content: <Form8 switchToTabA={switchToTabA} /> },
     { id: 9, label: "Víctimas", content: <Form9 switchToTabA={switchToTabA} /> },
+    { id: 10, label: "Personal", content: <Form10 eventId={eventId} switchToTabA={switchToTabA} /> },
   ];
 
   const fetchData = async (): Promise<void> => {
@@ -1540,6 +1547,88 @@ const Form9: React.FC<FormProps> = () => {
           <p>No se encontraron víctimas con ese nombre.</p>
         )}
       </div>
+    </div>
+  );
+};
+
+const Form10: React.FC<FormProps> = ({ eventId }) => {
+  const { id } = useParams<{ id: string }>();
+
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [requiredPersonnel, setRequiredPersonnel] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    fetch(`http://localhost:5000/emergenciasActivas/${id}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("No se pudo cargar la dotación de la emergencia");
+        }
+
+        return response.json();
+      })
+      .then((data) => {
+        setVehicles(data.assigned_vehicles || []);
+        setRequiredPersonnel(data.emergency.required_personnel || 0);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [id, eventId]);
+
+  if (loading) {
+    return <p>Cargando información...</p>;
+  }
+
+  const assignedPersonnel = vehicles.reduce(
+    (total, vehicle) => total + (vehicle.personnel_count || 0),
+    0
+  );
+
+  return (
+    <div className="personnel-section">
+      <h3>Personal de la emergencia</h3>
+
+      <div className="personnel-summary">
+        <div>
+          <span>Personal requerido</span>
+          <strong>{requiredPersonnel}</strong>
+        </div>
+        <div>
+          <span>Personal registrado</span>
+          <strong>{assignedPersonnel}</strong>
+        </div>
+      </div>
+
+      {vehicles.length > 0 ? (
+        <div className="data-table-wrap">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Unidad</th>
+                <th>Responsable</th>
+                <th>Rango</th>
+                <th>Dotación</th>
+              </tr>
+            </thead>
+            <tbody>
+              {vehicles.map((vehicle) => (
+                <tr key={vehicle.id}>
+                  <td>{vehicle.vehicle_code}</td>
+                  <td>{vehicle.personnel_in_charge?.name || "Sin registrar"}</td>
+                  <td>{vehicle.personnel_in_charge?.rank || "Sin registrar"}</td>
+                  <td>{vehicle.personnel_count || 0}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p>No hay unidades asignadas a esta emergencia.</p>
+      )}
     </div>
   );
 };

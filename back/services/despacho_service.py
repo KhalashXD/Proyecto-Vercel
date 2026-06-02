@@ -285,6 +285,9 @@ def ejecutar_despacho(
         "longitude":
             longitude,
 
+        "required_personnel":
+            emergency_type.required_personnel,
+
         "assigned_vehicles": [
 
             {

@@ -44,6 +44,18 @@ interface DespachoResponse {
   resultado: string;
   despacho: string[];
   id: string;
+  required_personnel: number;
+}
+
+interface DispatchConfirmation {
+  incidentCode: string;
+  clave: string;
+  calle: string;
+  interseccion: string;
+  direccion: string;
+  informacion: string;
+  vehicles: string[];
+  requiredPersonnel: number;
 }
 
 const houseIcon = new L.Icon({
@@ -106,6 +118,8 @@ const Despacho: React.FC = () => {
     {}
   );
   const [emergencyId, setEmergencyId] = useState<string | null>(null);
+  const [dispatchConfirmation, setDispatchConfirmation] =
+    useState<DispatchConfirmation | null>(null);
 
   const defaultCenter: [number, number] = [
     -33.04903608163022,
@@ -262,16 +276,6 @@ const Despacho: React.FC = () => {
       informacion: textInput2,
     };
 
-    const alertData = `
-      Clave: ${formData.clave}
-      Calle: ${formData.calle}
-      Intersección: ${formData.interseccion}
-      Dirección: ${formData.direccion}
-      Información: ${formData.informacion}
-    `;
-
-    alert(`DESPACHO ${alertData}`);
-
     try {
       const response = await fetch("http://localhost:5000/despacho", {
         method: "POST",
@@ -285,7 +289,6 @@ const Despacho: React.FC = () => {
         const result: DespachoResponse = await response.json();
 
         console.log("Data successfully sent:", result);
-        alert(result.resultado);
 
         localStorage.setItem("despacho", JSON.stringify(result.despacho));
         //localStorage.setItem("emergencyId", result.id);
@@ -293,6 +296,16 @@ const Despacho: React.FC = () => {
 
         setDespacho(result.despacho);
         setEmergencyId(result.id);
+        setDispatchConfirmation({
+          incidentCode: result.id,
+          clave: formData.clave,
+          calle: formData.calle,
+          interseccion: formData.interseccion,
+          direccion: formData.direccion,
+          informacion: formData.informacion,
+          vehicles: result.despacho,
+          requiredPersonnel: result.required_personnel,
+        });
 
         await playDispatchAlert(result.despacho);
       } else {
@@ -648,6 +661,74 @@ const Despacho: React.FC = () => {
           </Link>
         </aside>
       </div>
+
+      {dispatchConfirmation && (
+        <div className="dispatch-confirmation-backdrop">
+          <section
+            className="dispatch-confirmation-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="dispatch-confirmation-title"
+          >
+            <div className="dispatch-confirmation-header">
+              <span>Despacho generado</span>
+              <h2 id="dispatch-confirmation-title">
+                {dispatchConfirmation.incidentCode}
+              </h2>
+            </div>
+
+            <dl className="dispatch-confirmation-details">
+              <div>
+                <dt>Clave</dt>
+                <dd>{dispatchConfirmation.clave}</dd>
+              </div>
+              <div>
+                <dt>Ubicación</dt>
+                <dd>
+                  {dispatchConfirmation.calle} con{" "}
+                  {dispatchConfirmation.interseccion}
+                </dd>
+              </div>
+              <div>
+                <dt>Dirección exacta</dt>
+                <dd>{dispatchConfirmation.direccion || "Sin información"}</dd>
+              </div>
+              <div>
+                <dt>Información adicional</dt>
+                <dd>{dispatchConfirmation.informacion || "Sin información"}</dd>
+              </div>
+            </dl>
+
+            <div className="dispatch-confirmation-summary">
+              <div>
+                <span>Personal requerido</span>
+                <strong>{dispatchConfirmation.requiredPersonnel}</strong>
+              </div>
+
+              <div>
+                <span>Unidades despachadas</span>
+                <div className="dispatch-confirmation-units">
+                  {dispatchConfirmation.vehicles.length > 0 ? (
+                    dispatchConfirmation.vehicles.map((vehicle) => (
+                      <b key={vehicle}>{vehicle}</b>
+                    ))
+                  ) : (
+                    <em>No se asignaron unidades disponibles</em>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="dispatch-confirmation-ok"
+              onClick={() => setDispatchConfirmation(null)}
+            >
+              OK
+            </button>
+          </section>
+        </div>
+      )}
     </MainLayout>
   );
 };

@@ -165,7 +165,8 @@ def despacho(
 
     resultado_texto += (
         f"Clave {request.clave} "
-        f"{request.calle} con {request.interseccion}"
+        f"{request.calle} con {request.interseccion}. "
+        f"Personal requerido: {resultado_backend['required_personnel']}"
     )
 
     telegram_result = None
@@ -176,6 +177,7 @@ def despacho(
         "resultado": resultado_texto,
         "despacho": despacho_codigos,
         "id": resultado_backend["incident_code"],
+        "required_personnel": resultado_backend["required_personnel"],
         "telegram": telegram_result
         #"id": resultado_backend["incident_id"]  
         }
