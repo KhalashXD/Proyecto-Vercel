@@ -139,6 +139,8 @@ def despacho(
             emergency_code=request.clave,
             street_1=request.calle,
             street_2=request.interseccion,
+            latitude=request.latitude,
+            longitude=request.longitude,
             location_notes=request.direccion,
             incident_description=request.informacion,
             caller_name="No informado",

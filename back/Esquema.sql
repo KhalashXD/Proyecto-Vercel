@@ -293,10 +293,10 @@ CREATE TABLE IF NOT EXISTS audit_log (
 -- DATOS INICIALES - ESTACIONES (opcional, puedes omitir)
 -- ============================================================
 INSERT INTO stations (code, name, address, latitude, longitude, phone, email) VALUES
-  ('C1', '1ra Compañía Villa Alemana', 'Av. Principal 101, Villa Alemana', -33.0472, -71.3627, '911-0001', 'cia1@cbvaa.cl'),
-  ('C2', '2da Compañía Villa Alemana', 'Calle Norte 200, Villa Alemana',   -33.0420, -71.3500, '911-0002', 'cia2@cbvaa.cl'),
-  ('C3', '3ra Compañía Villa Alemana', 'Sector Sur 300, Villa Alemana',    -33.0550, -71.3800, '911-0003', 'cia3@cbvaa.cl'),
-  ('C4', '4ta Compañía Villa Alemana', 'Camino Interior 400, Villa Alemana', -33.0500, -71.3580, '911-0004', 'cia4@cbvaa.cl');
+  ('C1', '1ra Compañía Villa Alemana', 'San Martin 331, Villa Alemana', -33.04826497621013, -71.37766983702313, '911-0001', 'cia1@cbvaa.cl'),
+  ('C2', '2da Compañía Villa Alemana', 'Santiago 566, Villa Alemana',   -33.04348848857053, -71.37182416898918, '911-0002', 'cia2@cbvaa.cl'),
+  ('C3', '3ra Compañía Villa Alemana', 'Freire 371, Villa Alemana',    -33.04649840040579, -71.3530632234065, '911-0003', 'cia3@cbvaa.cl'),
+  ('C4', '4ta Compañía Villa Alemana', 'Los Avellanos 798, Villa Alemana', -33.05599775894304, -71.3911704295499, '911-0004', 'cia4@cbvaa.cl');
 
 -- ============================================================
 -- DATOS INICIALES - TIPOS DE EMERGENCIA

@@ -274,6 +274,8 @@ const Despacho: React.FC = () => {
       interseccion: selectedIntersection,
       direccion: textInput1,
       informacion: textInput2,
+      latitude: markerPosition?.[0] ?? null,
+      longitude: markerPosition?.[1] ?? null,
     };
 
     try {

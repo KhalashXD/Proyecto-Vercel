@@ -71,15 +71,19 @@ def ejecutar_despacho(
     # Obtener coordenadas
     # ==================================
 
-    coordenadas = (
-    obtener_coordenadas(
-        data.street_1,
-        data.street_2
-    )
-    )
+    if data.latitude is not None and data.longitude is not None:
+        latitude = data.latitude
+        longitude = data.longitude
+    else:
+        coordenadas = (
+            obtener_coordenadas(
+                data.street_1,
+                data.street_2
+            )
+        )
 
-    latitude = coordenadas["latitude"]
-    longitude = coordenadas["longitude"]
+        latitude = coordenadas["latitude"]
+        longitude = coordenadas["longitude"]
 
     # ==================================
     # Buscar reglas de despacho
@@ -118,12 +122,14 @@ def ejecutar_despacho(
         scored_vehicles.append(
             (
                 distance,
+                vehicle.station.code,
+                vehicle.vehicle_code,
                 vehicle
             )
         )
 
     scored_vehicles.sort(
-        key=lambda x: x[0]
+        key=lambda x: (x[0], x[1], x[2])
     )
 
     selected = scored_vehicles[
@@ -147,7 +153,7 @@ def ejecutar_despacho(
             }
         )
 
-    for _, vehicle in selected:
+    for *_, vehicle in selected:
         assigned_vehicles.append(vehicle)
 
     # ==================================

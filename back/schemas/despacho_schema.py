@@ -10,6 +10,9 @@ class DespachoRequest(BaseModel):
     street_1: str
     street_2: str
 
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+
     location_notes: Optional[str] = None
     incident_description: Optional[str] = None
 
@@ -41,3 +44,5 @@ class FrontDespachoRequest(
     interseccion: str
     direccion: str | None = None
     informacion: str
+    latitude: float | None = None
+    longitude: float | None = None
