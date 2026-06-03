@@ -42,11 +42,20 @@ validators==0.22.0
 phonenumbers==8.13.0
 
 # Testing
+pytest==7.4.3
+pytest-cov==4.1.0
+factory-boy==3.3.0
 httpx~=0.24.0
 
 # Code Quality
+pylint==3.0.3
+black==23.12.1
+flake8==6.1.0
+isort==5.13.2
 
 # Production Server
+gunicorn==21.2.0
+gevent==23.9.1
 
 # Monitoring & Performance
 prometheus-client==0.19.0
@@ -62,3 +71,5 @@ attrs==23.2.0
 geopy
 
 # Development
+ipython==8.17.2
+ipdb==0.13.13
