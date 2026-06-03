@@ -807,7 +807,7 @@ SELECT
     SUM(CASE WHEN v.status = 'green' THEN 1 ELSE 0 END) AS available,
     SUM(CASE WHEN v.status = 'yellow' THEN 1 ELSE 0 END) AS dispatched,
     SUM(CASE WHEN v.status = 'red' THEN 1 ELSE 0 END) AS at_incident,
-    SUM(CASE WHEN v.status = 'blue' THEN 1 ELSE 0 END) AS returning,
+    SUM(CASE WHEN v.status = 'blue' THEN 1 ELSE 0 END) AS returning_vehicles,
     SUM(CASE WHEN v.status = 'gray' THEN 1 ELSE 0 END) AS unavailable
 FROM stations s
 LEFT JOIN vehicles v ON s.id = v.station_id

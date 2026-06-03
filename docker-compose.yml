@@ -24,7 +24,7 @@ services:
     networks:
       - emergency_network
     healthcheck:
-        test: ["CMD", "mariadb-admin", "ping", "-h", "localhost"]
+        test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-uroot", "-proot"]
         interval: 10s
         timeout: 5s
         retries: 5

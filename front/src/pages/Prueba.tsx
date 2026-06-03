@@ -106,6 +106,12 @@ interface VehicleInstruction {
   created_at: string;
 }
 
+interface Personnel {
+  id: number;
+  nombre: string;
+  rank: string | null;
+}
+
 type IncidentActionType =
   | "A_evaluacion_incidente"
   | "A_nueva_clave"
@@ -1628,29 +1634,127 @@ const Form10: React.FC<FormProps> = ({ eventId }) => {
   const { id } = useParams<{ id: string }>();
 
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [personnelOptions, setPersonnelOptions] = useState<SelectOption[]>([]);
+  const [selectedPersonnel, setSelectedPersonnel] = useState<
+    Record<number, SelectOption | null>
+  >({});
+  const [personnelCounts, setPersonnelCounts] = useState<Record<number, string>>(
+    {}
+  );
   const [requiredPersonnel, setRequiredPersonnel] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    fetch(`http://localhost:5000/emergenciasActivas/${id}`)
-      .then((response) => {
+  const cargarDotacion = async (): Promise<void> => {
+    try {
+      const response = await fetch(`http://localhost:5000/emergenciasActivas/${id}`);
+
         if (!response.ok) {
           throw new Error("No se pudo cargar la dotación de la emergencia");
         }
 
-        return response.json();
-      })
-      .then((data) => {
-        setVehicles(data.assigned_vehicles || []);
-        setRequiredPersonnel(data.emergency.required_personnel || 0);
-      })
-      .catch((error) => {
-        console.error(error);
-      })
-      .finally(() => {
-        setLoading(false);
+      const data = await response.json();
+      const assignedVehicles = data.assigned_vehicles || [];
+
+      setVehicles(assignedVehicles);
+      setRequiredPersonnel(data.emergency.required_personnel || 0);
+
+      setSelectedPersonnel((previous) => {
+        const next = { ...previous };
+
+        assignedVehicles.forEach((vehicle: Vehicle) => {
+          if (vehicle.personnel_in_charge) {
+            next[vehicle.id] = {
+              value: vehicle.personnel_in_charge.id,
+              label: vehicle.personnel_in_charge.name,
+            };
+          }
+        });
+
+        return next;
       });
+
+      setPersonnelCounts((previous) => {
+        const next = { ...previous };
+
+        assignedVehicles.forEach((vehicle: Vehicle) => {
+          next[vehicle.id] = String(vehicle.personnel_count || 0);
+        });
+
+        return next;
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    Promise.all([
+      cargarDotacion(),
+      fetch("http://localhost:5000/personal")
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("No se pudo cargar el personal");
+          }
+
+          return response.json();
+        })
+        .then((data: Personnel[]) => {
+          setPersonnelOptions(
+            data.map((person) => ({
+              value: person.id,
+              label: person.rank
+                ? `${person.nombre} (${person.rank})`
+                : person.nombre,
+            }))
+          );
+        }),
+    ]).catch((error) => {
+      console.error(error);
+      setLoading(false);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, eventId]);
+
+  const handleSubmitPersonnel = async (
+    vehicleId: number
+  ): Promise<void> => {
+    const personnelCount = Number(personnelCounts[vehicleId] || 0);
+    const selectedPerson = selectedPersonnel[vehicleId];
+
+    if (Number.isNaN(personnelCount) || personnelCount < 0) {
+      alert("Ingresa una dotación válida");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:5000/emergenciasActivas/${id}/vehiculos/${vehicleId}/personal`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            personnel_in_charge_id: selectedPerson
+              ? Number(selectedPerson.value)
+              : null,
+            personnel_count: personnelCount,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      await cargarDotacion();
+    } catch (error) {
+      console.error(error);
+      alert("No se pudo registrar el personal de la unidad");
+    }
+  };
 
   if (loading) {
     return <p>Cargando información...</p>;
@@ -1685,6 +1789,7 @@ const Form10: React.FC<FormProps> = ({ eventId }) => {
                 <th>Responsable</th>
                 <th>Rango</th>
                 <th>Dotación</th>
+                <th>Registro</th>
               </tr>
             </thead>
             <tbody>
@@ -1693,7 +1798,41 @@ const Form10: React.FC<FormProps> = ({ eventId }) => {
                   <td>{vehicle.vehicle_code}</td>
                   <td>{vehicle.personnel_in_charge?.name || "Sin registrar"}</td>
                   <td>{vehicle.personnel_in_charge?.rank || "Sin registrar"}</td>
-                  <td>{vehicle.personnel_count || 0}</td>
+                  <td>
+                    <input
+                      type="number"
+                      min="0"
+                      value={personnelCounts[vehicle.id] || "0"}
+                      onChange={(event) =>
+                        setPersonnelCounts((previous) => ({
+                          ...previous,
+                          [vehicle.id]: event.target.value,
+                        }))
+                      }
+                    />
+                  </td>
+                  <td className="personnel-register-cell">
+                    <Select
+                      value={selectedPersonnel[vehicle.id] || null}
+                      onChange={(option) =>
+                        setSelectedPersonnel((previous) => ({
+                          ...previous,
+                          [vehicle.id]: option as SelectOption | null,
+                        }))
+                      }
+                      options={personnelOptions}
+                      placeholder="Responsable"
+                      isClearable
+                    />
+
+                    <button
+                      type="button"
+                      className="app-btn app-btn-primary"
+                      onClick={() => handleSubmitPersonnel(vehicle.id)}
+                    >
+                      Guardar
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>

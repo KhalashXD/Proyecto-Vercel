@@ -1,4 +1,5 @@
 import os
+import time
 from typing import Optional
 
 from fastapi import (
@@ -20,6 +21,8 @@ from sqlalchemy import (
     text
 )
 
+from sqlalchemy.exc import OperationalError
+
 from sqlalchemy.orm import (
     sessionmaker,
     Session
@@ -36,9 +39,10 @@ from services.despacho_service import ( ejecutar_despacho)
 
 from utils.maps import (  obtener_coordenadas)
 
-from schemas.incident_schema import ( UpdateIncidentStatusRequest, AssignVehicleRequest, UpdateVehicleStatusRequest, RegisterVehiclePersonnelRequest, CreateIncidentActionRequest, CreateIncidentVictimRequest, CreateVehicleInstructionRequest)
+from schemas.incident_schema import ( UpdateIncidentStatusRequest, AssignVehicleRequest, UpdateVehicleStatusRequest, RegisterVehiclePersonnelRequest, UpdateVehiclePersonnelRequest, CreateIncidentActionRequest, CreateIncidentVictimRequest, CreateVehicleInstructionRequest)
 
-from services.incident_service import (obtener_incidentes_activos,obtener_incidente_por_codigo,actualizar_estado_incidente, obtener_historial_incidentes, asignar_vehiculo_adicional, actualizar_estado_vehiculo_incidente, liberar_vehiculo_incidente, registrar_dotacion_vehiculo, registrar_accion_incidente, obtener_victimas_incidente, registrar_victima_incidente, obtener_instrucciones_unidades, registrar_instrucciones_unidades)
+from services.incident_service import (obtener_incidentes_activos,obtener_incidente_por_codigo,actualizar_estado_incidente, obtener_historial_incidentes, asignar_vehiculo_adicional, actualizar_estado_vehiculo_incidente, liberar_vehiculo_incidente, registrar_dotacion_vehiculo, registrar_personal_vehiculo_incidente, registrar_accion_incidente, obtener_victimas_incidente, registrar_victima_incidente, obtener_instrucciones_unidades, registrar_instrucciones_unidades)
+from models import Base
 
 from services.vehicle_service import (obtener_vehiculos, obtener_vehiculos_disponibles, actualizar_estado_vehiculo)
 from services.personnel_service import (obtener_personal)
@@ -102,6 +106,102 @@ SessionLocal = sessionmaker(
     autoflush=False,
     bind=engine
 )
+
+
+@app.on_event("startup")
+def ensure_database_compatibility():
+    last_error = None
+
+    for _ in range(30):
+        try:
+            Base.metadata.create_all(bind=engine)
+            last_error = None
+            break
+        except OperationalError as error:
+            last_error = error
+            time.sleep(2)
+
+    if last_error:
+        raise last_error
+
+    if not DATABASE_URL.startswith("mysql"):
+        return
+
+    statements = [
+        (
+            "ALTER TABLE vehicles "
+            "MODIFY status ENUM('green', 'yellow', 'red', 'blue', 'gray') "
+            "DEFAULT 'green' "
+            "COMMENT 'green=disponible en cuartel, yellow=despachado, "
+            "red=en emergencia, blue=retorno pendiente, gray=no disponible'"
+        ),
+        (
+            "ALTER TABLE incident_events "
+            "MODIFY event_type ENUM("
+            "'created', 'vehicle_assigned', 'vehicle_arrived', "
+            "'vehicle_departed', 'status_changed', "
+            "'additional_units_requested', 'ambulance_requested', "
+            "'form_submitted', 'victims_reported', 'personel_asigned', "
+            "'other', 'incident_closed', 'A_evaluacion_incidente', "
+            "'A_nueva_clave', 'A_instrucciones', 'A_comandante', "
+            "'A_externos', 'A_informacion', 'A_victimas'"
+            ") NOT NULL"
+        ),
+        (
+            "ALTER TABLE incident_victims "
+            "MODIFY sex ENUM('female', 'male', 'other', 'not_informed') "
+            "NOT NULL"
+        ),
+        (
+            "ALTER TABLE incident_victims "
+            "MODIFY injury_type ENUM('minor', 'serious', 'fatal', "
+            "'not_informed') NOT NULL"
+        ),
+        (
+            "ALTER TABLE incident_vehicles "
+            "ADD COLUMN IF NOT EXISTS personnel_in_charge_id INT NULL"
+        ),
+        (
+            "ALTER TABLE incident_vehicles "
+            "ADD COLUMN IF NOT EXISTS personnel_count INT DEFAULT 0"
+        ),
+        (
+            "ALTER TABLE incident_vehicles "
+            "ADD COLUMN IF NOT EXISTS arrived_at TIMESTAMP NULL"
+        ),
+        (
+            "ALTER TABLE incident_vehicles "
+            "ADD COLUMN IF NOT EXISTS departure_time TIMESTAMP NULL"
+        ),
+        (
+            "CREATE OR REPLACE VIEW vehicle_availability_view AS "
+            "SELECT "
+            "s.code AS station_code, "
+            "s.name AS station_name, "
+            "COUNT(v.id) AS total_vehicles, "
+            "SUM(CASE WHEN v.status = 'green' THEN 1 ELSE 0 END) AS available, "
+            "SUM(CASE WHEN v.status = 'yellow' THEN 1 ELSE 0 END) AS dispatched, "
+            "SUM(CASE WHEN v.status = 'red' THEN 1 ELSE 0 END) AS at_incident, "
+            "SUM(CASE WHEN v.status = 'blue' THEN 1 ELSE 0 END) AS returning_vehicles, "
+            "SUM(CASE WHEN v.status = 'gray' THEN 1 ELSE 0 END) AS unavailable "
+            "FROM stations s "
+            "LEFT JOIN vehicles v ON s.id = v.station_id "
+            "GROUP BY s.id, s.code, s.name"
+        ),
+    ]
+
+    for _ in range(30):
+        try:
+            with engine.begin() as connection:
+                for statement in statements:
+                    connection.execute(text(statement))
+            return
+        except OperationalError as error:
+            last_error = error
+            time.sleep(2)
+
+    if last_error:
+        raise last_error
 
 # =========================
 # Dependencia DB
@@ -331,6 +431,21 @@ def registrar_dotacion_carro(
         incident_code=incident_code,
         vehicle_id=vehicle_id,
         personnel_ids=request.personnel_ids
+    )
+
+@app.patch("/emergenciasActivas/{incident_code}/vehiculos/{vehicle_id}/personal")
+def registrar_personal_carro_en_emergencia(
+    incident_code: str,
+    vehicle_id: int,
+    request: UpdateVehiclePersonnelRequest,
+    db: Session = Depends(get_db)
+):
+    return registrar_personal_vehiculo_incidente(
+        db=db,
+        incident_code=incident_code,
+        vehicle_id=vehicle_id,
+        personnel_in_charge_id=request.personnel_in_charge_id,
+        personnel_count=request.personnel_count
     )
 
 @app.patch("/vehiculos/{vehicle_id}/estado")

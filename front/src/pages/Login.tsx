@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "../styles/LoginSignup.css";
 import Navbar from "../components/Navbar";
 import { auth } from "../firebase";
@@ -6,6 +6,7 @@ import {
   signInWithEmailAndPassword,
   multiFactor,
   getMultiFactorResolver,
+  onAuthStateChanged,
   RecaptchaVerifier,
   PhoneAuthProvider,
   PhoneMultiFactorGenerator,
@@ -21,10 +22,28 @@ const Login: React.FC = () => {
   const [resolver, setResolver] = useState<MultiFactorResolver | null>(null);
   const [verificationId, setVerificationId] = useState<string>("");
   const [showSmsStep, setShowSmsStep] = useState<boolean>(false);
+  const recaptchaRenderId = useRef<number>(0);
 
   const navigate = useNavigate();
 
-  const setupRecaptcha = async (): Promise<void> => {
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user || showSmsStep) {
+        return;
+      }
+
+      if (multiFactor(user).enrolledFactors.length === 0) {
+        navigate("/activar-sms");
+        return;
+      }
+
+      navigate("/despacho");
+    });
+
+    return () => unsubscribe();
+  }, [navigate, showSmsStep]);
+
+  const cleanupRecaptcha = (): void => {
     if (window.recaptchaVerifier) {
       try {
         window.recaptchaVerifier.clear();
@@ -34,6 +53,14 @@ const Login: React.FC = () => {
 
       window.recaptchaVerifier = null;
     }
+  };
+
+  useEffect(() => {
+    return () => cleanupRecaptcha();
+  }, []);
+
+  const setupRecaptcha = async (): Promise<void> => {
+    cleanupRecaptcha();
 
     const container = document.getElementById("recaptcha-container");
 
@@ -41,9 +68,19 @@ const Login: React.FC = () => {
       container.innerHTML = "";
     }
 
+    if (!container) {
+      throw new Error("No se encontró el contenedor de reCAPTCHA.");
+    }
+
+    recaptchaRenderId.current += 1;
+    const recaptchaElementId = `login-recaptcha-${recaptchaRenderId.current}`;
+    const recaptchaElement = document.createElement("div");
+    recaptchaElement.id = recaptchaElementId;
+    container.appendChild(recaptchaElement);
+
     window.recaptchaVerifier = new RecaptchaVerifier(
       auth,
-      "recaptcha-container",
+      recaptchaElementId,
       {
         size: "invisible",
         callback: () => {

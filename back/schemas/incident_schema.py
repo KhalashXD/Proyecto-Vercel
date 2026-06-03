@@ -36,6 +36,10 @@ class UpdateVehicleStatusRequest(BaseModel):
 class RegisterVehiclePersonnelRequest(BaseModel):
     personnel_ids: list[int]
 
+class UpdateVehiclePersonnelRequest(BaseModel):
+    personnel_in_charge_id: int | None = None
+    personnel_count: int
+
 class CreateIncidentActionRequest(BaseModel):
     event_type: str
     description: str

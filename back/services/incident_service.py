@@ -1,4 +1,4 @@
-from models import (
+﻿from models import (
     Incident,
     IncidentEvent,
     Vehicle,
@@ -7,7 +7,8 @@ from models import (
     EmergencyType,
     Personnel,
     IncidentVictim,
-    IncidentVehicleInstruction
+    IncidentVehicleInstruction,
+    Personnel
 )
 from sqlalchemy.orm import Session
 from sqlalchemy import func
@@ -98,7 +99,7 @@ def obtener_incidente_por_codigo(
         )
 
     # =========================
-    # Vehículos asignados
+    # VehÃ­culos asignados
     # =========================
 
     assigned_vehicles = []
@@ -183,20 +184,20 @@ def obtener_incidente_por_codigo(
     "vehicle_arrived": "Unidad en el lugar",
     "vehicle_departed": "Unidad dada de baja",
     "status_changed": "Cambio de estado",
-    "additional_units_requested": "Solicitud de más unidades",
+    "additional_units_requested": "Solicitud de mÃ¡s unidades",
     "ambulance_requested": "Solicitud de ambulancia",
     "form_submitted": "Formulario registrado",
     "incident_closed": "Emergencia cerrado",
-    "victims_reported": "Registro de víctimas",
+    "victims_reported": "Registro de vÃ­ctimas",
     "personel_asigned": "Personal Asignado",
     "other": "Otro Suceso",
-    "A_evaluacion_incidente": "Evaluación del incidente",
+    "A_evaluacion_incidente": "EvaluaciÃ³n del incidente",
     "A_nueva_clave": "Nueva clave",
     "A_instrucciones": "Instrucciones",
     "A_comandante": "Comandante",
     "A_externos": "Recursos externos",
-    "A_informacion": "Información",
-    "A_victimas": "Víctimas",}
+    "A_informacion": "InformaciÃ³n",
+    "A_victimas": "VÃ­ctimas",}
 
     timeline = [
         {
@@ -746,7 +747,7 @@ def registrar_dotacion_vehiculo(
             vehicle_id=vehicle_id,
             event_type="personel_asigned",
             description=(
-                f"Dotación registrada para unidad "
+                f"DotaciÃ³n registrada para unidad "
                 f"{relation.vehicle.vehicle_code}: {selected_names}"
             ),
             user_name="system"
@@ -757,7 +758,7 @@ def registrar_dotacion_vehiculo(
     db.refresh(relation)
 
     return {
-        "message": "Dotación registrada correctamente",
+        "message": "DotaciÃ³n registrada correctamente",
         "vehicle_id": relation.vehicle.id,
         "vehicle_code": relation.vehicle.vehicle_code,
         "personnel_count": relation.personnel_count,
@@ -769,6 +770,79 @@ def registrar_dotacion_vehiculo(
             }
             for person in personnel
         ]
+    }
+
+def registrar_personal_vehiculo_incidente(
+    db: Session,
+    incident_code: str,
+    vehicle_id: int,
+    personnel_in_charge_id: int | None,
+    personnel_count: int
+):
+    if personnel_count < 0:
+        raise Exception("Personnel count is not valid")
+
+    incident = (
+        db.query(Incident)
+        .filter(Incident.incident_code == incident_code)
+        .first()
+    )
+
+    if not incident:
+        raise Exception("Incident not found")
+
+    relation = (
+        db.query(IncidentVehicle)
+        .filter(
+            IncidentVehicle.incident_id == incident.id,
+            IncidentVehicle.vehicle_id == vehicle_id
+        )
+        .first()
+    )
+
+    if not relation:
+        raise Exception("Vehicle is not assigned to this incident")
+
+    personnel = None
+
+    if personnel_in_charge_id:
+        personnel = (
+            db.query(Personnel)
+            .filter(Personnel.id == personnel_in_charge_id)
+            .first()
+        )
+
+        if not personnel:
+            raise Exception("Personnel not found")
+
+    relation.personnel_in_charge_id = personnel_in_charge_id
+    relation.personnel_count = personnel_count
+
+    vehicle_code = relation.vehicle.vehicle_code
+    responsible_name = _personnel_name(personnel) if personnel else "Sin responsable"
+
+    db.add(
+        IncidentEvent(
+            incident_id=incident.id,
+            vehicle_id=relation.vehicle_id,
+            event_type="personel_asigned",
+            description=(
+                f"Personal registrado en {vehicle_code}: "
+                f"{personnel_count} bomberos. Responsable: {responsible_name}"
+            ),
+            user_name="system"
+        )
+    )
+
+    db.commit()
+    db.refresh(relation)
+
+    return {
+        "message": "Personal registrado correctamente",
+        "vehicle_id": relation.vehicle_id,
+        "vehicle_code": vehicle_code,
+        "personnel_in_charge_id": relation.personnel_in_charge_id,
+        "personnel_count": relation.personnel_count
     }
 
 INCIDENT_ACTION_TYPES = {
@@ -829,7 +903,7 @@ def registrar_accion_incidente(
     db.refresh(event)
 
     return {
-        "message": "Acción registrada correctamente",
+        "message": "AcciÃ³n registrada correctamente",
         "event_type": event.event_type,
         "description": event.description,
         "created_at": event.created_at
@@ -916,7 +990,7 @@ def registrar_instrucciones_unidades(
     db.commit()
 
     return {
-        "message": "Instrucción registrada correctamente",
+        "message": "InstrucciÃ³n registrada correctamente",
         "vehicle_codes": unique_vehicle_codes
     }
 
@@ -1002,7 +1076,7 @@ def registrar_victima_incidente(
     event = IncidentEvent(
         incident_id=incident.id,
         event_type="A_victimas",
-        description=f"Víctima registrada: {name}",
+        description=f"VÃ­ctima registrada: {name}",
         user_name="system"
     )
 
@@ -1012,6 +1086,6 @@ def registrar_victima_incidente(
     db.refresh(victim)
 
     return {
-        "message": "Víctima registrada correctamente",
+        "message": "VÃ­ctima registrada correctamente",
         "victim_id": victim.id
     }

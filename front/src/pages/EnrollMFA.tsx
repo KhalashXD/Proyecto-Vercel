@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import { auth } from "../firebase";
 import {
@@ -16,10 +16,11 @@ const EnrollMFA: React.FC = () => {
   const [verificationId, setVerificationId] = useState<string>("");
   const [step, setStep] = useState<number>(1);
   const [error, setError] = useState<string>("");
+  const recaptchaRenderId = useRef<number>(0);
 
   const navigate = useNavigate();
 
-  const setupRecaptcha = async (): Promise<void> => {
+  const cleanupRecaptcha = (): void => {
     if (window.recaptchaVerifier) {
       try {
         window.recaptchaVerifier.clear();
@@ -29,6 +30,14 @@ const EnrollMFA: React.FC = () => {
 
       window.recaptchaVerifier = null;
     }
+  };
+
+  useEffect(() => {
+    return () => cleanupRecaptcha();
+  }, []);
+
+  const setupRecaptcha = async (): Promise<void> => {
+    cleanupRecaptcha();
 
     const container = document.getElementById("recaptcha-container");
 
@@ -36,9 +45,19 @@ const EnrollMFA: React.FC = () => {
       container.innerHTML = "";
     }
 
+    if (!container) {
+      throw new Error("No se encontró el contenedor de reCAPTCHA.");
+    }
+
+    recaptchaRenderId.current += 1;
+    const recaptchaElementId = `enroll-recaptcha-${recaptchaRenderId.current}`;
+    const recaptchaElement = document.createElement("div");
+    recaptchaElement.id = recaptchaElementId;
+    container.appendChild(recaptchaElement);
+
     window.recaptchaVerifier = new RecaptchaVerifier(
       auth,
-      "recaptcha-container",
+      recaptchaElementId,
       {
         size: "normal",
         callback: () => {
