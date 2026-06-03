@@ -3,12 +3,22 @@ from models import (
     IncidentEvent,
     Vehicle,
     IncidentVehicle,
+    IncidentVehiclePersonnel,
     EmergencyType,
+    Personnel,
     IncidentVictim,
     IncidentVehicleInstruction
 )
 from sqlalchemy.orm import Session
 from sqlalchemy import func
+
+
+def _personnel_name(person: Personnel) -> str:
+    return (
+        f"{person.first_name} "
+        f"{person.last_name_1 or ''} "
+        f"{person.last_name_2 or ''}"
+    ).strip()
 
 def obtener_incidentes_activos(
     db: Session
@@ -96,6 +106,24 @@ def obtener_incidente_por_codigo(
     for relation in incident.vehicles:
 
         vehicle = relation.vehicle
+        crew_relations = (
+            db.query(IncidentVehiclePersonnel)
+            .filter(
+                IncidentVehiclePersonnel.incident_id == incident.id,
+                IncidentVehiclePersonnel.vehicle_id == vehicle.id,
+                IncidentVehiclePersonnel.released_at.is_(None)
+            )
+            .all()
+        )
+
+        crew = [
+            {
+                "id": crew_relation.personnel.id,
+                "name": _personnel_name(crew_relation.personnel),
+                "rank": crew_relation.personnel.rank
+            }
+            for crew_relation in crew_relations
+        ]
 
         assigned_vehicles.append(
             {
@@ -138,7 +166,10 @@ def obtener_incidente_por_codigo(
                     ),
 
                 "personnel_count":
-                    relation.personnel_count
+                    len(crew) if crew else relation.personnel_count,
+
+                "crew":
+                    crew
             }
         )
 
@@ -619,6 +650,125 @@ def liberar_vehiculo_incidente(
         "vehicle_id": vehicle.id,
         "vehicle_code": vehicle.vehicle_code,
         "status": vehicle.status
+    }
+
+def registrar_dotacion_vehiculo(
+    db: Session,
+    incident_code: str,
+    vehicle_id: int,
+    personnel_ids: list[int]
+):
+    incident = (
+        db.query(Incident)
+        .filter(Incident.incident_code == incident_code)
+        .first()
+    )
+
+    if not incident:
+        raise Exception("Incident not found")
+
+    relation = (
+        db.query(IncidentVehicle)
+        .filter(
+            IncidentVehicle.incident_id == incident.id,
+            IncidentVehicle.vehicle_id == vehicle_id
+        )
+        .first()
+    )
+
+    if not relation:
+        raise Exception("Vehicle is not assigned to this incident")
+
+    requested_ids = list(dict.fromkeys(personnel_ids))
+
+    if not requested_ids:
+        raise Exception("Select at least one firefighter")
+
+    personnel = (
+        db.query(Personnel)
+        .filter(Personnel.id.in_(requested_ids))
+        .all()
+    )
+
+    if len(personnel) != len(requested_ids):
+        raise Exception("One or more firefighters were not found")
+
+    active_assignments = (
+        db.query(IncidentVehiclePersonnel)
+        .filter(
+            IncidentVehiclePersonnel.incident_id == incident.id,
+            IncidentVehiclePersonnel.vehicle_id == vehicle_id,
+            IncidentVehiclePersonnel.released_at.is_(None)
+        )
+        .all()
+    )
+
+    active_ids = {
+        assignment.personnel_id
+        for assignment in active_assignments
+    }
+
+    requested_id_set = set(requested_ids)
+
+    for assignment in active_assignments:
+        if assignment.personnel_id not in requested_id_set:
+            assignment.released_at = func.current_timestamp()
+            assignment.personnel.disponible = 1
+
+    for person in personnel:
+        if person.id in active_ids:
+            continue
+
+        if person.disponible == 0:
+            raise Exception(f"{_personnel_name(person)} is not available")
+
+        db.add(
+            IncidentVehiclePersonnel(
+                incident_id=incident.id,
+                vehicle_id=vehicle_id,
+                personnel_id=person.id
+            )
+        )
+        person.disponible = 0
+
+    relation.personnel_count = len(requested_ids)
+
+    relation.personnel_in_charge_id = requested_ids[0]
+
+    selected_names = ", ".join(
+        _personnel_name(person)
+        for person in personnel
+    )
+
+    db.add(
+        IncidentEvent(
+            incident_id=incident.id,
+            vehicle_id=vehicle_id,
+            event_type="personel_asigned",
+            description=(
+                f"Dotación registrada para unidad "
+                f"{relation.vehicle.vehicle_code}: {selected_names}"
+            ),
+            user_name="system"
+        )
+    )
+
+    db.commit()
+    db.refresh(relation)
+
+    return {
+        "message": "Dotación registrada correctamente",
+        "vehicle_id": relation.vehicle.id,
+        "vehicle_code": relation.vehicle.vehicle_code,
+        "personnel_count": relation.personnel_count,
+        "crew": [
+            {
+                "id": person.id,
+                "name": _personnel_name(person),
+                "rank": person.rank
+            }
+            for person in personnel
+        ]
     }
 
 INCIDENT_ACTION_TYPES = {

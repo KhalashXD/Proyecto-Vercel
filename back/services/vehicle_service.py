@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from models import (
-    Vehicle
+    Vehicle,
+    IncidentVehiclePersonnel
 )
 
 VEHICLE_STATUSES = {
@@ -112,7 +114,8 @@ def obtener_vehiculos_disponibles(db: Session):
             "vehicle_code": vehicle.vehicle_code,
             "vehicle_type": vehicle.vehicle_type,
             "station_name": vehicle.station.name,
-            "status": vehicle.status
+            "status": vehicle.status,
+            "driver_name": vehicle.driver_name
         }
         for vehicle in vehicles
     ]
@@ -145,6 +148,21 @@ def actualizar_estado_vehiculo(
 
     previous_status = vehicle.status
     vehicle.status = new_status
+
+    if previous_status == "blue" and new_status == "green":
+        active_personnel = (
+            db.query(IncidentVehiclePersonnel)
+            .filter(
+                IncidentVehiclePersonnel.vehicle_id == vehicle.id,
+                IncidentVehiclePersonnel.released_at.is_(None)
+            )
+            .all()
+        )
+
+        for assignment in active_personnel:
+            assignment.released_at = func.current_timestamp()
+            assignment.personnel.disponible = 1
+
     db.commit()
     db.refresh(vehicle)
 

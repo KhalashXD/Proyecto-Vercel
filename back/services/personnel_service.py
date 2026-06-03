@@ -24,6 +24,7 @@ def obtener_personal(
             "rank": person.rank,
             "station_id": person.station_id,
             "radio_code": person.radio_code,
+            "disponible": person.disponible,
         }
         for person in personnel
     ]

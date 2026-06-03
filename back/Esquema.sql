@@ -126,6 +126,7 @@ CREATE TABLE IF NOT EXISTS personnel (
     station_id INT,
     can_rescue BOOLEAN DEFAULT FALSE,
     can_hazmat BOOLEAN DEFAULT FALSE,
+    disponible INT DEFAULT 1,
     level VARCHAR(50),
     radio_code VARCHAR(20),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -159,6 +160,27 @@ CREATE TABLE IF NOT EXISTS incident_vehicles (
     INDEX idx_incident (incident_id),
     INDEX idx_vehicle (vehicle_id),
     INDEX idx_personnel_in_charge (personnel_in_charge_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- TABLA: incident_vehicle_personnel (Dotación por unidad)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS incident_vehicle_personnel (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    incident_id INT NOT NULL,
+    vehicle_id INT NOT NULL,
+    personnel_id INT NOT NULL,
+    assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    released_at TIMESTAMP NULL,
+
+    FOREIGN KEY (incident_id) REFERENCES incidents(id) ON DELETE CASCADE,
+    FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE,
+    FOREIGN KEY (personnel_id) REFERENCES personnel(id) ON DELETE CASCADE,
+
+    INDEX idx_ivp_incident (incident_id),
+    INDEX idx_ivp_vehicle (vehicle_id),
+    INDEX idx_ivp_personnel (personnel_id),
+    INDEX idx_ivp_active (vehicle_id, released_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
@@ -419,18 +441,18 @@ INSERT INTO emergency_types (code, name, description, required_units, required_p
 -- DATOS INICIALES - VEHÍCULOS
 -- ============================================================
 INSERT INTO vehicles (vehicle_code, vehicle_type, station_id, status, driver_name, capacity) VALUES
-    ('C11', 'Camión Bombero', 1, 'green', 'a', 8),
-    ('C12', 'Camión Bombero', 1, 'green', 'a', 8),
-    ('C13', 'Camión Bombero', 1, 'green', 'a', 8),
-    ('C14', 'Camión Bombero', 1, 'green', 'a', 8),
-    ('C21', 'Camión Bombero', 2, 'green', 'a', 8),
-    ('C22', 'Camión Bombero', 2, 'green', 'a', 8),
-    ('C31', 'Camión Bombero', 3, 'green', 'a', 8),
-    ('C32', 'Camión Bombero', 3, 'green', 'a', 8),
-    ('C33', 'Camión Bombero', 3, 'green', 'a', 8),
-    ('C41', 'Camión Bombero', 4, 'green', 'a', 8),
-    ('C42', 'Camión Bombero', 4, 'green', 'a', 8),
-    ('C43', 'Camión Bombero', 4, 'green', 'a', 8);
+    ('C11', 'Camión Bombero', 1, 'green', 'Sin Conductor', 8),
+    ('C12', 'Camión Bombero', 1, 'green', 'Sin Conductor', 8),
+    ('C13', 'Camión Bombero', 1, 'green', 'Sin Conductor', 8),
+    ('C14', 'Camión Bombero', 1, 'green', 'Sin Conductor', 8),
+    ('C21', 'Camión Bombero', 2, 'green', 'Sin Conductor', 8),
+    ('C22', 'Camión Bombero', 2, 'green', 'Sin Conductor', 8),
+    ('C31', 'Camión Bombero', 3, 'green', 'Sin Conductor', 8),
+    ('C32', 'Camión Bombero', 3, 'green', 'Sin Conductor', 8),
+    ('C33', 'Camión Bombero', 3, 'green', 'Sin Conductor', 8),
+    ('C41', 'Camión Bombero', 4, 'green', 'Sin Conductor', 8),
+    ('C42', 'Camión Bombero', 4, 'green', 'Sin Conductor', 8),
+    ('C43', 'Camión Bombero', 4, 'green', 'Sin Conductor', 8);
 
 -- ============================================================
 -- DATOS INICIALES - REGLAS DE DESPACHO BORRAR DESPUES

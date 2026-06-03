@@ -19,18 +19,33 @@ interface SelectOption {
   label: string;
 }
 
+interface PersonnelOption {
+  value: number;
+  label: string;
+  rank: string | null;
+  disponible: number | null;
+}
+
+interface VehicleCrewMember {
+  id: number;
+  name: string;
+  rank: string | null;
+}
+
 interface Vehicle {
   id: number;
   vehicle_code: string;
   vehicle_type: string;
   station_name: string;
   status: string;
+  driver_name?: string | null;
   personnel_in_charge?: {
     id: number;
     name: string;
     rank: string | null;
   } | null;
   personnel_count?: number;
+  crew?: VehicleCrewMember[];
 }
 
 interface IncidentVictim {
@@ -338,11 +353,10 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
   const [carrosDisponibles, setCarrosDisponibles] = useState<Vehicle[]>([]);
   const [selectedDespacho, setSelectedDespacho] = useState<number[]>([]);
   const [selectedLiberar, setSelectedLiberar] = useState<number[]>([]);
-  const [despacho, setDespacho] = useState<string[]>([]);
-  const [acciones, setAcciones] = useState<any[]>([]);
-  const [data2, setData2] = useState<SelectOption[]>([]);
-  const [selectedOptions, setSelectedOptions] = useState<Record<number, SelectOption | null>>({});
-  const [integerValues, setIntegerValues] = useState<Record<number, number>>({});
+  const [personnelOptions, setPersonnelOptions] = useState<PersonnelOption[]>([]);
+  const [selectedCrewOptions, setSelectedCrewOptions] = useState<
+    Record<number, PersonnelOption[]>
+  >({});
 
   const cargarDisponibles = async (): Promise<void> => {
     try {
@@ -380,31 +394,33 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
     }
   };
 
-  useEffect(() => {
-    fetch("/data.json")
-      .then((response) => response.json())
-      .then((jsonData: Array<{ id: string; nombre: string }>) => {
-        const options = jsonData.map((item) => ({
-          value: item.id,
-          label: item.nombre,
-        }));
+  const cargarPersonal = async (): Promise<void> => {
+    try {
+      const response = await fetch("http://localhost:5000/personal");
 
-        setData2(options);
-      })
-      .catch((error) => {
-        console.error("Error al cargar el JSON:", error);
-      });
-  }, []);
+      if (!response.ok) {
+        throw new Error("No se pudo cargar el personal");
+      }
 
-  useEffect(() => {
-    const savedDespacho = localStorage.getItem("despacho");
-    const savedAcciones = localStorage.getItem("acciones");
+      const data: Array<{
+        id: number;
+        nombre: string;
+        rank: string | null;
+        disponible: number | null;
+      }> = await response.json();
 
-    if (savedDespacho && savedAcciones) {
-      setDespacho(JSON.parse(savedDespacho));
-      setAcciones(JSON.parse(savedAcciones));
+      setPersonnelOptions(
+        data.map((person) => ({
+          value: person.id,
+          label: person.rank ? `${person.nombre} (${person.rank})` : person.nombre,
+          rank: person.rank,
+          disponible: person.disponible,
+        }))
+      );
+    } catch (error) {
+      console.error(error);
     }
-  }, []);
+  };
 
   useEffect(() => {
     cargarActivos();
@@ -414,6 +430,7 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
 
   useEffect(() => {
     cargarDisponibles();
+    cargarPersonal();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -532,72 +549,67 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
       await cargarActivos();
     }
   };
+  const getStoredCrewOptions = (vehicle: Vehicle): PersonnelOption[] => (
+    vehicle.crew || []
+  ).map((person) => ({
+    value: person.id,
+    label: person.rank ? `${person.name} (${person.rank})` : person.name,
+    rank: person.rank,
+    disponible: 0,
+  }));
 
+  const getCrewValue = (vehicle: Vehicle): PersonnelOption[] => {
+    return selectedCrewOptions[vehicle.id] || getStoredCrewOptions(vehicle);
+  };
 
+  const getCrewOptions = (vehicle: Vehicle): PersonnelOption[] => {
+    const selectedIds = new Set(getCrewValue(vehicle).map((person) => person.value));
 
+    return personnelOptions.filter(
+      (person) => person.disponible !== 0 || selectedIds.has(person.value)
+    );
+  };
 
-
-
-  const handleDespachoChange = (
-    index: number,
-    selectedOption: SelectOption | null
+  const handleCrewChange = (
+    vehicleId: number,
+    selectedOptions: readonly PersonnelOption[] | null
   ): void => {
-    setSelectedOptions((prevState) => ({
+    setSelectedCrewOptions((prevState) => ({
       ...prevState,
-      [index]: selectedOption,
+      [vehicleId]: selectedOptions ? [...selectedOptions] : [],
     }));
   };
 
-  const handleIntegerChange = (index: number, value: number): void => {
-    setIntegerValues((prevState) => ({
-      ...prevState,
-      [index]: value,
-    }));
-  };
+  const handleCrewSubmit = async (vehicle: Vehicle): Promise<void> => {
+    const selectedPersonnel = getCrewValue(vehicle);
 
-  const handleDespachoSubmit = async (index: number): Promise<void> => {
-    const selectedOption = selectedOptions[index];
-    const integerValue = integerValues[index];
-
-    if (!selectedOption || integerValue === undefined || Number.isNaN(integerValue)) {
-      alert("Selecciona una opción y proporciona un número entero para este despacho");
+    if (selectedPersonnel.length === 0) {
+      alert("Selecciona al menos un bombero para esta unidad");
       return;
     }
 
-    const despachoData = {
-      despachoIndex: index,
-      selectedId: Number(selectedOption.value) + 1,
-      integerValue,
-      despacho,
-      acciones,
-      id,
-    };
-
     try {
-      const response = await fetch("http://localhost:5000/carros_mando2", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(despachoData),
-      });
+      const response = await fetch(
+        `http://localhost:5000/emergenciasActivas/${id}/vehiculos/${vehicle.id}/dotacion`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            personnel_ids: selectedPersonnel.map((person) => person.value),
+          }),
+        }
+      );
 
       if (!response.ok) {
-        console.error("Error sending despacho item:", response.statusText);
+        throw new Error(await response.text());
       }
+
+      await cargarActivos();
+      await cargarPersonal();
     } catch (error) {
-      console.error("Error:", error);
+      console.error(error);
+      alert("No se pudo registrar la dotación de esta unidad");
     }
-
-    const updatedDespacho = [...despacho];
-    updatedDespacho.splice(index, 1);
-
-    const updatedAcciones = [...acciones];
-    updatedAcciones.splice(index, 1);
-
-    setDespacho(updatedDespacho);
-    setAcciones(updatedAcciones);
-
-    localStorage.setItem("despacho", JSON.stringify(updatedDespacho));
-    localStorage.setItem("acciones", JSON.stringify(updatedAcciones));
   };
 
   const toggleSelection = (vehicleId: number): void => {
@@ -637,6 +649,24 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
     (vehicle) => vehicle.status === "yellow"
   );
 
+  const getVehicleDriverName = (vehicle: Vehicle): string => {
+    return (
+      vehicle.personnel_in_charge?.name ||
+      vehicle.crew?.[0]?.name ||
+      vehicle.driver_name ||
+      "Sin conductor"
+    );
+  };
+
+  const renderVehicleButtonContent = (vehicle: Vehicle) => (
+    <>
+      <span className="vehicle-chip-code">{vehicle.vehicle_code}</span>
+      <span className="vehicle-chip-driver">
+        {getVehicleDriverName(vehicle)}
+      </span>
+    </>
+  );
+
   return (
     <div className="wrapper-carros">
       <div className="emergencia-column">
@@ -654,7 +684,7 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
                     selectedLiberar.includes(vehicle.id) ? "active" : ""
                   }`}
                 >
-                  {vehicle.vehicle_code}
+                  {renderVehicleButtonContent(vehicle)}
                 </button>
               ))
             ) : (
@@ -687,7 +717,7 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
                     selectedItems.includes(vehicle.id) ? "active" : ""
                   }`}
                 >
-                  {vehicle.vehicle_code}
+                  {renderVehicleButtonContent(vehicle)}
                 </button>
               ))
             ) : (
@@ -720,7 +750,7 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
                   selectedDespacho.includes(vehicle.id) ? "active" : ""
                 }`}
               >
-                {vehicle.vehicle_code}
+                {renderVehicleButtonContent(vehicle)}
               </button>
             ))}
 
@@ -735,43 +765,44 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
       <div className="despacho">
         <h2>Registro de dotación</h2>
 
-        {despacho.length > 0 ? (
-          despacho.map((item, index) => (
+        {carrosActivos.length > 0 ? (
+          carrosActivos.map((vehicle) => (
             <form
-              key={`${item}-${index}`}
+              key={vehicle.id}
               onSubmit={(e) => {
                 e.preventDefault();
-                handleDespachoSubmit(index);
+                handleCrewSubmit(vehicle);
               }}
             >
-              <label>Unidad {item}</label>
+              <label>Unidad {vehicle.vehicle_code}</label>
 
               <Select
-                value={selectedOptions[index] || null}
+                isMulti
+                value={getCrewValue(vehicle)}
                 onChange={(option) =>
-                  handleDespachoChange(index, option as SelectOption | null)
+                  handleCrewChange(
+                    vehicle.id,
+                    option as readonly PersonnelOption[] | null
+                  )
                 }
-                options={data2}
-                placeholder="Busca un nombre"
+                options={getCrewOptions(vehicle)}
+                placeholder="Busca bomberos"
                 isClearable
               />
 
-              <input
-                type="number"
-                placeholder="Ingrese cantidad de bomberos"
-                value={integerValues[index] || ""}
-                onChange={(e) =>
-                  handleIntegerChange(index, parseInt(e.target.value, 10))
-                }
-              />
+              <p>
+                {getCrewValue(vehicle).length} bombero
+                {getCrewValue(vehicle).length === 1 ? "" : "s"} seleccionado
+                {getCrewValue(vehicle).length === 1 ? "" : "s"}
+              </p>
 
               <button type="submit" className="app-btn app-btn-primary">
-                Registrar Despacho
+                Registrar dotación
               </button>
             </form>
           ))
         ) : (
-          <p>No hay unidades despachadas</p>
+          <p>No hay unidades asignadas a esta emergencia.</p>
         )}
       </div>
     </div>

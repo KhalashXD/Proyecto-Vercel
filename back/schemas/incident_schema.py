@@ -33,6 +33,9 @@ class AssignVehicleRequest(BaseModel):
 class UpdateVehicleStatusRequest(BaseModel):
     status: str
 
+class RegisterVehiclePersonnelRequest(BaseModel):
+    personnel_ids: list[int]
+
 class CreateIncidentActionRequest(BaseModel):
     event_type: str
     description: str

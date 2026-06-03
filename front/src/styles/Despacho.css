@@ -1,12 +1,11 @@
 .dispatch-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+  grid-template-columns: minmax(0, 1fr);
   gap: 18px;
   align-items: start;
 }
 
-.dispatch-main-card,
-.dispatch-side-card {
+.dispatch-main-card {
   background:
     linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01)),
     var(--bg-surface);
@@ -83,70 +82,6 @@
 .dispatch-button:hover {
   filter: brightness(1.05);
   transform: translateY(-1px);
-}
-
-.dispatch-side-card {
-  padding: 18px;
-}
-
-.dispatch-side-title {
-  margin: 0 0 14px;
-  font-size: 1.15rem;
-  font-weight: 900;
-  color: var(--text-main);
-}
-
-.dispatch-unit-card {
-  background: var(--bg-surface-2);
-  border: 1px solid var(--border-soft);
-  border-radius: 15px;
-  padding: 15px;
-  margin-bottom: 14px;
-}
-
-.dispatch-unit-card label {
-  display: block;
-  font-weight: 900;
-  margin-bottom: 10px;
-  color: var(--text-main);
-}
-
-.dispatch-unit-card input {
-  width: 100%;
-  min-height: 44px;
-  border-radius: 12px;
-  border: 1px solid var(--border-soft);
-  padding: 10px 13px;
-  background: #f1f1f1;
-  color: #222;
-  outline: none;
-  margin-top: 12px;
-  margin-bottom: 12px;
-}
-
-.dispatch-unit-card .btn {
-  width: 100%;
-  border-radius: 12px;
-  font-weight: 800;
-  margin: 0;
-}
-
-.dispatch-empty {
-  padding: 22px;
-  text-align: center;
-  color: var(--text-soft);
-  border: 1px dashed rgba(255,255,255,0.14);
-  background: rgba(255,255,255,0.025);
-  border-radius: 15px;
-  margin-bottom: 14px;
-}
-
-.last-dispatch-button {
-  width: 100%;
-  min-height: 48px;
-  border-radius: 13px;
-  font-weight: 900;
-  margin: 0;
 }
 
 .dispatch-confirmation-backdrop {
@@ -268,14 +203,10 @@
     grid-template-columns: 1fr;
   }
 
-  .dispatch-side-card {
-    order: 2;
-  }
 }
 
 @media (max-width: 780px) {
-  .dispatch-form,
-  .dispatch-side-card {
+  .dispatch-form {
     padding: 14px;
   }
 
@@ -293,10 +224,6 @@
     font-size: 1rem;
   }
 
-  .dispatch-unit-card {
-    padding: 13px;
-  }
-
   .dispatch-confirmation-details {
     grid-template-columns: 1fr;
   }
@@ -312,17 +239,9 @@
   }
 
   .dispatch-form select,
-  .dispatch-form input,
-  .dispatch-unit-card input {
+  .dispatch-form input {
     min-height: 42px;
     font-size: 0.95rem;
   }
 
-  .dispatch-side-title {
-    font-size: 1rem;
-  }
-
-  .last-dispatch-button {
-    min-height: 44px;
-  }
 }

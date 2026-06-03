@@ -6,7 +6,6 @@ import {
   Popup,
   useMap,
 } from "react-leaflet";
-import { Link } from "react-router-dom";
 import Select from "react-select";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -28,11 +27,6 @@ interface StreetData {
   Intersecciones: string;
   X: string;
   Y: string;
-}
-
-interface BomberoData {
-  nombre: string;
-  id: string;
 }
 
 interface Coordinates {
@@ -109,15 +103,6 @@ const Despacho: React.FC = () => {
   const [clave, setClave] = useState<string>("");
   const [textInput1, setTextInput1] = useState<string>("");
   const [textInput2, setTextInput2] = useState<string>("");
-  const [despacho, setDespacho] = useState<string[]>([]);
-  const [data2, setData2] = useState<SelectOption[]>([]);
-  const [selectedOptions, setSelectedOptions] = useState<
-    Record<number, SelectOption | null>
-  >({});
-  const [integerValues, setIntegerValues] = useState<Record<number, number>>(
-    {}
-  );
-  const [emergencyId, setEmergencyId] = useState<string | null>(null);
   const [dispatchConfirmation, setDispatchConfirmation] =
     useState<DispatchConfirmation | null>(null);
 
@@ -154,22 +139,6 @@ const Despacho: React.FC = () => {
   ];
 
   useEffect(() => {
-    fetch("/data.json")
-      .then((response) => response.json())
-      .then((jsonData: BomberoData[]) => {
-        const options = jsonData.map((item) => ({
-          value: item.id,
-          label: item.nombre,
-        }));
-
-        setData2(options);
-      })
-      .catch((error) => {
-        console.error("Error al cargar el JSON:", error);
-      });
-  }, []);
-
-  useEffect(() => {
     fetch("/calles.json")
       .then((response) => response.json())
       .then((jsonData: StreetData[]) => {
@@ -185,16 +154,6 @@ const Despacho: React.FC = () => {
       .catch((error) => {
         console.error("Error fetching the JSON file:", error);
       });
-  }, []);
-
-  useEffect(() => {
-    const savedDespacho = localStorage.getItem("despacho");
-    const savedEmergencyId = localStorage.getItem("emergencyId");
-
-    if (savedDespacho && savedEmergencyId) {
-      setDespacho(JSON.parse(savedDespacho));
-      setEmergencyId(savedEmergencyId);
-    }
   }, []);
 
   const handleStreetChange = (selectedOption: SelectOption | null): void => {
@@ -292,12 +251,6 @@ const Despacho: React.FC = () => {
 
         console.log("Data successfully sent:", result);
 
-        localStorage.setItem("despacho", JSON.stringify(result.despacho));
-        //localStorage.setItem("emergencyId", result.id);
-        localStorage.setItem("emergencyId", String(result.id));
-
-        setDespacho(result.despacho);
-        setEmergencyId(result.id);
         setDispatchConfirmation({
           incidentCode: result.id,
           clave: formData.clave,
@@ -316,76 +269,6 @@ const Despacho: React.FC = () => {
     } catch (error) {
       console.error("Error:", error);
     }
-  };
-
-  const handleDespachoChange = (
-    index: number,
-    selectedOption: SelectOption | null
-  ): void => {
-    setSelectedOptions((prevState) => ({
-      ...prevState,
-      [index]: selectedOption,
-    }));
-  };
-
-  const handleIntegerChange = (index: number, value: number): void => {
-    setIntegerValues((prevState) => ({
-      ...prevState,
-      [index]: value,
-    }));
-  };
-
-  const handleDespachoSubmit = async (index: number): Promise<void> => {
-    const selectedOption = selectedOptions[index];
-    const integerValue = integerValues[index];
-
-    if (
-      !selectedOption ||
-      integerValue === undefined ||
-      Number.isNaN(integerValue)
-    ) {
-      alert(
-        "Selecciona una opción y proporciona un número entero para este despacho"
-      );
-      return;
-    }
-
-    //const despachoData = {
-    //  despachoIndex: index,
-    //  selectedId: Number(selectedOption.value) + 1,
-    //  integerValue,
-    //  despacho,
-    //};
-
-    const despachoData = {
-      incidentId: emergencyId,
-      despachoIndex: index,
-      selectedId: Number(selectedOption.value),
-      integerValue,
-      despacho,
-    };
-
-    try {
-      const response = await fetch("http://localhost:5000/carros_mando", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(despachoData),
-      });
-
-      if (!response.ok) {
-        console.error("Error sending despacho item:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-
-    const updatedDespacho = [...despacho];
-    updatedDespacho.splice(index, 1);
-
-    setDespacho(updatedDespacho);
-    localStorage.setItem("despacho", JSON.stringify(updatedDespacho));
   };
 
   return (
@@ -605,63 +488,6 @@ const Despacho: React.FC = () => {
           </form>
         </section>
 
-        <aside className="dispatch-side-card">
-          <h2 className="dispatch-side-title">Unidades por registrar</h2>
-
-          {despacho.length > 0 ? (
-            despacho.map((item, index) => (
-              <form
-                key={`${item}-${index}`}
-                className="dispatch-unit-card"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleDespachoSubmit(index);
-                }}
-              >
-                <label>Unidad {item}</label>
-
-                <div className="dispatch-select">
-                  <Select
-                    value={selectedOptions[index] || null}
-                    onChange={(option) =>
-                      handleDespachoChange(index, option as SelectOption | null)
-                    }
-                    options={data2}
-                    placeholder="Busca un nombre"
-                    isClearable
-                  />
-                </div>
-
-                <input
-                  type="number"
-                  placeholder="Cantidad de bomberos"
-                  value={integerValues[index] || ""}
-                  onChange={(e) =>
-                    handleIntegerChange(index, parseInt(e.target.value, 10))
-                  }
-                />
-
-                <button type="submit" className="btn btn-success">
-                  Registrar Despacho
-                </button>
-              </form>
-            ))
-          ) : (
-            <div className="dispatch-empty">No hay unidades despachadas</div>
-          )}
-
-          <Link to={`/emergencia/${emergencyId || ""}`}>
-            <button
-              type="button"
-              className="btn btn-primary last-dispatch-button"
-              onClick={() => {
-                localStorage.removeItem("emergencyId");
-              }}
-            >
-              Último Despacho
-            </button>
-          </Link>
-        </aside>
       </div>
 
       {dispatchConfirmation && (

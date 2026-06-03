@@ -80,6 +80,33 @@
   transition: 0.18s ease;
 }
 
+.wrapper-carros .action-chip {
+  align-items: center;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 3px;
+  justify-content: center;
+  min-height: 58px;
+  min-width: 92px;
+  line-height: 1.15;
+}
+
+.vehicle-chip-code {
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.vehicle-chip-driver {
+  display: block;
+  font-size: 0.74rem;
+  font-weight: 700;
+  max-width: 130px;
+  opacity: 0.88;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .action-chip:hover {
   background: #2b2d36;
   transform: translateY(-1px);
@@ -279,8 +306,6 @@
 }
 
 .emergency-vehicle {
-  display: inline-flex;
-  align-items: center;
   background: #b83e3e;
   border-color: #d84b4b;
 }

@@ -36,9 +36,9 @@ from services.despacho_service import ( ejecutar_despacho)
 
 from utils.maps import (  obtener_coordenadas)
 
-from schemas.incident_schema import ( UpdateIncidentStatusRequest, AssignVehicleRequest, UpdateVehicleStatusRequest, CreateIncidentActionRequest, CreateIncidentVictimRequest, CreateVehicleInstructionRequest)
+from schemas.incident_schema import ( UpdateIncidentStatusRequest, AssignVehicleRequest, UpdateVehicleStatusRequest, RegisterVehiclePersonnelRequest, CreateIncidentActionRequest, CreateIncidentVictimRequest, CreateVehicleInstructionRequest)
 
-from services.incident_service import (obtener_incidentes_activos,obtener_incidente_por_codigo,actualizar_estado_incidente, obtener_historial_incidentes, asignar_vehiculo_adicional, actualizar_estado_vehiculo_incidente, liberar_vehiculo_incidente, registrar_accion_incidente, obtener_victimas_incidente, registrar_victima_incidente, obtener_instrucciones_unidades, registrar_instrucciones_unidades)
+from services.incident_service import (obtener_incidentes_activos,obtener_incidente_por_codigo,actualizar_estado_incidente, obtener_historial_incidentes, asignar_vehiculo_adicional, actualizar_estado_vehiculo_incidente, liberar_vehiculo_incidente, registrar_dotacion_vehiculo, registrar_accion_incidente, obtener_victimas_incidente, registrar_victima_incidente, obtener_instrucciones_unidades, registrar_instrucciones_unidades)
 
 from services.vehicle_service import (obtener_vehiculos, obtener_vehiculos_disponibles, actualizar_estado_vehiculo)
 from services.personnel_service import (obtener_personal)
@@ -317,6 +317,20 @@ def liberar_carro_de_emergencia(
         db=db,
         incident_code=incident_code,
         vehicle_id=vehicle_id
+    )
+
+@app.put("/emergenciasActivas/{incident_code}/vehiculos/{vehicle_id}/dotacion")
+def registrar_dotacion_carro(
+    incident_code: str,
+    vehicle_id: int,
+    request: RegisterVehiclePersonnelRequest,
+    db: Session = Depends(get_db)
+):
+    return registrar_dotacion_vehiculo(
+        db=db,
+        incident_code=incident_code,
+        vehicle_id=vehicle_id,
+        personnel_ids=request.personnel_ids
     )
 
 @app.patch("/vehiculos/{vehicle_id}/estado")

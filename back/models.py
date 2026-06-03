@@ -144,6 +144,11 @@ class Vehicle(Base):
         back_populates="vehicle"
     )
 
+    incident_personnel_assignments = relationship(
+        "IncidentVehiclePersonnel",
+        back_populates="vehicle"
+    )
+
     incident_events = relationship(
         "IncidentEvent",
         back_populates="vehicle"
@@ -327,7 +332,7 @@ class Personnel(Base):
 
     can_rescue = Column(Boolean, default=False)
     can_hazmat = Column(Boolean, default=False)
-    disponible = Column(Integer)
+    disponible = Column(Integer, default=1)
 
     level = Column(String(50))
     radio_code = Column(String(20))
@@ -338,6 +343,11 @@ class Personnel(Base):
     )
 
     station = relationship("Station")
+
+    incident_vehicle_assignments = relationship(
+        "IncidentVehiclePersonnel",
+        back_populates="personnel"
+    )
 
     __table_args__ = (
         Index("idx_station", "station_id"),
@@ -419,6 +429,58 @@ class IncidentVehicle(Base):
             "idx_personnel_in_charge",
             "personnel_in_charge_id"
         ),
+    )
+
+
+# ============================================================
+# TABLA: incident_vehicle_personnel
+# ============================================================
+
+class IncidentVehiclePersonnel(Base):
+    __tablename__ = "incident_vehicle_personnel"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+
+    incident_id = Column(
+        Integer,
+        ForeignKey("incidents.id", ondelete="CASCADE"),
+        nullable=False
+    )
+
+    vehicle_id = Column(
+        Integer,
+        ForeignKey("vehicles.id", ondelete="CASCADE"),
+        nullable=False
+    )
+
+    personnel_id = Column(
+        Integer,
+        ForeignKey("personnel.id", ondelete="CASCADE"),
+        nullable=False
+    )
+
+    assigned_at = Column(
+        TIMESTAMP,
+        server_default=func.current_timestamp()
+    )
+
+    released_at = Column(TIMESTAMP)
+
+    incident = relationship("Incident")
+    vehicle = relationship(
+        "Vehicle",
+        back_populates="incident_personnel_assignments"
+    )
+    personnel = relationship(
+        "Personnel",
+        back_populates="incident_vehicle_assignments"
+    )
+
+    __table_args__ = (
+        Index("idx_ivp_incident", "incident_id"),
+        Index("idx_ivp_vehicle", "vehicle_id"),
+        Index("idx_ivp_personnel", "personnel_id"),
+        Index("idx_ivp_active", "vehicle_id", "released_at"),
     )
 
 
