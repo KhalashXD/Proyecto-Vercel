@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Select from "react-select";
+import Select, { StylesConfig } from "react-select";
 import { useParams } from "react-router-dom";
 import MainLayout from "../components/MainLayout";
 import { abrirReporte } from "../api/reportService";
@@ -47,6 +47,46 @@ interface Vehicle {
   personnel_count?: number;
   crew?: VehicleCrewMember[];
 }
+
+const formSelectStyles: StylesConfig<any, boolean> = {
+  control: (base) => ({
+    ...base,
+    color: "#111",
+  }),
+  input: (base) => ({
+    ...base,
+    color: "#111",
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: "#111",
+  }),
+  multiValueLabel: (base) => ({
+    ...base,
+    color: "#111",
+  }),
+  placeholder: (base) => ({
+    ...base,
+    color: "#555",
+  }),
+  menu: (base) => ({
+    ...base,
+    backgroundColor: "#fff",
+  }),
+  menuList: (base) => ({
+    ...base,
+    backgroundColor: "#fff",
+  }),
+  option: (base, state) => ({
+    ...base,
+    color: "#222",
+    backgroundColor: state.isSelected
+      ? "#dbeafe"
+      : state.isFocused
+        ? "#eef2f7"
+        : "#fff",
+  }),
+};
 
 interface IncidentVictim {
   id: number;
@@ -788,6 +828,7 @@ const Form1: React.FC<FormProps> = ({ eventId, switchToTabA }) => {
                 options={getCrewOptions(vehicle)}
                 placeholder="Busca bomberos"
                 isClearable
+                styles={formSelectStyles}
               />
 
               <p>
@@ -1260,6 +1301,7 @@ const Form6: React.FC<FormProps> = ({ switchToTabA }) => {
           options={options}
           placeholder="Busca un nombre"
           isClearable
+          styles={formSelectStyles}
         />
       </label>
 
